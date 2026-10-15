@@ -595,7 +595,7 @@ Oferecer experiência instalável e resiliente para navegação em celulares sem
 
 No repositório, o app publica `app/manifest.ts`, ícones próprios, `public/sw.js` e `public/offline.html`. O worker faz precache dos ícones e da página offline, busca a navegação na rede antes de cair no cache e revalida assets estáticos. Rotas de autenticação e mutações não entram no cache. A agenda e os grupos de horário podem reabrir o último dado conhecido; um envio offline é recusado para não duplicar reserva.
 
-### Recursos planejados
+### Recursos publicados
 
 - web app manifest;
 - ícones próprios e metadados;

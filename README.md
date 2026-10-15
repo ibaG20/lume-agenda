@@ -3,7 +3,7 @@
 PWA mobile-first para que microempreendedores publiquem sua disponibilidade e recebam agendamentos, enquanto clientes consultam horários, reservam e cancelam sem criar uma conta.
 
 > [!IMPORTANT]
-> Este repositório está em fase de inicialização. Neste momento, ele contém somente o scaffold web criado com Next.js. Supabase, PostgreSQL, Edge Functions, Upstash Redis, Resend, PWA, testes, observabilidade e CI/CD fazem parte da arquitetura-alvo documentada, mas ainda não estão implementados. Consulte [Estado atual](#estado-atual) e [STACK.md](./STACK.md) antes de assumir que uma integração já existe.
+> O app web já inclui as telas do painel e do agendamento público, Auth via Supabase, testes Vitest e o PWA instalável. PostgreSQL, Edge Functions versionadas neste repositório, Upstash Redis, Resend, observabilidade e CI/CD continuam na arquitetura-alvo. Consulte [Estado atual](#estado-atual) e [STACK.md](./STACK.md) antes de assumir que uma integração já existe.
 
 ## Sumário
 
@@ -615,7 +615,7 @@ Somente lint e build estão configurados. A ausência de testes não significa q
 
 ## PWA, acessibilidade e redes limitadas
 
-PWA é um requisito planejado, não uma funcionalidade atual. Sua implementação deve considerar:
+O shell instalável já está no app (`app/manifest.ts`, ícones, `public/sw.js` e `public/offline.html`). A implementação segue estas restrições:
 
 - manifest com nome, ícones, cores, escopo e modo de exibição;
 - layout mobile-first e alvos de toque adequados;
