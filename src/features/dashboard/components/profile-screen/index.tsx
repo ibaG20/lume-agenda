@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AppIcon } from "@/components/atoms/app-icon";
+import { SubmitButton } from "@/components/atoms/submit-button";
 import { PageHeader } from "@/components/molecules/page-header";
 import { Popover } from "@/components/molecules/popover";
 import { useSignOut } from "@/features/auth";
@@ -261,9 +262,14 @@ export function ProfileScreen({
               {feedback}
             </p>
           ) : null}
-          <button className={styles.saveButton} disabled={busy} type="submit">
-            {update.status === "pending" ? "Salvando…" : "Salvar perfil"}
-          </button>
+          <SubmitButton
+            className={styles.saveButton}
+            disabled={busy}
+            pending={update.status === "pending"}
+            pendingLabel="Salvando…"
+          >
+            Salvar perfil
+          </SubmitButton>
         </footer>
       </form>
     </div>

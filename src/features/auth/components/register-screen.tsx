@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRegister } from "../hooks/use-register";
 import { createAuthPageHref, normalizeNextPath } from "../utils/next-path";
+import { SubmitButton } from "@/components/atoms/submit-button";
 import { AuthCard } from "./auth-card";
 
 type RegisterScreenProps = {
@@ -162,17 +163,14 @@ export function RegisterScreen({ configured, nextPath }: RegisterScreenProps) {
           />
         </fieldset>
 
-        <button
-          aria-busy={auth.password.status === "pending"}
+        <SubmitButton
           className="btn btn-primary btn-block"
           disabled={!configured || isBusy}
-          type="submit"
+          pending={auth.password.status === "pending"}
+          pendingLabel="Criando conta…"
         >
-          {auth.password.status === "pending" ? (
-            <span className="loading loading-spinner" aria-hidden="true" />
-          ) : null}
           Criar conta
-        </button>
+        </SubmitButton>
       </form>
 
       <div className="divider text-xs uppercase text-base-content/60">ou</div>

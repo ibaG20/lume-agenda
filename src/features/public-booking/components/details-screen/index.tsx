@@ -2,6 +2,7 @@
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { SubmitButton } from "@/components/atoms/submit-button";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
 import {
   useBookAppointment,
@@ -243,17 +244,13 @@ export function DetailsScreen() {
           >
             Voltar
           </button>
-          <button
-            aria-busy={busy}
+          <SubmitButton
             className="btn btn-primary"
-            disabled={busy}
-            type="submit"
+            pending={busy}
+            pendingLabel="Confirmando…"
           >
-            {busy ? (
-              <span className="loading loading-spinner" aria-hidden="true" />
-            ) : null}
             Confirmar agendamento
-          </button>
+          </SubmitButton>
         </div>
       </form>
     </section>

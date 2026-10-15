@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSignIn } from "../hooks/use-sign-in";
 import { createAuthPageHref, normalizeNextPath } from "../utils/next-path";
+import { SubmitButton } from "@/components/atoms/submit-button";
 import { AuthCard } from "./auth-card";
 
 type SignInScreenProps = {
@@ -116,17 +117,14 @@ export function SignInScreen({
           />
         </fieldset>
 
-        <button
-          aria-busy={auth.password.status === "pending"}
+        <SubmitButton
           className="btn btn-primary btn-block"
           disabled={!configured || isBusy}
-          type="submit"
+          pending={auth.password.status === "pending"}
+          pendingLabel="Entrando…"
         >
-          {auth.password.status === "pending" ? (
-            <span className="loading loading-spinner" aria-hidden="true" />
-          ) : null}
           Entrar
-        </button>
+        </SubmitButton>
       </form>
 
       <div className="divider text-xs uppercase text-base-content/60">ou</div>

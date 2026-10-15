@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AppIcon } from "@/components/atoms/app-icon";
+import { SubmitButton } from "@/components/atoms/submit-button";
 import {
   useSaveScheduleGroup,
   type DayOfWeek,
@@ -236,13 +237,13 @@ export function ScheduleGroupForm({
         >
           Cancelar
         </button>
-        <button className={styles.saveButton} disabled={busy} type="submit">
-          {busy
-            ? "Salvando…"
-            : mode === "create"
-              ? "Criar grupo"
-              : "Salvar alterações"}
-        </button>
+        <SubmitButton
+          className={styles.saveButton}
+          pending={busy}
+          pendingLabel="Salvando…"
+        >
+          {mode === "create" ? "Criar grupo" : "Salvar alterações"}
+        </SubmitButton>
       </footer>
     </form>
   );
