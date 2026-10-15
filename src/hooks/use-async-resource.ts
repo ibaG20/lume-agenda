@@ -91,8 +91,6 @@ export function useAsyncResource<T>(
     let cancelled = false;
     const cached = cacheKey ? readStored<T>(cacheKey, cacheTtlMs) : undefined;
 
-    // Fetch remoto: o pending precisa ir para o estado da UI.
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- hook de leitura remota
     setState((previous) => {
       if (cached) {
         const empty = isEmptyRef.current?.(cached.data) ?? false;
