@@ -78,6 +78,28 @@
   color: var(--color-primary-content);
 }
 
+.step[data-active="true"] .stepNumber {
+  animation: scale-in var(--motion-fast) var(--ease-out);
+}
+
+@media (max-width: 1023px) {
+  .progress {
+    background: color-mix(in srgb, var(--color-base-100) 96%, white);
+    border: 1.5px solid var(--color-base-300);
+    border-radius: 1.25rem;
+    bottom: calc(0.7rem + env(safe-area-inset-bottom));
+    left: 0.75rem;
+    padding: 0.55rem 0.35rem;
+    position: fixed;
+    right: 0.75rem;
+    z-index: 30;
+  }
+
+  .content {
+    padding-bottom: 7rem;
+  }
+}
+
 .content {
   margin: 0 auto;
   max-width: 68rem;

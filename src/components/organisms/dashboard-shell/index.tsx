@@ -55,18 +55,40 @@ export function DashboardShell({ children }: { children: ReactNode }) {
             <BrandLogo />
           </Link>
         </header>
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-28 pt-6 sm:px-6 lg:px-10 lg:pb-10 lg:pt-10">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-36 pt-6 sm:px-6 lg:px-10 lg:pb-10 lg:pt-10">
           {children}
         </main>
-        <nav className={styles.mobileNav} aria-label="Navegação principal">
-          {navigation.map((item) => {
+        <nav className={styles.dock} aria-label="Navegação principal">
+          {navigation.slice(0, 2).map((item) => {
             const active = item.exact
               ? pathname === item.href
               : pathname.startsWith(item.href);
             return (
               <Link
                 aria-current={active ? "page" : undefined}
-                className={styles.mobileNavLink}
+                className={styles.dockLink}
+                data-active={active}
+                href={item.href}
+                key={item.href}
+              >
+                <AppIcon name={item.icon} size={21} />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+          <Link
+            aria-label="Novo horário"
+            className={styles.dockAction}
+            href="/inicio/horarios/criar"
+          >
+            <AppIcon name="plus" size={24} />
+          </Link>
+          {navigation.slice(2).map((item) => {
+            const active = pathname.startsWith(item.href);
+            return (
+              <Link
+                aria-current={active ? "page" : undefined}
+                className={styles.dockLink}
                 data-active={active}
                 href={item.href}
                 key={item.href}
