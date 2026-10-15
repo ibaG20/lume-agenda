@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AppIcon } from "@/components/atoms/app-icon";
+import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { Popover } from "@/components/molecules/popover";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
@@ -54,6 +55,8 @@ export function ScheduleListScreen() {
           </span>
         }
       />
+
+      <CachedNotice cachedAt={groups.cachedAt} fromCache={groups.fromCache} />
 
       {groups.status === "pending" ? (
         <ResourceFeedback kind="loading" title="Carregando seus horários…" />

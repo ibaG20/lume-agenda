@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 
 import { act, renderHook, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { ToastProvider } from "@/components/organisms/toaster";
 import { useAsyncAction } from "./use-async-action";
 import type { ApiResult } from "@/types/api";
@@ -87,5 +87,27 @@ describe("useAsyncAction", () => {
     });
 
     expect(screen.getByText("Perfil salvo.")).toBeTruthy();
+  });
+
+  it("blocks a mutation while the browser is offline", async () => {
+    const action = vi.fn(async () => ({
+      ok: true as const,
+      data: { ok: true },
+      requestId: "ok",
+    }));
+    vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+    const { result } = renderHook(() => useAsyncAction(action), {
+      wrapper: ToastProvider,
+    });
+
+    await act(async () => {
+      const outcome = await result.current.run(undefined);
+      expect(outcome.ok).toBe(false);
+    });
+
+    expect(action).not.toHaveBeenCalled();
+    expect(result.current.error?.message).toContain("offline");
+    expect(screen.getByText(/offline/i)).toBeTruthy();
+    vi.restoreAllMocks();
   });
 });

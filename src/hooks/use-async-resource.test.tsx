@@ -80,4 +80,22 @@ describe("useAsyncResource", () => {
       expect(result.current.data?.calls).toBe(2);
     });
   });
+
+  it("shows the last stored payload when the next read fails", async () => {
+    window.localStorage.setItem(
+      "lume-read:agenda:today",
+      JSON.stringify({ data: { slots: [1] }, savedAt: Date.now() }),
+    );
+    const { result } = renderHook(() =>
+      useAsyncResource(() => Promise.resolve(fail("sem rede")), "agenda", {
+        cacheKey: "agenda:today",
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.status).toBe("success");
+    });
+    expect(result.current.fromCache).toBe(true);
+    expect(result.current.data).toEqual({ slots: [1] });
+  });
 });

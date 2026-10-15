@@ -38,6 +38,17 @@ export function useAsyncAction<TInput, TData>(
 
   const run = useCallback(
     async (input: TInput): Promise<ApiResult<TData>> => {
+      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        const error = toApiError({
+          code: "UNAVAILABLE",
+          message: "Você está offline. Envie de novo quando a conexão voltar.",
+          requestId: "offline",
+        });
+        setState({ status: "error", data: undefined, error });
+        toast.push({ title: error.message, tone: "warning" });
+        return { ok: false, error };
+      }
+
       setState((previous) => ({
         status: "pending",
         data: previous.data,

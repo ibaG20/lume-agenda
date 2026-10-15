@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MonthCalendar } from "@/components/organisms/month-calendar";
+import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
@@ -64,6 +65,10 @@ export function AgendaScreen({ timezone }: { timezone: string }) {
         />
 
         <section aria-labelledby="selected-date-title">
+          <CachedNotice
+            cachedAt={agenda.cachedAt}
+            fromCache={agenda.fromCache}
+          />
           <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className={styles.sectionEyebrow}>Horários</p>

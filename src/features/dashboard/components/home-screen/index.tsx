@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AppIcon } from "@/components/atoms/app-icon";
+import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
 import { useDailyAgenda } from "@/features/agenda";
@@ -62,7 +63,9 @@ export function HomeScreen() {
           ) : null}
         </div>
 
-        {profile.status === "pending" || agenda.status === "pending" ? (
+        <CachedNotice cachedAt={agenda.cachedAt} fromCache={agenda.fromCache} />
+        {(profile.status === "pending" && !profile.data) ||
+        (agenda.status === "pending" && !agenda.data) ? (
           <ResourceFeedback kind="loading" title="Carregando sua agenda…" />
         ) : null}
         {profile.status === "error" ? (

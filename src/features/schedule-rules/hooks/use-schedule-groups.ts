@@ -32,6 +32,8 @@ async function loadScheduleGroups() {
 export function useScheduleGroups() {
   return useAsyncResource(loadScheduleGroups, "schedule-groups", {
     isEmpty: (data) => data.length === 0,
+    cacheKey: "schedule-groups",
+    cacheTtlMs: 6 * 60 * 60 * 1000,
   });
 }
 
