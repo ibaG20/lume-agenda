@@ -1,0 +1,67 @@
+.dialog {
+  background: transparent;
+  border: 0;
+  inset: 0;
+  margin: auto;
+  max-height: none;
+  max-width: none;
+  padding: 1rem;
+  width: 100%;
+}
+
+.dialog::backdrop {
+  animation: fade-in var(--motion-base) var(--ease-out);
+  background: color-mix(in srgb, var(--color-base-content) 46%, transparent);
+}
+
+.panel {
+  animation: scale-in var(--motion-base) var(--ease-out);
+  background: var(--color-base-100);
+  border: 1.5px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  color: var(--color-base-content);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-inline: auto;
+  max-width: 28rem;
+  padding: 1.25rem;
+}
+
+.header h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.header p,
+.body {
+  color: color-mix(in srgb, var(--color-base-content) 78%, transparent);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-top: 0.35rem;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .dialog {
+    margin: 0;
+    padding: 0;
+  }
+
+  .panel {
+    animation-name: slide-up;
+    border-bottom: 0;
+    border-radius: 1.15rem 1.15rem 0 0;
+    margin-top: auto;
+    max-width: none;
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    width: 100%;
+  }
+}
