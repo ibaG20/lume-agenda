@@ -11,11 +11,13 @@ type BookAppointmentForm = Omit<BookAppointmentInput, "idempotencyKey">;
 export function useBookAppointment() {
   const idempotencyKeyRef = useRef(crypto.randomUUID());
 
-  const action = useAsyncAction((input: BookAppointmentForm) =>
-    bookAppointment(createBrowserSupabaseClient(), {
-      ...input,
-      idempotencyKey: idempotencyKeyRef.current,
-    }),
+  const action = useAsyncAction(
+    (input: BookAppointmentForm) =>
+      bookAppointment(createBrowserSupabaseClient(), {
+        ...input,
+        idempotencyKey: idempotencyKeyRef.current,
+      }),
+    { errorToast: true },
   );
 
   const beginNewAttempt = () => {

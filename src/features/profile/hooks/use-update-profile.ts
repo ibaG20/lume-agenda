@@ -6,8 +6,10 @@ import { updateProfile } from "../api/update-profile";
 import type { UpdateProfileInput } from "../types";
 
 export function useUpdateProfile() {
-  const action = useAsyncAction((input: UpdateProfileInput) =>
-    updateProfile(createBrowserSupabaseClient(), input),
+  const action = useAsyncAction(
+    (input: UpdateProfileInput) =>
+      updateProfile(createBrowserSupabaseClient(), input),
+    { successMessage: "Perfil salvo.", errorToast: true },
   );
 
   return {

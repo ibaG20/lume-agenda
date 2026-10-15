@@ -36,8 +36,10 @@ export function useScheduleGroups() {
 }
 
 export function useSaveScheduleGroup() {
-  const action = useAsyncAction((input: SaveScheduleGroupInput) =>
-    saveScheduleGroup(createBrowserSupabaseClient(), input),
+  const action = useAsyncAction(
+    (input: SaveScheduleGroupInput) =>
+      saveScheduleGroup(createBrowserSupabaseClient(), input),
+    { successMessage: "Horários salvos.", errorToast: true },
   );
 
   return {

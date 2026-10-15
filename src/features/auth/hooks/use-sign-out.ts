@@ -5,7 +5,9 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { signOut } from "../api/sign-out";
 
 export function useSignOut() {
-  const action = useAsyncAction(() => signOut(createBrowserSupabaseClient()));
+  const action = useAsyncAction(() => signOut(createBrowserSupabaseClient()), {
+    errorToast: true,
+  });
 
   return {
     status: action.status,
