@@ -9,12 +9,26 @@ import {
   summarizeDays,
   summarizeRanges,
 } from "@/components/organisms/schedule-group-form/index.function";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { useGroupMutation, useScheduleGroups } from "@/features/schedule-rules";
 import styles from "./index.module.css";
 
 export function ScheduleListScreen() {
+  const confirm = useConfirm();
   const groups = useScheduleGroups();
   const mutation = useGroupMutation();
+
+  async function removeGroup(id: string, name: string) {
+    const accepted = await confirm({
+      title: "Excluir grupo",
+      description: `Excluir “${name}”? Os horários desse grupo deixam de ser oferecidos.`,
+      confirmLabel: "Excluir",
+      tone: "danger",
+    });
+    if (!accepted) return;
+    const result = await mutation.remove(id);
+    if (result.ok) groups.refetch();
+  }
 
   async function toggleGroup(id: string, isActive: boolean) {
     const result = await mutation.setActive({ id, isActive });
@@ -112,12 +126,22 @@ export function ScheduleListScreen() {
                 </div>
               </dl>
 
-              <Link
-                className={styles.editButton}
-                href={`/inicio/horarios/editar?grupo=${group.id}`}
-              >
-                Editar grupo <AppIcon name="chevron-right" size={18} />
-              </Link>
+              <div className={styles.actions}>
+                <button
+                  className={styles.deleteButton}
+                  disabled={mutation.isPending}
+                  onClick={() => void removeGroup(group.id, group.name)}
+                  type="button"
+                >
+                  <AppIcon name="trash" size={18} /> Excluir
+                </button>
+                <Link
+                  className={styles.editButton}
+                  href={`/inicio/horarios/editar?grupo=${group.id}`}
+                >
+                  Editar grupo <AppIcon name="chevron-right" size={18} />
+                </Link>
+              </div>
             </li>
           ))}
         </ul>

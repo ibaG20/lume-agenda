@@ -6,6 +6,7 @@ import { AppIcon } from "@/components/atoms/app-icon";
 import { SubmitButton } from "@/components/atoms/submit-button";
 import { PageHeader } from "@/components/molecules/page-header";
 import { Popover } from "@/components/molecules/popover";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { useSignOut } from "@/features/auth";
 import {
   useUpdateProfile,
@@ -37,6 +38,7 @@ export function ProfileScreen({
   firstAccess,
 }: ProfileScreenProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const update = useUpdateProfile();
   const signOut = useSignOut();
   const [name, setName] = useState(initialProfile?.name ?? "");
@@ -90,6 +92,14 @@ export function ProfileScreen({
   }
 
   async function handleSignOut() {
+    const accepted = await confirm({
+      title: "Sair da conta",
+      description: "Você precisará entrar de novo para ver a agenda.",
+      confirmLabel: "Sair",
+      tone: "danger",
+    });
+    if (!accepted) return;
+
     const result = await signOut.signOut();
     if (result.ok) {
       router.replace("/sign-in");

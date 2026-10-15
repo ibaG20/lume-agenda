@@ -4,6 +4,7 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SubmitButton } from "@/components/atoms/submit-button";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import {
   useBookAppointment,
   type BookingClientInput,
@@ -29,6 +30,7 @@ function firstFieldWithError(
 
 export function DetailsScreen() {
   const router = useRouter();
+  const confirm = useConfirm();
   const flow = useBookingFlow();
   const booking = useBookAppointment();
   const errorSummaryRef = useRef<HTMLDivElement>(null);
@@ -68,6 +70,13 @@ export function DetailsScreen() {
       focusField(firstFieldWithError(validation.errors));
       return;
     }
+
+    const accepted = await confirm({
+      title: "Confirmar agendamento",
+      description: `Reservar este horário com ${flow.provider?.name ?? "o prestador"}?`,
+      confirmLabel: "Reservar horário",
+    });
+    if (!accepted) return;
 
     const result = await booking.book({
       slug: flow.slug,
