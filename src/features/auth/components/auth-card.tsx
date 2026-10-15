@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { BrandLogo } from "@/components/atoms/brand-logo";
 
 type AuthCardProps = {
   title: string;
@@ -16,14 +17,8 @@ export function AuthCard({
   return (
     <main className="flex min-h-svh flex-1 items-center justify-center bg-base-200 px-4 py-8 text-base-content sm:px-6">
       <section className="w-full max-w-md" aria-labelledby="auth-title">
-        <div className="mb-6 flex items-center justify-center gap-3">
-          <span
-            aria-hidden="true"
-            className="grid size-11 place-items-center rounded-box bg-primary text-xl font-bold text-primary-content"
-          >
-            A
-          </span>
-          <span className="text-lg font-bold tracking-tight">Agendamento</span>
+        <div className="mb-6 flex items-center justify-center">
+          <BrandLogo size={44} />
         </div>
 
         <div className="card border border-base-300 bg-base-100 shadow-sm">

@@ -1,0 +1,22 @@
+.logo {
+  align-items: center;
+  color: var(--color-base-content);
+  display: inline-flex;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.logo[data-tone="dark"] {
+  color: var(--color-neutral-content);
+}
+
+.word {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.logo svg {
+  flex: 0 0 auto;
+}

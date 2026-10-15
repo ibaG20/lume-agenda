@@ -16,11 +16,7 @@
   padding: 1.25rem max(1rem, env(safe-area-inset-left));
 }
 
-.brand {
-  color: var(--color-primary);
-  font-size: 1.12rem;
-  font-weight: 900;
-  letter-spacing: -0.035em;
+.brandRow {
   margin: 0 auto 1.15rem;
   max-width: 68rem;
 }
@@ -102,8 +98,7 @@
     padding-block: 1.5rem;
   }
 
-  .brand {
-    font-size: 1.35rem;
+  .brandRow {
     margin-bottom: 1.35rem;
   }
 

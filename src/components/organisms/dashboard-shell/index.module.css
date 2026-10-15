@@ -20,18 +20,6 @@
   text-decoration: none;
 }
 
-.brandMark {
-  align-items: center;
-  background: var(--color-primary);
-  border-radius: 0.7rem;
-  color: var(--color-primary-content);
-  display: inline-flex;
-  font-size: 1rem;
-  height: 2.35rem;
-  justify-content: center;
-  width: 2.35rem;
-}
-
 .navLink {
   align-items: center;
   border-radius: var(--radius-field);

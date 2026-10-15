@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppIcon } from "@/components/atoms/app-icon";
+import { BrandLogo } from "@/components/atoms/brand-logo";
 import styles from "./index.module.css";
 
 const navigation = [
@@ -24,10 +25,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-svh bg-base-200 text-base-content">
       <aside className={styles.sidebar} aria-label="Navegação principal">
         <Link className={styles.brand} href="/inicio">
-          <span className={styles.brandMark} aria-hidden>
-            A
-          </span>
-          <span>Agendamento</span>
+          <BrandLogo tone="dark" />
         </Link>
         <nav className="flex flex-col gap-2">
           {navigation.map((item) => {
@@ -54,10 +52,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         <header className={styles.mobileHeader}>
           <Link className={styles.brand} href="/inicio">
-            <span className={styles.brandMark} aria-hidden>
-              A
-            </span>
-            <span>Agendamento</span>
+            <BrandLogo />
           </Link>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-28 pt-6 sm:px-6 lg:px-10 lg:pb-10 lg:pt-10">

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Agendamento",
+  title: "Lume Agendas",
   description: "Gerencie seus horários e agendamentos em um só lugar.",
 };
 

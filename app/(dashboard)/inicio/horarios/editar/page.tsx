@@ -7,7 +7,7 @@ import { requireDashboardUser } from "@/features/auth/server/dashboard-session";
 import { listGroups, listRules } from "@/features/schedule-rules";
 
 export const metadata: Metadata = {
-  title: "Editar horários · Agendamento",
+  title: "Editar horários · Lume Agendas",
 };
 
 type EditarHorariosPageProps = {
