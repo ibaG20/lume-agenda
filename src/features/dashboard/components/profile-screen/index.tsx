@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AppIcon } from "@/components/atoms/app-icon";
 import { PageHeader } from "@/components/molecules/page-header";
+import { Popover } from "@/components/molecules/popover";
 import { useSignOut } from "@/features/auth";
 import {
   useUpdateProfile,
@@ -165,7 +166,12 @@ export function ProfileScreen({
           </label>
 
           <label className={styles.field}>
-            <span>Fuso horário</span>
+            <span className="inline-flex items-center gap-2">
+              Fuso horário
+              <Popover label="Sobre o fuso horário">
+                Todos os horários da agenda e dos lembretes usam este fuso.
+              </Popover>
+            </span>
             <select
               disabled={busy}
               onChange={(event) =>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { AppIcon } from "@/components/atoms/app-icon";
 import { PageHeader } from "@/components/molecules/page-header";
+import { Popover } from "@/components/molecules/popover";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
 import {
   summarizeDays,
@@ -27,10 +28,16 @@ export function ScheduleListScreen() {
         title="Seus horários"
         description="Organize dias com a mesma rotina em grupos e ligue somente os que estão em uso."
         action={
-          <Link className={styles.createButton} href="/inicio/horarios/criar">
-            <AppIcon name="plus" size={19} />
-            <span>Novo grupo</span>
-          </Link>
+          <span className="inline-flex items-center gap-2">
+            <Popover label="Como os grupos funcionam">
+              Grupos ativos não podem se sobrepor. Desative um antes de ligar
+              outro no mesmo dia.
+            </Popover>
+            <Link className={styles.createButton} href="/inicio/horarios/criar">
+              <AppIcon name="plus" size={19} />
+              <span>Novo grupo</span>
+            </Link>
+          </span>
         }
       />
 
