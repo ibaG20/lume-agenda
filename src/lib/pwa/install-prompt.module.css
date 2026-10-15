@@ -1,0 +1,36 @@
+.banner {
+  animation: slide-up var(--motion-base) var(--ease-out);
+  background: var(--color-base-100);
+  border: 1.5px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  bottom: calc(6.5rem + env(safe-area-inset-bottom));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  left: 0.75rem;
+  padding: 0.85rem;
+  position: fixed;
+  right: 0.75rem;
+  z-index: 40;
+}
+
+.banner p {
+  font-size: 0.85rem;
+  font-weight: 650;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+@media (min-width: 1024px) {
+  .banner {
+    bottom: 1rem;
+    left: auto;
+    max-width: 28rem;
+  }
+}
