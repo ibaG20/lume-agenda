@@ -63,13 +63,13 @@ Legenda usada nesta documentação:
 | Tailwind CSS | Implementado no scaffold | Tailwind 4 integrado via PostCSS; ainda sem design system do produto |
 | ESLint | Implementado | ESLint 9 com regras Next.js Core Web Vitals e TypeScript |
 | Funcionalidades de agendamento | Planejado | Nenhum fluxo de domínio foi implementado |
-| PWA instalável | Planejado | Manifest, ícones próprios e service worker ainda não existem |
+| PWA instalável | Implementado | `app/manifest.ts`, ícones em `public/icons`, `public/sw.js` e página `public/offline.html`; mutações offline são recusadas |
 | Supabase Auth | Implementado no web | Login, cadastro, Google OAuth PKCE, logout local, refresh e sessão SSR; provedor Google ainda depende de configuração externa |
 | PostgreSQL, migrations e RLS | Planejado | Contrato em `docs/schema.prisma`; sem Prisma Client nem migrations no web |
 | Supabase Edge Functions | Parcial | Contratos e hooks em `src/features`; funções ainda não deployadas |
 | Upstash Redis | Planejado | Cache e invalidação ainda não existem |
 | Resend | Planejado | Envio resiliente de emails ainda não existe |
-| Testes automatizados | Parcial | Vitest cobre mapper, `invokeFunction`, Auth, disponibilidade, reserva, cancelamento, perfil, regras, exceções, agenda, clientes, cancelamento do prestador e o proxy de sessão |
+| Testes automatizados | Parcial | Vitest cobre mapper, `invokeFunction`, Auth, disponibilidade, reserva, cancelamento, perfil, regras, exceções, agenda, clientes, cancelamento do prestador, o proxy de sessão, modais, toasts e o cache offline de leitura |
 | Camada web de API | Implementado | `docs/supabase.md`, `docs/integracao.md` e hooks por caso de uso |
 | CI/CD e observabilidade | Planejado | Não há workflows ou instrumentação versionados |
 | Regras de duração, fuso e precedência | Pendente de decisão | Bloqueadas por DEC-01 |
