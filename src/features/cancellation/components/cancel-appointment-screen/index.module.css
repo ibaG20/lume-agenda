@@ -1,0 +1,84 @@
+.shell {
+  background:
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--color-secondary) 30%, transparent),
+      transparent 32rem
+    ),
+    var(--color-base-100);
+  color: var(--color-base-content);
+  min-height: 100vh;
+}
+
+.header {
+  background: color-mix(in srgb, var(--color-base-100) 94%, white);
+  border-bottom: 1.5px solid var(--color-base-300);
+  padding: 1.25rem max(1rem, env(safe-area-inset-left));
+}
+
+.content {
+  margin: 0 auto;
+  max-width: 42rem;
+  padding: 2rem 1rem 3rem;
+}
+
+.narrow {
+  margin: 0 auto;
+  max-width: 36rem;
+}
+
+.headerCopy {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.eyebrow {
+  color: var(--color-primary);
+  font-size: 0.7rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.eyebrow[data-cancelled="true"] {
+  color: var(--color-error);
+}
+
+.headerCopy h1 {
+  font-size: clamp(1.65rem, 6vw, 2.35rem);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  margin-top: 0.35rem;
+}
+
+.headerCopy > p:last-child {
+  color: color-mix(in srgb, var(--color-base-content) 68%, transparent);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin-top: 0.7rem;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.actions :global(.btn) {
+  width: 100%;
+}
+
+.error {
+  color: var(--color-error);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (min-width: 640px) {
+  .content {
+    padding: 3rem 1.5rem 4rem;
+  }
+}

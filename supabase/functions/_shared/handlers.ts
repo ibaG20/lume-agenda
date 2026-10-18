@@ -244,17 +244,19 @@ export async function getCancellation(context: RequestContext) {
   if (!appointmentResult.data) notFound();
   const profileResult = await context.admin
     .from("profiles")
-    .select("name")
+    .select("name,public_slug,timezone")
     .eq("id", appointmentResult.data.provider_id)
     .maybeSingle();
   if (profileResult.error) dbError(profileResult.error);
-  if (!profileResult.data) notFound();
+  if (!profileResult.data?.public_slug) notFound();
   return {
     appointmentId: appointmentResult.data.id,
     start: appointmentResult.data.start_datetime,
     end: appointmentResult.data.end_datetime,
     status: appointmentResult.data.status,
     providerName: profileResult.data.name,
+    publicSlug: profileResult.data.public_slug,
+    timezone: profileResult.data.timezone,
   };
 }
 

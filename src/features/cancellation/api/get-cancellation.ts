@@ -12,6 +12,8 @@ function toPreviewDto(data: CancellationPreviewDto): CancellationPreviewDto {
     end: data.end,
     status: data.status,
     providerName: data.providerName,
+    publicSlug: data.publicSlug,
+    timezone: data.timezone || "America/Sao_Paulo",
   };
 }
 

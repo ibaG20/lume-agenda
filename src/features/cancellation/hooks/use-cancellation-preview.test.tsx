@@ -27,6 +27,8 @@ const previewDto = {
   end: "2026-09-15T12:30:00.000Z",
   status: "CONFIRMED" as const,
   providerName: "Salão Nails",
+  publicSlug: "salao-nails",
+  timezone: "America/Sao_Paulo",
 };
 
 describe("useCancellationPreview", () => {

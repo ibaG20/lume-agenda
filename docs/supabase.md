@@ -171,6 +171,8 @@ O `cancellation_token` **não** volta no JSON; vai só no email.
   end: string;
   status: 'CONFIRMED' | 'CANCELLED';
   providerName: string;
+  publicSlug: string;
+  timezone: string;
 }
 ```
 

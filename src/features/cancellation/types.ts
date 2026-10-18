@@ -4,6 +4,8 @@ export type CancellationPreviewDto = {
   end: string;
   status: "CONFIRMED" | "CANCELLED";
   providerName: string;
+  publicSlug: string;
+  timezone: string;
 };
 
 export type CancelAppointmentDto = {
