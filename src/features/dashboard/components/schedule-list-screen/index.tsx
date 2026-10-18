@@ -1,8 +1,8 @@
 "use client";
 
+import { startTransition, useOptimistic } from "react";
 import { AppIcon } from "@/components/atoms/app-icon";
 import { AppLink } from "@/components/atoms/app-link";
-import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { Popover } from "@/components/molecules/popover";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
@@ -11,13 +11,37 @@ import {
   summarizeRanges,
 } from "@/components/organisms/schedule-group-form/index.function";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
-import { useGroupMutation, useScheduleGroups } from "@/features/schedule-rules";
+import {
+  useGroupMutation,
+  useScheduleGroups,
+  type ScheduleGroupDetailDto,
+} from "@/features/schedule-rules";
 import styles from "./index.module.css";
+
+type OptimisticGroupAction =
+  | { type: "remove"; id: string }
+  | { type: "toggle"; id: string; isActive: boolean };
+
+function updateGroups(
+  groups: ScheduleGroupDetailDto[],
+  action: OptimisticGroupAction,
+) {
+  if (action.type === "remove") {
+    return groups.filter((group) => group.id !== action.id);
+  }
+  return groups.map((group) =>
+    group.id === action.id ? { ...group, isActive: action.isActive } : group,
+  );
+}
 
 export function ScheduleListScreen() {
   const confirm = useConfirm();
   const groups = useScheduleGroups();
   const mutation = useGroupMutation();
+  const [visibleGroups, applyOptimisticGroup] = useOptimistic(
+    groups.data ?? [],
+    updateGroups,
+  );
 
   async function removeGroup(id: string, name: string) {
     const accepted = await confirm({
@@ -27,13 +51,27 @@ export function ScheduleListScreen() {
       tone: "danger",
     });
     if (!accepted) return;
-    const result = await mutation.remove(id);
-    if (result.ok) groups.refetch();
+    startTransition(async () => {
+      const change: OptimisticGroupAction = { type: "remove", id };
+      applyOptimisticGroup(change);
+      const result = await mutation.remove(id);
+      if (result.ok) {
+        groups.updateData((current) => updateGroups(current, change));
+        groups.refetch();
+      }
+    });
   }
 
-  async function toggleGroup(id: string, isActive: boolean) {
-    const result = await mutation.setActive({ id, isActive });
-    if (result.ok) groups.refetch();
+  function toggleGroup(id: string, isActive: boolean) {
+    startTransition(async () => {
+      const change: OptimisticGroupAction = { type: "toggle", id, isActive };
+      applyOptimisticGroup(change);
+      const result = await mutation.setActive({ id, isActive });
+      if (result.ok) {
+        groups.updateData((current) => updateGroups(current, change));
+        groups.refetch();
+      }
+    });
   }
 
   return (
@@ -57,8 +95,6 @@ export function ScheduleListScreen() {
           </span>
         }
       />
-
-      <CachedNotice cachedAt={groups.cachedAt} fromCache={groups.fromCache} />
 
       {groups.status === "pending" ? (
         <ResourceFeedback kind="loading" title="Carregando seus horários…" />
@@ -91,8 +127,12 @@ export function ScheduleListScreen() {
 
       {groups.status === "success" ? (
         <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {groups.data.map((group) => (
-            <li className={styles.groupCard} key={group.id}>
+          {visibleGroups.map((group) => (
+            <li
+              aria-busy={mutation.isPending || undefined}
+              className={styles.groupCard}
+              key={group.id}
+            >
               <header className="flex items-start justify-between gap-3">
                 <div>
                   <span className={styles.status} data-active={group.isActive}>

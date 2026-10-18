@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { startTransition, useOptimistic, useState } from "react";
 import { SubmitButton } from "@/components/atoms/submit-button";
 import { formatLongDate, formatTime } from "@/lib/date-time/dashboard";
 import { Temporal } from "@js-temporal/polyfill";
@@ -23,10 +23,25 @@ export function NoticesSection() {
   const notices = useNotices();
   const dismissal = useDismissNotice(() => notices.refetch());
   const [hiddenIds, setHiddenIds] = useState<string[]>([]);
+  const [optimisticHiddenIds, hideOptimistically] = useOptimistic(
+    hiddenIds,
+    (current, noticeId: string) => [...current, noticeId],
+  );
   const timezone = notices.data?.timezone ?? "America/Sao_Paulo";
   const visible =
-    notices.data?.notices.filter((notice) => !hiddenIds.includes(notice.id)) ??
-    [];
+    notices.data?.notices.filter(
+      (notice) => !optimisticHiddenIds.includes(notice.id),
+    ) ?? [];
+
+  function dismissNotice(noticeId: string) {
+    startTransition(async () => {
+      hideOptimistically(noticeId);
+      const result = await dismissal.dismiss(noticeId);
+      if (result.ok) {
+        setHiddenIds((current) => [...current, noticeId]);
+      }
+    });
+  }
 
   if (visible.length === 0) return null;
 
@@ -51,13 +66,7 @@ export function NoticesSection() {
             </p>
             <SubmitButton
               className="btn btn-outline btn-sm"
-              onClick={() => {
-                void dismissal.dismiss(notice.id).then((result) => {
-                  if (result.ok) {
-                    setHiddenIds((current) => [...current, notice.id]);
-                  }
-                });
-              }}
+              onClick={() => dismissNotice(notice.id)}
               pending={dismissal.status === "pending"}
               type="button"
             >

@@ -94,7 +94,7 @@ export function useAsyncResource<T>(
   const isEmpty = options?.isEmpty;
   const cacheKey = options?.cacheKey;
   const cacheTtlMs = options?.cacheTtlMs ?? DEFAULT_CACHE_TTL_MS;
-  const [reloadToken, setReloadToken] = useState(0);
+  const [reload, setReload] = useState({ token: 0, showLoading: false });
   const [fromCache, setFromCache] = useState(false);
   const [cachedAt, setCachedAt] = useState<number>();
   const [state, setState] = useState<AsyncResourceState<T>>(
@@ -102,9 +102,14 @@ export function useAsyncResource<T>(
       ? { status: "pending", data: undefined, error: undefined }
       : idleState,
   );
+  const stateRef = useRef(state);
 
   const fetcherRef = useRef(fetcher);
   const isEmptyRef = useRef(isEmpty);
+
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   useEffect(() => {
     fetcherRef.current = fetcher;
@@ -117,16 +122,19 @@ export function useAsyncResource<T>(
     }
 
     let cancelled = false;
-    const fresh = cacheKey ? readStored<T>(cacheKey, cacheTtlMs) : undefined;
-    const stale = cacheKey ? readStored<T>(cacheKey, STALE_MAX_MS) : undefined;
+    const fresh =
+      cacheKey && !reload.showLoading
+        ? readStored<T>(cacheKey, cacheTtlMs)
+        : undefined;
+    const stale =
+      cacheKey && !reload.showLoading
+        ? readStored<T>(cacheKey, STALE_MAX_MS)
+        : undefined;
     const snapshot = fresh ?? stale;
 
-    setState((previous) => {
+    setState(() => {
       if (snapshot) {
         return toResourceState(snapshot.data, isEmptyRef.current);
-      }
-      if (previous.data !== undefined && previous.status !== "error") {
-        return { ...previous, error: undefined };
       }
       return { status: "pending", data: undefined, error: undefined };
     });
@@ -175,15 +183,37 @@ export function useAsyncResource<T>(
     return () => {
       cancelled = true;
     };
-  }, [cacheKey, cacheTtlMs, enabled, key, reloadToken]);
+  }, [cacheKey, cacheTtlMs, enabled, key, reload]);
 
-  const refetch = useCallback(() => {
-    setReloadToken((value) => value + 1);
+  const refetch = useCallback((options?: { showLoading?: boolean }) => {
+    setReload((current) => ({
+      token: current.token + 1,
+      showLoading: options?.showLoading === true,
+    }));
   }, []);
 
+  const updateData = useCallback(
+    (updater: (current: T) => T) => {
+      const current = stateRef.current;
+      if (current.data === undefined) return;
+      const data = updater(current.data);
+      const next = toResourceState(data, isEmptyRef.current);
+      stateRef.current = next;
+      setState(next);
+      if (cacheKey) writeStored(cacheKey, data);
+    },
+    [cacheKey],
+  );
+
   if (!enabled) {
-    return { ...idleState, refetch, fromCache: false, cachedAt: undefined };
+    return {
+      ...idleState,
+      refetch,
+      updateData,
+      fromCache: false,
+      cachedAt: undefined,
+    };
   }
 
-  return { ...state, refetch, fromCache, cachedAt };
+  return { ...state, refetch, updateData, fromCache, cachedAt };
 }

@@ -2,7 +2,6 @@
 
 import { AppIcon } from "@/components/atoms/app-icon";
 import { AppLink } from "@/components/atoms/app-link";
-import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
 import { useDailyAgenda } from "@/features/agenda";
@@ -52,7 +51,6 @@ export function HomeScreen() {
           Hoje
         </h2>
 
-        <CachedNotice cachedAt={agenda.cachedAt} fromCache={agenda.fromCache} />
         {(profile.status === "pending" && !profile.data) ||
         (agenda.status === "pending" && !agenda.data) ? (
           <ResourceFeedback kind="loading" title="Carregando sua agenda…" />

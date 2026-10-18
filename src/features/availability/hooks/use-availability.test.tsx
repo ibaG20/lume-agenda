@@ -19,6 +19,7 @@ vi.mock("../api/get-availability", () => ({
 describe("useAvailability", () => {
   beforeEach(() => {
     getAvailability.mockReset();
+    window.localStorage.clear();
   });
 
   it("stays idle until slug and date are present", () => {
