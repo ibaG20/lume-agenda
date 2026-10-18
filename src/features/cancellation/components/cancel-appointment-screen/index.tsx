@@ -156,7 +156,7 @@ export function CancelAppointmentScreen({ token }: { token: string }) {
             >
               Cancelar agendamento
             </SubmitButton>
-            {cancellation.status === "error" ? (
+            {cancellation.status === "error" && cancellation.error ? (
               <p className={styles.error} role="alert">
                 {cancellation.error.message}
               </p>
