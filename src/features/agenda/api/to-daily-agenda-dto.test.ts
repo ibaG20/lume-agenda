@@ -28,4 +28,28 @@ describe("toDailyAgendaDto", () => {
     expect(dto.slots[1]?.appointmentId).toBe("apt-1");
     expect(dto.slots[1]?.clientName).toBe("Ana");
   });
+
+  it("keeps overrideId only on blocked slots", () => {
+    const dto = toDailyAgendaDto({
+      date: "2026-09-15",
+      timezone: "America/Sao_Paulo",
+      slots: [
+        {
+          start: "2026-09-15T12:00:00.000Z",
+          end: "2026-09-15T13:00:00.000Z",
+          state: "blocked",
+          overrideId: "ovr-1",
+        },
+        {
+          start: "2026-09-15T13:00:00.000Z",
+          end: "2026-09-15T14:00:00.000Z",
+          state: "available",
+          overrideId: "não deve vazar",
+        },
+      ],
+    });
+
+    expect(dto.slots[0]?.overrideId).toBe("ovr-1");
+    expect(dto.slots[1]).not.toHaveProperty("overrideId");
+  });
 });

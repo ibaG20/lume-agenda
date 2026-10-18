@@ -10,6 +10,9 @@ export function toAgendaSlot(slot: AgendaSlot): AgendaSlot {
   if (slot.appointmentId) {
     next.appointmentId = slot.appointmentId;
   }
+  if (slot.state === "blocked" && slot.overrideId) {
+    next.overrideId = slot.overrideId;
+  }
   if (slot.state === "booked" && slot.clientName) {
     next.clientName = slot.clientName;
   }

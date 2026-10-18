@@ -5,6 +5,7 @@ export type AgendaSlot = {
   end: string;
   state: AgendaSlotState;
   appointmentId?: string;
+  overrideId?: string;
   clientName?: string;
 };
 

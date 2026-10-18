@@ -8,6 +8,7 @@ export type TimeRange = { start: string; end: string };
 export type AgendaRange = TimeRange & {
   state: "available" | "booked" | "blocked";
   appointmentId?: string;
+  overrideId?: string;
 };
 
 export type DayAvailability = {
@@ -139,7 +140,9 @@ function calculateDateAvailability(
       dayStart,
       dayEnd,
     );
-    return range ? [{ ...range, is_available: row.is_available }] : [];
+    return range
+      ? [{ ...range, is_available: row.is_available, id: row.id }]
+      : [];
   });
   const dateAppointments = appointments.flatMap((row) => {
     const range = clipped(
@@ -154,7 +157,7 @@ function calculateDateAvailability(
     .map(({ start, end }) => ({ start, end }));
   const blocks = dateOverrides
     .filter((row) => !row.is_available)
-    .map(({ start, end }) => ({ start, end }));
+    .map(({ start, end, id }) => ({ start, end, id: id! }));
   const bookings = dateAppointments.map(({ start, end, id }) => ({
     start,
     end,
@@ -177,7 +180,12 @@ function calculateDateAvailability(
   );
   const agenda: AgendaRange[] = [
     ...available.map((range) => ({ ...range, state: "available" as const })),
-    ...blocks.map((range) => ({ ...range, state: "blocked" as const })),
+    ...blocks.map((range) => ({
+      start: range.start,
+      end: range.end,
+      state: "blocked" as const,
+      overrideId: range.id,
+    })),
     ...bookings.map((range) => ({
       start: range.start,
       end: range.end,
@@ -237,7 +245,7 @@ export async function calculateDays(
   const [overridesResult, appointmentsResult] = await Promise.all([
     admin
       .from("AvailabilityOverride")
-      .select("start_datetime,end_datetime,is_available")
+      .select("id,start_datetime,end_datetime,is_available")
       .eq("provider_id", providerId)
       .lt("start_datetime", rangeEnd)
       .gt("end_datetime", rangeStart),

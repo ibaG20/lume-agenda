@@ -277,10 +277,13 @@ type DailyAgendaDto = {
     end: string;
     state: 'available' | 'booked' | 'blocked';
     appointmentId?: string;
+    overrideId?: string;
     clientName?: string;
   }>;
 };
 ```
+
+`overrideId` só aparece em horários `blocked` e identifica o bloqueio pontual criado por `create-override`; reativar o horário é excluí-lo com `delete-override`.
 
 Não inclui token de cancelamento nem PII além do nome necessário para o cartão do horário ocupado. O `clientName` vem do cadastro privado em `ProviderClient`; o DTO não expõe e-mail nem telefone.
 
