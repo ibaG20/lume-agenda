@@ -6,15 +6,25 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { cancelAppointmentAsProvider } from "../api/cancel-appointment-as-provider";
 
 export function useProviderCancelAppointment() {
-  const idempotencyKeyRef = useRef(crypto.randomUUID());
+  const idempotencyKeysRef = useRef(new Map<string, string>());
 
   const action = useAsyncAction(
-    (appointmentId: string) =>
-      cancelAppointmentAsProvider(createBrowserSupabaseClient(), {
+    (appointmentId: string) => {
+      const keys = idempotencyKeysRef.current;
+      let idempotencyKey = keys.get(appointmentId);
+      if (!idempotencyKey) {
+        idempotencyKey = crypto.randomUUID();
+        keys.set(appointmentId, idempotencyKey);
+      }
+      return cancelAppointmentAsProvider(createBrowserSupabaseClient(), {
         appointmentId,
-        idempotencyKey: idempotencyKeyRef.current,
-      }),
-    { successMessage: "Agendamento cancelado.", errorToast: true },
+        idempotencyKey,
+      });
+    },
+    {
+      successMessage:
+        "Agendamento cancelado. O cliente será avisado por email.",
+    },
   );
 
   return {
@@ -22,6 +32,7 @@ export function useProviderCancelAppointment() {
     data: action.data,
     error: action.error,
     cancel: action.run,
+    reset: action.reset,
     isIdempotent: action.error?.code === "IDEMPOTENT",
   };
 }

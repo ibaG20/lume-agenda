@@ -4,7 +4,11 @@ export {
   listOverrides,
   updateOverride,
 } from "./api/overrides";
-export { useOverrideMutation, useOverrides } from "./hooks/use-overrides";
+export {
+  useOverrideMutation,
+  useOverrides,
+  useSlotAvailability,
+} from "./hooks/use-overrides";
 export type {
   CreateOverrideInput,
   OverrideDto,

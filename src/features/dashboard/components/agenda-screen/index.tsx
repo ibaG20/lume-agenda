@@ -5,56 +5,52 @@ import { MonthCalendar } from "@/components/organisms/month-calendar";
 import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
-import { useConfirm } from "@/components/organisms/confirm-dialog";
 import {
   useDailyAgenda,
   type AgendaSlot,
   type AgendaSlotState,
 } from "@/features/agenda";
-import { useProviderCancelAppointment } from "@/features/provider-cancellation";
 import {
   formatLongDate,
   formatTime,
   todayInTimezone,
 } from "@/lib/date-time/dashboard";
+import { SlotManageDialog } from "../slot-manage-dialog";
 import styles from "./index.module.css";
 
 const statusLabel: Record<AgendaSlotState, string> = {
   available: "Livre",
   booked: "Ocupado",
-  blocked: "Bloqueado",
+  blocked: "Inativo",
 };
+
+function slotAction(slot: AgendaSlot): string | null {
+  if (slot.state === "available") return "Inativar";
+  if (slot.state === "booked" && slot.appointmentId) return "Cancelar";
+  if (
+    slot.state === "blocked" &&
+    slot.overrideId &&
+    new Date(slot.start).valueOf() > Date.now()
+  ) {
+    return "Reativar";
+  }
+  return null;
+}
 
 export function AgendaScreen({ timezone }: { timezone: string }) {
   const [selectedDate, setSelectedDate] = useState(() =>
     todayInTimezone(timezone),
   );
-  const confirm = useConfirm();
-  const cancellation = useProviderCancelAppointment();
+  const [managedSlot, setManagedSlot] = useState<AgendaSlot | null>(null);
   const agenda = useDailyAgenda(selectedDate);
   const displayTimezone = agenda.data?.timezone ?? timezone;
-
-  async function cancelSlot(slot: AgendaSlot) {
-    if (!slot.appointmentId || cancellation.status === "pending") return;
-    const accepted = await confirm({
-      title: "Cancelar agendamento",
-      description: `Cancelar o horário de ${slot.clientName ?? "cliente"}? Ele volta a ficar livre.`,
-      confirmLabel: "Cancelar horário",
-      tone: "danger",
-    });
-    if (!accepted) return;
-    const result = await cancellation.cancel(slot.appointmentId);
-    if (result.ok || (!result.ok && result.error.code === "IDEMPOTENT")) {
-      agenda.refetch();
-    }
-  }
 
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
         eyebrow="Sua agenda"
         title="Agendamentos"
-        description="Escolha um dia para consultar os horários livres, ocupados e bloqueados."
+        description="Escolha um dia para consultar os horários livres, ocupados e inativos. Toque em uma ação para inativar, reativar ou cancelar um horário."
       />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(19rem,23rem)_1fr]">
@@ -104,43 +100,54 @@ export function AgendaScreen({ timezone }: { timezone: string }) {
           ) : null}
           {agenda.status === "success" ? (
             <ol className="flex flex-col gap-2">
-              {agenda.data.slots.map((slot) => (
-                <li
-                  className={styles.slot}
-                  data-state={slot.state}
-                  key={`${slot.state}-${slot.start}-${slot.appointmentId ?? "slot"}`}
-                >
-                  <span className={styles.statusBar} aria-hidden />
-                  <time className={styles.time} dateTime={slot.start}>
-                    {formatTime(slot.start, displayTimezone)}
-                    <small>– {formatTime(slot.end, displayTimezone)}</small>
-                  </time>
-                  <span className={styles.slotInfo}>
-                    <strong>{statusLabel[slot.state]}</strong>
-                    {slot.state === "booked" ? (
-                      <small>{slot.clientName ?? "Cliente agendado"}</small>
-                    ) : slot.state === "available" ? (
-                      <small>Disponível para agendamento</small>
-                    ) : (
-                      <small>Indisponível para clientes</small>
-                    )}
-                  </span>
-                  {slot.state === "booked" && slot.appointmentId ? (
-                    <button
-                      className={styles.cancel}
-                      disabled={cancellation.status === "pending"}
-                      onClick={() => void cancelSlot(slot)}
-                      type="button"
-                    >
-                      Cancelar
-                    </button>
-                  ) : null}
-                </li>
-              ))}
+              {agenda.data.slots.map((slot) => {
+                const action = slotAction(slot);
+                return (
+                  <li
+                    className={styles.slot}
+                    data-state={slot.state}
+                    key={`${slot.state}-${slot.start}-${slot.appointmentId ?? "slot"}`}
+                  >
+                    <span className={styles.statusBar} aria-hidden />
+                    <time className={styles.time} dateTime={slot.start}>
+                      {formatTime(slot.start, displayTimezone)}
+                      <small>– {formatTime(slot.end, displayTimezone)}</small>
+                    </time>
+                    <span className={styles.slotInfo}>
+                      <strong>{statusLabel[slot.state]}</strong>
+                      {slot.state === "booked" ? (
+                        <small>{slot.clientName ?? "Cliente agendado"}</small>
+                      ) : slot.state === "available" ? (
+                        <small>Disponível para agendamento</small>
+                      ) : (
+                        <small>Indisponível para clientes</small>
+                      )}
+                    </span>
+                    {action ? (
+                      <button
+                        className={styles.action}
+                        data-state={slot.state}
+                        onClick={() => setManagedSlot(slot)}
+                        type="button"
+                      >
+                        {action}
+                      </button>
+                    ) : null}
+                  </li>
+                );
+              })}
             </ol>
           ) : null}
         </section>
       </div>
+
+      <SlotManageDialog
+        date={selectedDate}
+        onChanged={agenda.refetch}
+        onClose={() => setManagedSlot(null)}
+        slot={managedSlot}
+        timezone={displayTimezone}
+      />
     </div>
   );
 }

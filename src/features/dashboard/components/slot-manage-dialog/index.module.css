@@ -1,0 +1,46 @@
+.details {
+  background: var(--color-base-200);
+  border-left: 0.28rem solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.85rem 1rem;
+}
+
+.details[data-state="available"] {
+  border-left-color: var(--color-success);
+}
+
+.details[data-state="booked"] {
+  border-left-color: var(--color-info);
+}
+
+.details[data-state="blocked"] {
+  border-left-color: var(--color-warning);
+}
+
+.details > div {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.details dt {
+  color: color-mix(in srgb, var(--color-base-content) 62%, transparent);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.details dd {
+  color: var(--color-base-content);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.error {
+  color: var(--color-error);
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+}

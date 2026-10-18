@@ -51,3 +51,34 @@ export function useOverrideMutation() {
     reset,
   };
 }
+
+export function useSlotAvailability() {
+  const deactivate = useAsyncAction(
+    (slot: { start: string; end: string }) =>
+      createOverride(createBrowserSupabaseClient(), {
+        start: slot.start,
+        end: slot.end,
+        isAvailable: false,
+      }),
+    { successMessage: "Horário inativado neste dia." },
+  );
+  const reactivate = useAsyncAction(
+    (overrideId: string) =>
+      deleteOverride(createBrowserSupabaseClient(), overrideId),
+    { successMessage: "Horário reativado." },
+  );
+
+  const reset = () => {
+    deactivate.reset();
+    reactivate.reset();
+  };
+
+  return {
+    isPending:
+      deactivate.status === "pending" || reactivate.status === "pending",
+    error: deactivate.error ?? reactivate.error,
+    deactivate: deactivate.run,
+    reactivate: reactivate.run,
+    reset,
+  };
+}

@@ -71,16 +71,34 @@
   background: var(--color-warning);
 }
 
-.cancel {
+.action {
+  --action-color: var(--color-base-content);
   background: transparent;
-  border: 1.5px solid color-mix(in srgb, var(--color-error) 45%, var(--color-base-300));
+  border: 1.5px solid
+    color-mix(in srgb, var(--action-color) 45%, var(--color-base-300));
   border-radius: var(--radius-field);
-  color: var(--color-error);
+  color: var(--action-color);
   font-size: 0.75rem;
   font-weight: 800;
   margin-right: 0.85rem;
   min-height: 2.4rem;
   padding: 0.35rem 0.7rem;
+}
+
+.action[data-state="available"] {
+  --action-color: color-mix(
+    in srgb,
+    var(--color-warning) 60%,
+    var(--color-base-content)
+  );
+}
+
+.action[data-state="blocked"] {
+  --action-color: var(--color-primary);
+}
+
+.action[data-state="booked"] {
+  --action-color: var(--color-error);
 }
 
 .time {

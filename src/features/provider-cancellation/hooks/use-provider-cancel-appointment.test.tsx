@@ -51,6 +51,28 @@ describe("useProviderCancelAppointment", () => {
     expect(first).not.toHaveProperty("token");
   });
 
+  it("uses a different Idempotency-Key for each appointment", async () => {
+    cancelAppointmentAsProvider.mockResolvedValue({
+      ok: true,
+      data: cancelDto,
+      requestId: "ok",
+    });
+
+    const { result } = renderHook(() => useProviderCancelAppointment());
+
+    await act(async () => {
+      await result.current.cancel(appointmentId);
+    });
+    await act(async () => {
+      await result.current.cancel("apt-2");
+    });
+
+    const first = cancelAppointmentAsProvider.mock.calls[0]?.[1];
+    const second = cancelAppointmentAsProvider.mock.calls[1]?.[1];
+    expect(second?.appointmentId).toBe("apt-2");
+    expect(second?.idempotencyKey).not.toBe(first?.idempotencyKey);
+  });
+
   it("treats IDEMPOTENT as already applied", async () => {
     cancelAppointmentAsProvider.mockResolvedValue({
       ok: false,
