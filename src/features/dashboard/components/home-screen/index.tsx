@@ -6,6 +6,7 @@ import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
 import { useDailyAgenda } from "@/features/agenda";
+import { NoticesSection } from "@/features/notices";
 import { useProfile } from "@/features/profile";
 import { formatTime, todayInTimezone } from "@/lib/date-time/dashboard";
 import styles from "./index.module.css";
@@ -115,6 +116,8 @@ export function HomeScreen() {
           </ol>
         ) : null}
       </section>
+
+      <NoticesSection />
     </div>
   );
 }

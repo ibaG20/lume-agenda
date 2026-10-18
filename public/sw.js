@@ -1,4 +1,4 @@
-const CACHE_NAME = "lume-agendas-v1";
+const CACHE_NAME = "lume-agendas-v2";
 const PRECACHE = [
   "/offline.html",
   "/icons/icon-192.png",
@@ -50,6 +50,39 @@ function isStaticAsset(pathname) {
     pathname.endsWith(".css")
   );
 }
+
+self.addEventListener("push", (event) => {
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch {
+    payload = {};
+  }
+  const title = payload.title || "Lume Agendas";
+  const options = {
+    body: payload.body || "Um cliente cancelou um horário.",
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
+    tag: payload.tag || "lume-notice",
+    data: { url: payload.url || "/inicio" },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = new URL(event.notification.data?.url || "/inicio", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
+      for (const windowClient of windows) {
+        if (windowClient.url === target && "focus" in windowClient) {
+          return windowClient.focus();
+        }
+      }
+      return self.clients.openWindow(target);
+    }),
+  );
+});
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;

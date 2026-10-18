@@ -23,6 +23,10 @@ export const EdgeFunction = {
   getDailyAgenda: "get-daily-agenda",
   listClients: "list-clients",
   cancelAppointmentAsProvider: "cancel-appointment-as-provider",
+  listNotices: "list-notices",
+  dismissNotice: "dismiss-notice",
+  registerPushSubscription: "register-push-subscription",
+  getNotificationConfig: "get-notification-config",
 } as const;
 
 export type EdgeFunctionName = (typeof EdgeFunction)[keyof typeof EdgeFunction];

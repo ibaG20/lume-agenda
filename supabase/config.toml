@@ -21,3 +21,6 @@ verify_jwt = false
 [functions.process-email-outbox]
 verify_jwt = false
 
+[functions.process-notice-outbox]
+verify_jwt = false
+

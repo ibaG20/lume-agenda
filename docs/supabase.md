@@ -202,6 +202,42 @@ Header `Idempotency-Key` recomendado. Já cancelado → `ok: true` com `status: 
 { appointmentId: string; status: 'CANCELLED' }
 ```
 
+O cancelamento pelo cliente grava um aviso na fila `notice_outbox`, na mesma transação. O painel lista os avisos abertos e o prestador dispensa cada um. A entrega no celular é outra etapa da mesma fila, via Web Push, e não apaga o aviso da tela.
+
+### `listNotices` — `list-notices`
+
+| | |
+| --- | --- |
+| Auth | prestador |
+| Método | `GET` |
+| Hook | `useNotices` |
+
+**Output**
+
+```ts
+{
+  timezone: string;
+  notices: Array<{
+    id: string;
+    eventType: 'CLIENT_CANCELLED';
+    clientName: string;
+    start: string;
+    end: string;
+    createdAt: string;
+  }>;
+}
+```
+
+Não inclui e-mail, telefone nem token.
+
+### `dismissNotice` — `dismiss-notice`
+
+`POST` `{ noticeId: string }`. Só o prestador dono do aviso. Já dispensado responde sucesso de novo. Some da lista.
+
+### `getNotificationConfig` e `registerPushSubscription`
+
+`GET` devolve `{ vapidPublicKey: string | null }`. `POST` `{ endpoint, p256dh, authKey }` grava a inscrição do PWA. O worker `process-notice-outbox` usa essa inscrição para o aviso no celular.
+
 ## Funções do prestador (JWT)
 
 Exigem sessão válida e `auth.uid()` correspondente ao `provider_id` do recurso (`UNAUTHORIZED` se cruzar prestadores).

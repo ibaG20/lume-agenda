@@ -1,4 +1,11 @@
 import { processEmailOutbox } from "./email-worker.ts";
+import { processNoticeOutbox } from "./notice-worker.ts";
+import {
+  dismissNotice,
+  getNotificationConfig,
+  listNotices,
+  registerPushSubscription,
+} from "./notices.ts";
 import { handleRoute } from "./http.ts";
 import {
   bookAppointment,
@@ -126,6 +133,27 @@ const routes: Record<string, RouteDefinition & { successStatus?: number }> = {
     method: "POST",
     auth: "worker",
     handler: processEmailOutbox,
+  },
+  "list-notices": { method: "GET", auth: "provider", handler: listNotices },
+  "dismiss-notice": {
+    method: "POST",
+    auth: "provider",
+    handler: dismissNotice,
+  },
+  "register-push-subscription": {
+    method: "POST",
+    auth: "provider",
+    handler: registerPushSubscription,
+  },
+  "get-notification-config": {
+    method: "GET",
+    auth: "provider",
+    handler: getNotificationConfig,
+  },
+  "process-notice-outbox": {
+    method: "POST",
+    auth: "worker",
+    handler: processNoticeOutbox,
   },
 };
 

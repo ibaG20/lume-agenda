@@ -18,6 +18,9 @@ vi.mock("@/features/profile", () => ({
     refetch: vi.fn(),
   }),
 }));
+vi.mock("@/features/notices", () => ({
+  NoticesSection: () => <section>Avisos</section>,
+}));
 vi.mock("@/features/agenda", () => ({
   useDailyAgenda: () => ({
     status: "success",
@@ -60,5 +63,11 @@ describe("HomeScreen", () => {
         .getByRole("link", { name: /Configurar horários/ })
         .getAttribute("href"),
     ).toBe("/inicio/horarios");
+
+    const today = screen.getByRole("heading", { name: "Agendamentos do dia" });
+    const notices = screen.getByText("Avisos");
+    expect(
+      today.compareDocumentPosition(notices) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 });
