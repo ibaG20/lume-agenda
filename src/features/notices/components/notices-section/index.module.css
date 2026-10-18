@@ -4,59 +4,12 @@
   gap: 0.9rem;
 }
 
-.heading {
-  align-items: flex-end;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
 .eyebrow {
   color: var(--color-error);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.heading h2 {
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin-top: 0.2rem;
-}
-
-.counter {
-  align-items: center;
-  background: var(--color-error);
-  border-radius: 999px;
-  color: var(--color-error-content);
-  display: inline-flex;
-  font-size: 0.78rem;
-  font-weight: 800;
-  height: 1.8rem;
-  justify-content: center;
-  min-width: 1.8rem;
-  padding: 0 0.45rem;
-}
-
-.permission {
-  align-items: center;
-  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-base-100));
-  border: 1.5px solid color-mix(in srgb, var(--color-primary) 35%, var(--color-base-300));
-  border-radius: var(--radius-box);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8rem;
-  justify-content: space-between;
-  padding: 0.9rem 1rem;
-}
-
-.permission p,
-.denied,
-.empty {
-  color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
-  font-size: 0.84rem;
-  line-height: 1.5;
 }
 
 .list {
@@ -71,7 +24,8 @@
 .notice {
   align-items: center;
   background: color-mix(in srgb, var(--color-error) 7%, var(--color-base-100));
-  border: 1.5px solid color-mix(in srgb, var(--color-error) 35%, var(--color-base-300));
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-error) 35%, var(--color-base-300));
   border-radius: var(--radius-box);
   display: flex;
   flex-wrap: wrap;

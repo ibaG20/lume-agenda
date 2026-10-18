@@ -6,6 +6,7 @@ type PageHeaderProps = {
   title: string;
   description?: string;
   action?: ReactNode;
+  size?: "large" | "medium";
 };
 
 export function PageHeader({
@@ -13,12 +14,15 @@ export function PageHeader({
   title,
   description,
   action,
+  size = "large",
 }: PageHeaderProps) {
   return (
     <header className="flex items-start justify-between gap-4">
       <div className="min-w-0">
         {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
-        <h1 className={styles.title}>{title}</h1>
+        <h1 className={styles.title} data-size={size}>
+          {title}
+        </h1>
         {description ? (
           <p className={styles.description}>{description}</p>
         ) : null}

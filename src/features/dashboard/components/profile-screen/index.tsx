@@ -109,15 +109,7 @@ export function ProfileScreen({
 
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader
-        eyebrow="Sua conta"
-        title={firstAccess ? "Complete seu perfil" : "Perfil"}
-        description={
-          firstAccess
-            ? "Precisamos destes dados antes de publicar sua agenda."
-            : "Mantenha seus dados e seu endereço de agendamento atualizados."
-        }
-      />
+      <PageHeader size="medium" title="Perfil" />
 
       {firstAccess ? (
         <aside className={styles.onboarding}>
@@ -139,7 +131,7 @@ export function ProfileScreen({
               Dados pessoais
             </h2>
             <p className={styles.cardDescription}>
-              O nome será usado na saudação e na agenda pública.
+              O nome será usado na agenda pública.
             </p>
           </header>
 

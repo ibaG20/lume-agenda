@@ -47,11 +47,7 @@ export function AgendaScreen({ timezone }: { timezone: string }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader
-        eyebrow="Sua agenda"
-        title="Agendamentos"
-        description="Escolha um dia para consultar os horários livres, ocupados e inativos. Toque em uma ação para inativar, reativar ou cancelar um horário."
-      />
+      <PageHeader size="medium" title="Agendamentos" />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(19rem,23rem)_1fr]">
         <MonthCalendar

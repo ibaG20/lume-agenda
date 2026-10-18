@@ -67,23 +67,9 @@
   text-transform: uppercase;
 }
 
-.sectionTitle {
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin-top: 0.2rem;
-}
-
-.counter {
-  align-items: center;
-  background: var(--color-primary);
-  border-radius: 999px;
-  color: var(--color-primary-content);
-  display: inline-flex;
-  font-size: 0.78rem;
-  font-weight: 800;
-  height: 1.8rem;
-  justify-content: center;
-  min-width: 1.8rem;
+.empty {
+  color: color-mix(in srgb, var(--color-base-content) 65%, transparent);
+  font-size: 0.9rem;
 }
 
 .appointment {

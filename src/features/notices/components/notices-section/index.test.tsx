@@ -1,6 +1,12 @@
 /** @vitest-environment jsdom */
 
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NoticesSection } from ".";
 
@@ -43,19 +49,7 @@ describe("NoticesSection", () => {
     dismiss.mockResolvedValue({ ok: true });
   });
 
-  afterEach(() => {
-    cleanup();
-    vi.unstubAllGlobals();
-  });
-
-  it("shows the blocked-notification note only after mount", async () => {
-    vi.stubGlobal("Notification", { permission: "denied" });
-    render(<NoticesSection />);
-
-    expect(
-      await screen.findByText(/notificações do celular estão bloqueadas/),
-    ).toBeTruthy();
-  });
+  afterEach(cleanup);
 
   it("shows a client cancellation and removes it when dismissed", async () => {
     render(<NoticesSection />);
@@ -68,6 +62,6 @@ describe("NoticesSection", () => {
       expect(dismiss).toHaveBeenCalledWith("notice-1");
       expect(screen.queryByText("Ana Souza")).toBeNull();
     });
-    expect(screen.getByText("Nenhum cancelamento de cliente por enquanto.")).toBeTruthy();
+    expect(screen.queryByRole("region", { name: "Avisos" })).toBeNull();
   });
 });

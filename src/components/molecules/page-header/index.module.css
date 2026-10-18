@@ -15,6 +15,12 @@
   line-height: 1.08;
 }
 
+.title[data-size="medium"] {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
 .description {
   color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
   font-size: 0.95rem;

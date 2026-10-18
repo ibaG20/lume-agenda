@@ -47,10 +47,10 @@ import { HomeScreen } from ".";
 afterEach(cleanup);
 
 describe("HomeScreen", () => {
-  it("shows the greeting, daily customer and quick actions", () => {
+  it("shows today's customer and quick actions without a greeting", () => {
     render(<HomeScreen />);
 
-    expect(screen.getByRole("heading", { name: "Olá, Ana!" })).toBeTruthy();
+    expect(screen.queryByText(/Olá, Ana!/)).toBeNull();
     expect(screen.getByText("Bruno")).toBeTruthy();
     expect(screen.getByText("09:00")).toBeTruthy();
     expect(
@@ -64,7 +64,7 @@ describe("HomeScreen", () => {
         .getAttribute("href"),
     ).toBe("/inicio/horarios");
 
-    const today = screen.getByRole("heading", { name: "Agendamentos do dia" });
+    const today = screen.getByRole("heading", { name: "Hoje" });
     const notices = screen.getByText("Avisos");
     expect(
       today.compareDocumentPosition(notices) & Node.DOCUMENT_POSITION_FOLLOWING,

@@ -39,16 +39,18 @@ export function ScheduleListScreen() {
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        eyebrow="Disponibilidade"
-        title="Seus horários"
-        description="Organize dias com a mesma rotina em grupos e ligue somente os que estão em uso."
+        title="Horários"
+        size="medium"
         action={
           <span className="inline-flex items-center gap-2">
             <Popover label="Como os grupos funcionam">
               Grupos ativos não podem se sobrepor. Desative um antes de ligar
               outro no mesmo dia.
             </Popover>
-            <AppLink className={styles.createButton} href="/inicio/horarios/criar">
+            <AppLink
+              className={styles.createButton}
+              href="/inicio/horarios/criar"
+            >
               <AppIcon name="plus" size={19} />
               <span>Novo grupo</span>
             </AppLink>

@@ -22,11 +22,7 @@ export function HomeScreen() {
 
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader
-        eyebrow="Painel do dia"
-        title={`Olá${profile.data?.name ? `, ${profile.data.name}` : ""}!`}
-        description="Veja seus próximos atendimentos e mantenha seus horários organizados."
-      />
+      <PageHeader size="medium" title="Painel do dia" />
 
       <section className="grid gap-3 sm:grid-cols-2" aria-label="Ações rápidas">
         <AppLink className={styles.primaryAction} href="/inicio/agendamentos">
@@ -52,17 +48,9 @@ export function HomeScreen() {
       </section>
 
       <section aria-labelledby="today-title">
-        <div className="mb-4 flex items-end justify-between gap-4">
-          <div>
-            <p className={styles.sectionEyebrow}>Hoje</p>
-            <h2 className={styles.sectionTitle} id="today-title">
-              Agendamentos do dia
-            </h2>
-          </div>
-          {booked.length > 0 ? (
-            <span className={styles.counter}>{booked.length}</span>
-          ) : null}
-        </div>
+        <h2 className={`${styles.sectionEyebrow} mb-4`} id="today-title">
+          Hoje
+        </h2>
 
         <CachedNotice cachedAt={agenda.cachedAt} fromCache={agenda.fromCache} />
         {(profile.status === "pending" && !profile.data) ||
@@ -87,10 +75,7 @@ export function HomeScreen() {
         ) : null}
         {(agenda.status === "empty" || agenda.status === "success") &&
         booked.length === 0 ? (
-          <ResourceFeedback
-            title="Nenhum atendimento hoje"
-            description="Quando um cliente agendar, ele aparecerá aqui."
-          />
+          <p className={styles.empty}>Nenhum agendamento hoje.</p>
         ) : null}
         {booked.length > 0 && agenda.data ? (
           <ol className="flex flex-col gap-3">
