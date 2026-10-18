@@ -11,6 +11,10 @@ export function useAvailability(slug: string, date: string) {
     {
       enabled: slug.length > 0 && date.length > 0,
       isEmpty: (data) => data.slots.length === 0,
+      cacheKey:
+        slug.length > 0 && date.length > 0
+          ? `availability:${slug}:${date}`
+          : undefined,
     },
   );
 }

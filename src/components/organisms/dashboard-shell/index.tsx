@@ -1,9 +1,9 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppIcon } from "@/components/atoms/app-icon";
+import { AppLink } from "@/components/atoms/app-link";
 import { BrandLogo } from "@/components/atoms/brand-logo";
 import styles from "./index.module.css";
 
@@ -24,16 +24,16 @@ export function DashboardShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-svh bg-base-200 text-base-content">
       <aside className={styles.sidebar} aria-label="Navegação principal">
-        <Link className={styles.brand} href="/inicio">
+        <AppLink className={styles.brand} href="/inicio">
           <BrandLogo tone="dark" />
-        </Link>
+        </AppLink>
         <nav className="flex flex-col gap-2">
           {navigation.map((item) => {
             const active = item.exact
               ? pathname === item.href
               : pathname.startsWith(item.href);
             return (
-              <Link
+              <AppLink
                 aria-current={active ? "page" : undefined}
                 className={styles.navLink}
                 data-active={active}
@@ -42,7 +42,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               >
                 <AppIcon name={item.icon} />
                 <span>{item.label}</span>
-              </Link>
+              </AppLink>
             );
           })}
         </nav>
@@ -51,9 +51,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className={styles.mobileHeader}>
-          <Link className={styles.brand} href="/inicio">
+          <AppLink className={styles.brand} href="/inicio">
             <BrandLogo />
-          </Link>
+          </AppLink>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-36 pt-6 sm:px-6 lg:px-10 lg:pb-10 lg:pt-10">
           {children}
@@ -64,7 +64,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               ? pathname === item.href
               : pathname.startsWith(item.href);
             return (
-              <Link
+              <AppLink
                 aria-current={active ? "page" : undefined}
                 className={styles.dockLink}
                 data-active={active}
@@ -73,20 +73,20 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               >
                 <AppIcon name={item.icon} size={21} />
                 <span>{item.label}</span>
-              </Link>
+              </AppLink>
             );
           })}
-          <Link
+          <AppLink
             aria-label="Novo horário"
             className={styles.dockAction}
             href="/inicio/horarios/criar"
           >
             <AppIcon name="plus" size={24} />
-          </Link>
+          </AppLink>
           {navigation.slice(2).map((item) => {
             const active = pathname.startsWith(item.href);
             return (
-              <Link
+              <AppLink
                 aria-current={active ? "page" : undefined}
                 className={styles.dockLink}
                 data-active={active}
@@ -95,7 +95,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
               >
                 <AppIcon name={item.icon} size={21} />
                 <span>{item.label}</span>
-              </Link>
+              </AppLink>
             );
           })}
         </nav>

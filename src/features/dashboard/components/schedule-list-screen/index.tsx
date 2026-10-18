@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { AppIcon } from "@/components/atoms/app-icon";
+import { AppLink } from "@/components/atoms/app-link";
 import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { Popover } from "@/components/molecules/popover";
@@ -48,10 +48,10 @@ export function ScheduleListScreen() {
               Grupos ativos não podem se sobrepor. Desative um antes de ligar
               outro no mesmo dia.
             </Popover>
-            <Link className={styles.createButton} href="/inicio/horarios/criar">
+            <AppLink className={styles.createButton} href="/inicio/horarios/criar">
               <AppIcon name="plus" size={19} />
               <span>Novo grupo</span>
-            </Link>
+            </AppLink>
           </span>
         }
       />
@@ -138,12 +138,12 @@ export function ScheduleListScreen() {
                 >
                   <AppIcon name="trash" size={18} /> Excluir
                 </button>
-                <Link
+                <AppLink
                   className={styles.editButton}
                   href={`/inicio/horarios/editar?grupo=${group.id}`}
                 >
                   Editar grupo <AppIcon name="chevron-right" size={18} />
-                </Link>
+                </AppLink>
               </div>
             </li>
           ))}

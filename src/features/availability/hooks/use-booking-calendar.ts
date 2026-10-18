@@ -19,6 +19,10 @@ export function useBookingCalendar(
     `${slug}:${startDate}:${endDate}`,
     {
       enabled: slug.length > 0 && startDate.length > 0 && endDate.length > 0,
+      cacheKey:
+        slug.length > 0 && startDate.length > 0 && endDate.length > 0
+          ? `calendar:${slug}:${startDate}:${endDate}`
+          : undefined,
       isEmpty: (data) => data.bookableDates.length === 0,
     },
   );

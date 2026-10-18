@@ -25,6 +25,7 @@ const profileDto = {
 describe("useProfile", () => {
   beforeEach(() => {
     getProfile.mockReset();
+    window.localStorage.clear();
   });
 
   it("loads the public profile DTO", async () => {

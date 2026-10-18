@@ -15,7 +15,7 @@ export function useOverrides() {
   return useAsyncResource(
     () => listOverrides(createBrowserSupabaseClient()),
     "overrides",
-    { isEmpty: (data) => data.length === 0 },
+    { isEmpty: (data) => data.length === 0, cacheKey: "overrides" },
   );
 }
 

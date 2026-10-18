@@ -8,5 +8,6 @@ export function useProfile() {
   return useAsyncResource(
     () => getProfile(createBrowserSupabaseClient()),
     "profile",
+    { cacheKey: "profile" },
   );
 }

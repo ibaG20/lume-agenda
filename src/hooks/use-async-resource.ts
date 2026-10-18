@@ -16,8 +16,9 @@ const idleState = {
   error: undefined,
 };
 
-const CACHE_PREFIX = "lume-read:";
+export const READ_CACHE_PREFIX = "lume-read:";
 const DEFAULT_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
+const STALE_MAX_MS = 7 * 24 * 60 * 60 * 1000;
 
 type StoredValue<T> = { data: T; savedAt: number };
 
@@ -27,7 +28,7 @@ function readStored<T>(
 ): StoredValue<T> | undefined {
   if (typeof window === "undefined") return undefined;
   try {
-    const raw = window.localStorage.getItem(CACHE_PREFIX + cacheKey);
+    const raw = window.localStorage.getItem(READ_CACHE_PREFIX + cacheKey);
     if (!raw) return undefined;
     const parsed = JSON.parse(raw) as StoredValue<T>;
     if (
@@ -46,10 +47,37 @@ function writeStored<T>(cacheKey: string, data: T) {
   if (typeof window === "undefined") return;
   try {
     const value: StoredValue<T> = { data, savedAt: Date.now() };
-    window.localStorage.setItem(CACHE_PREFIX + cacheKey, JSON.stringify(value));
+    window.localStorage.setItem(
+      READ_CACHE_PREFIX + cacheKey,
+      JSON.stringify(value),
+    );
   } catch {
     // Quota or private mode: the screen still works from the network.
   }
+}
+
+export function clearReadCache() {
+  if (typeof window === "undefined") return;
+  const keys: string[] = [];
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+    if (key?.startsWith(READ_CACHE_PREFIX)) keys.push(key);
+  }
+  for (const key of keys) {
+    window.localStorage.removeItem(key);
+  }
+}
+
+function toResourceState<T>(
+  data: T,
+  isEmpty?: (data: T) => boolean,
+): AsyncResourceState<T> {
+  const empty = isEmpty?.(data) ?? false;
+  return {
+    status: empty ? "empty" : "success",
+    data,
+    error: undefined,
+  };
 }
 
 export function useAsyncResource<T>(
@@ -89,24 +117,21 @@ export function useAsyncResource<T>(
     }
 
     let cancelled = false;
-    const cached = cacheKey ? readStored<T>(cacheKey, cacheTtlMs) : undefined;
+    const fresh = cacheKey ? readStored<T>(cacheKey, cacheTtlMs) : undefined;
+    const stale = cacheKey ? readStored<T>(cacheKey, STALE_MAX_MS) : undefined;
+    const snapshot = fresh ?? stale;
 
     setState((previous) => {
-      if (cached) {
-        const empty = isEmptyRef.current?.(cached.data) ?? false;
-        return {
-          status: empty ? "empty" : "success",
-          data: cached.data,
-          error: undefined,
-        };
+      if (snapshot) {
+        return toResourceState(snapshot.data, isEmptyRef.current);
       }
       if (previous.data !== undefined && previous.status !== "error") {
         return { ...previous, error: undefined };
       }
       return { status: "pending", data: undefined, error: undefined };
     });
-    setFromCache(Boolean(cached));
-    setCachedAt(cached?.savedAt);
+    setFromCache(Boolean(snapshot));
+    setCachedAt(snapshot?.savedAt);
 
     void fetcherRef
       .current()
@@ -118,15 +143,12 @@ export function useAsyncResource<T>(
           if (cacheKey) writeStored(cacheKey, result.data);
           setFromCache(false);
           setCachedAt(undefined);
-          const empty = isEmptyRef.current?.(result.data) ?? false;
-          setState({
-            status: empty ? "empty" : "success",
-            data: result.data,
-            error: undefined,
-          });
+          setState(toResourceState(result.data, isEmptyRef.current));
           return;
         }
-        if (cached) return;
+        if (snapshot && result.error.code !== "UNAUTHENTICATED") {
+          return;
+        }
         setFromCache(false);
         setState({
           status: "error",
@@ -135,7 +157,7 @@ export function useAsyncResource<T>(
         });
       })
       .catch(() => {
-        if (cancelled || cached) {
+        if (cancelled || snapshot) {
           return;
         }
         setFromCache(false);

@@ -51,6 +51,7 @@ export function useNotices() {
   const resource = useAsyncResource(
     () => listNotices(createBrowserSupabaseClient()),
     "notices",
+    { cacheKey: "notices" },
   );
 
   useEffect(() => {

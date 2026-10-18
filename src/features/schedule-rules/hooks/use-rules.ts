@@ -13,6 +13,7 @@ export function useRules(groupId: string) {
     {
       enabled: groupId.length > 0,
       isEmpty: (data) => data.length === 0,
+      cacheKey: groupId.length > 0 ? `rules:${groupId}` : undefined,
     },
   );
 }

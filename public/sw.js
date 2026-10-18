@@ -1,4 +1,5 @@
-const CACHE_NAME = "lume-agendas-v2";
+const CACHE_NAME = "lume-agendas-v3";
+const START_URL = "/inicio";
 const PRECACHE = [
   "/offline.html",
   "/icons/icon-192.png",
@@ -51,6 +52,62 @@ function isStaticAsset(pathname) {
   );
 }
 
+function isAppShellRequest(request) {
+  if (request.mode === "navigate" || request.destination === "document") {
+    return true;
+  }
+  return (
+    request.headers.get("RSC") === "1" ||
+    request.headers.has("Next-Router-State-Tree")
+  );
+}
+
+function canCacheResponse(request, response) {
+  if (!response || !response.ok) return false;
+  const finalUrl = new URL(response.url || request.url);
+  if (finalUrl.origin !== self.location.origin) return false;
+  if (isAuthPath(finalUrl.pathname)) return false;
+  return true;
+}
+
+function putInCache(request, response) {
+  const copy = response.clone();
+  return caches
+    .open(CACHE_NAME)
+    .then((cache) => cache.put(request, copy))
+    .catch(() => undefined);
+}
+
+async function matchCached(request) {
+  const exact = await caches.match(request);
+  if (exact) return exact;
+  const url = new URL(request.url);
+  const byPath = await caches.match(url.pathname);
+  if (byPath) return byPath;
+  if (url.pathname === "/") {
+    return caches.match(START_URL);
+  }
+  return undefined;
+}
+
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request);
+    if (canCacheResponse(request, response)) {
+      void putInCache(request, response);
+    }
+    return response;
+  } catch {
+    const cached = await matchCached(request);
+    if (cached) return cached;
+    if (request.mode === "navigate" || request.destination === "document") {
+      const offline = await caches.match("/offline.html");
+      if (offline) return offline;
+    }
+    return Response.error();
+  }
+}
+
 self.addEventListener("push", (event) => {
   let payload = {};
   try {
@@ -64,23 +121,28 @@ self.addEventListener("push", (event) => {
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
     tag: payload.tag || "lume-notice",
-    data: { url: payload.url || "/inicio" },
+    data: { url: payload.url || START_URL },
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const target = new URL(event.notification.data?.url || "/inicio", self.location.origin).href;
+  const target = new URL(
+    event.notification.data?.url || START_URL,
+    self.location.origin,
+  ).href;
   event.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windows) => {
-      for (const windowClient of windows) {
-        if (windowClient.url === target && "focus" in windowClient) {
-          return windowClient.focus();
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((windows) => {
+        for (const windowClient of windows) {
+          if (windowClient.url === target && "focus" in windowClient) {
+            return windowClient.focus();
+          }
         }
-      }
-      return self.clients.openWindow(target);
-    }),
+        return self.clients.openWindow(target);
+      }),
   );
 });
 
@@ -91,15 +153,8 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin || isAuthPath(url.pathname)) return;
 
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request)
-        .then((response) => response)
-        .catch(async () => {
-          const cached = await caches.match(request);
-          return cached || caches.match("/offline.html");
-        }),
-    );
+  if (isAppShellRequest(request)) {
+    event.respondWith(networkFirst(request));
     return;
   }
 
@@ -110,11 +165,7 @@ self.addEventListener("fetch", (event) => {
       const fetched = fetch(request)
         .then((response) => {
           if (response.ok) {
-            const copy = response.clone();
-            caches
-              .open(CACHE_NAME)
-              .then((cache) => cache.put(request, copy))
-              .catch(() => undefined);
+            void putInCache(request, response);
           }
           return response;
         })

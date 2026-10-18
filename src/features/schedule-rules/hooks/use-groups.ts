@@ -20,7 +20,7 @@ export function useGroups() {
   return useAsyncResource(
     () => listGroups(createBrowserSupabaseClient()),
     "groups",
-    { isEmpty: (data) => data.length === 0 },
+    { isEmpty: (data) => data.length === 0, cacheKey: "groups" },
   );
 }
 

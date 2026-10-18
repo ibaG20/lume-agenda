@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { AppIcon } from "@/components/atoms/app-icon";
+import { AppLink } from "@/components/atoms/app-link";
 import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
@@ -29,7 +29,7 @@ export function HomeScreen() {
       />
 
       <section className="grid gap-3 sm:grid-cols-2" aria-label="Ações rápidas">
-        <Link className={styles.primaryAction} href="/inicio/agendamentos">
+        <AppLink className={styles.primaryAction} href="/inicio/agendamentos">
           <span className={styles.actionIcon}>
             <AppIcon name="calendar" />
           </span>
@@ -38,8 +38,8 @@ export function HomeScreen() {
             <small>Consulte dias livres e ocupados</small>
           </span>
           <AppIcon name="chevron-right" />
-        </Link>
-        <Link className={styles.secondaryAction} href="/inicio/horarios">
+        </AppLink>
+        <AppLink className={styles.secondaryAction} href="/inicio/horarios">
           <span className={styles.actionIcon}>
             <AppIcon name="clock" />
           </span>
@@ -48,7 +48,7 @@ export function HomeScreen() {
             <small>Defina quando você atende</small>
           </span>
           <AppIcon name="chevron-right" />
-        </Link>
+        </AppLink>
       </section>
 
       <section aria-labelledby="today-title">

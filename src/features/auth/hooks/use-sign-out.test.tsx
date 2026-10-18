@@ -34,4 +34,24 @@ describe("useSignOut", () => {
 
     expect(result.current.status).toBe("success");
   });
+
+  it("clears stored reads after a successful sign-out", async () => {
+    window.localStorage.setItem(
+      "lume-read:profile",
+      JSON.stringify({ data: { name: "Ana" }, savedAt: Date.now() }),
+    );
+    signOutApi.mockResolvedValue({
+      ok: true,
+      data: { signedOut: true },
+      requestId: "ok",
+    });
+
+    const { result } = renderHook(() => useSignOut());
+
+    await act(async () => {
+      await result.current.signOut();
+    });
+
+    expect(window.localStorage.getItem("lume-read:profile")).toBeNull();
+  });
 });
