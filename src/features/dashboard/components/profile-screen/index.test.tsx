@@ -40,6 +40,7 @@ vi.mock("@/features/profile", () => ({
   }),
 }));
 
+import { ConfirmProvider } from "@/components/organisms/confirm-dialog";
 import { ProfileScreen } from ".";
 
 const profile = {
@@ -66,11 +67,13 @@ describe("ProfileScreen", () => {
 
   it("shows and copies the provider public link", async () => {
     render(
-      <ProfileScreen
-        email="ana@example.com"
-        firstAccess={false}
-        initialProfile={profile}
-      />,
+      <ConfirmProvider>
+        <ProfileScreen
+          email="ana@example.com"
+          firstAccess={false}
+          initialProfile={profile}
+        />
+      </ConfirmProvider>,
     );
 
     expect(screen.getByText("/ana-servicos/agendar")).toBeTruthy();
@@ -90,14 +93,17 @@ describe("ProfileScreen", () => {
 
   it("offers logout during first access and redirects to sign in", async () => {
     render(
-      <ProfileScreen
-        email="ana@example.com"
-        firstAccess
-        initialProfile={profile}
-      />,
+      <ConfirmProvider>
+        <ProfileScreen
+          email="ana@example.com"
+          firstAccess
+          initialProfile={profile}
+        />
+      </ConfirmProvider>,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Sair da conta" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Sair" }));
 
     await waitFor(() => expect(mocks.signOut).toHaveBeenCalledOnce());
     expect(mocks.routerReplace).toHaveBeenCalledWith("/sign-in");

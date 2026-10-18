@@ -7,7 +7,9 @@ type AppIconName =
   | "chevron-right"
   | "plus"
   | "copy"
-  | "logout";
+  | "logout"
+  | "info"
+  | "trash";
 
 type AppIconProps = {
   name: AppIconName;
@@ -45,6 +47,19 @@ const paths: Record<AppIconName, React.ReactNode> = {
   ),
   logout: (
     <path d="M10 17l5-5-5-5M15 12H3M14 4h5a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-5" />
+  ),
+  info: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 11v6M12 8h.01" />
+    </>
+  ),
+  trash: (
+    <>
+      <path d="M4 7h16" />
+      <path d="M9 7V5h6v2" />
+      <path d="M7 7l1 13h8l1-13" />
+    </>
   ),
 };
 

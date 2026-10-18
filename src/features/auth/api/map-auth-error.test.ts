@@ -29,6 +29,23 @@ describe("mapAuthError", () => {
     }
   });
 
+  it("maps a network failure to UNAVAILABLE", () => {
+    const result = mapAuthError({
+      message: "Failed to fetch https://project.supabase.co",
+      name: "AuthRetryableFetchError",
+      status: 0,
+    } as AuthError);
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.code).toBe("UNAVAILABLE");
+      expect(result.error.message).toBe(
+        "Serviço temporariamente indisponível.",
+      );
+      expect(result.error.message).not.toContain("supabase.co");
+    }
+  });
+
   it("treats other statuses as UNAUTHENTICATED", () => {
     const missing = mapAuthError(authError("Email not found", 401));
     expect(missing.ok).toBe(false);

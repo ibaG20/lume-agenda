@@ -8,8 +8,15 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { Temporal } from "@js-temporal/polyfill";
+import { formatLongDate, todayInTimezone } from "@/lib/date-time/dashboard";
 import { BookingFlowProvider } from "../booking-flow-provider";
 import { ScheduleScreen } from ".";
+
+const today = todayInTimezone("America/Sao_Paulo");
+const yesterday = Temporal.PlainDate.from(today)
+  .subtract({ days: 1 })
+  .toString();
 
 const push = vi.fn();
 const useBookingCalendar = vi.fn();
@@ -37,9 +44,9 @@ describe("ScheduleScreen", () => {
         slug: "salao-nails",
         providerName: "Salão Nails",
         timezone: "America/Sao_Paulo",
-        startDate: "2026-08-31",
-        endDate: "2026-10-11",
-        bookableDates: ["2026-09-29"],
+        startDate: yesterday,
+        endDate: today,
+        bookableDates: [today],
       },
       error: undefined,
       refetch: vi.fn(),
@@ -54,8 +61,8 @@ describe("ScheduleScreen", () => {
               timezone: "America/Sao_Paulo",
               slots: [
                 {
-                  start: "2026-09-29T12:00:00.000Z",
-                  end: "2026-09-29T13:00:00.000Z",
+                  start: `${today}T12:00:00.000Z`,
+                  end: `${today}T13:00:00.000Z`,
                 },
               ],
             },
@@ -83,11 +90,11 @@ describe("ScheduleScreen", () => {
         screen.getByRole("heading", { name: "Agende com Salão Nails" }),
       ).toBeTruthy();
       expect(
-        screen.getByRole("heading", { name: /29 de setembro de 2026/i }),
+        screen.getByRole("heading", { name: formatLongDate(today) }),
       ).toBeTruthy();
     });
     expect(
-      (screen.getByRole("button", { name: "2026-09-28" }) as HTMLButtonElement)
+      (screen.getByRole("button", { name: yesterday }) as HTMLButtonElement)
         .disabled,
     ).toBe(true);
 

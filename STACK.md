@@ -80,7 +80,7 @@ A stack foi escolhida para atender os seguintes direcionadores:
 | Banco | Supabase PostgreSQL | Fonte de verdade, constraints, transações, RLS e histórico | Planejado |
 | Cache | Upstash Redis | Cache de disponibilidade e apoio a controles de tráfego | Planejado |
 | Email | Resend | Confirmações e cancelamentos | Planejado |
-| PWA | Manifest + service worker a definir | Instalação e experiência segura em conectividade limitada | Planejado |
+| PWA | Manifest + service worker manual | Instalação, página offline e cache de leitura; mutações exigem rede | Implementado |
 | Testes | Ferramentas a selecionar | Unitário, integração, banco, E2E, acessibilidade e carga | Pendente de ADR |
 | CI/CD | Plataforma a confirmar | Gates, preview, homologação e produção | Planejado |
 | Observabilidade | Ferramentas a selecionar | Logs, métricas, tracing, alertas e auditoria | Pendente de ADR |
@@ -593,7 +593,9 @@ Uma reserva confirmada e seu evento de notificação devem ser persistidos no me
 
 Oferecer experiência instalável e resiliente para navegação em celulares sem comprometer a consistência das reservas.
 
-### Recursos planejados
+No repositório, o app publica `app/manifest.ts`, ícones próprios, `public/sw.js` e `public/offline.html`. O worker faz precache dos ícones e da página offline, busca a navegação na rede antes de cair no cache e revalida assets estáticos. Rotas de autenticação e mutações não entram no cache. A agenda e os grupos de horário podem reabrir o último dado conhecido; um envio offline é recusado para não duplicar reserva.
+
+### Recursos publicados
 
 - web app manifest;
 - ícones próprios e metadados;

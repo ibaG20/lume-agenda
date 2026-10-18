@@ -31,8 +31,9 @@ export function useGroupMutation() {
   const update = useAsyncAction((input: UpdateGroupInput) =>
     updateGroup(createBrowserSupabaseClient(), input),
   );
-  const remove = useAsyncAction((id: string) =>
-    deleteGroup(createBrowserSupabaseClient(), id),
+  const remove = useAsyncAction(
+    (id: string) => deleteGroup(createBrowserSupabaseClient(), id),
+    { successMessage: "Grupo excluído.", errorToast: true },
   );
   const setActive = useAsyncAction((input: SetGroupActiveInput) =>
     setGroupActive(createBrowserSupabaseClient(), input),

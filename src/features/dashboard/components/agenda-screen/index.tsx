@@ -2,9 +2,16 @@
 
 import { useState } from "react";
 import { MonthCalendar } from "@/components/organisms/month-calendar";
+import { CachedNotice } from "@/components/molecules/cached-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
-import { useDailyAgenda, type AgendaSlotState } from "@/features/agenda";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
+import {
+  useDailyAgenda,
+  type AgendaSlot,
+  type AgendaSlotState,
+} from "@/features/agenda";
+import { useProviderCancelAppointment } from "@/features/provider-cancellation";
 import {
   formatLongDate,
   formatTime,
@@ -22,8 +29,25 @@ export function AgendaScreen({ timezone }: { timezone: string }) {
   const [selectedDate, setSelectedDate] = useState(() =>
     todayInTimezone(timezone),
   );
+  const confirm = useConfirm();
+  const cancellation = useProviderCancelAppointment();
   const agenda = useDailyAgenda(selectedDate);
   const displayTimezone = agenda.data?.timezone ?? timezone;
+
+  async function cancelSlot(slot: AgendaSlot) {
+    if (!slot.appointmentId || cancellation.status === "pending") return;
+    const accepted = await confirm({
+      title: "Cancelar agendamento",
+      description: `Cancelar o horário de ${slot.clientName ?? "cliente"}? Ele volta a ficar livre.`,
+      confirmLabel: "Cancelar horário",
+      tone: "danger",
+    });
+    if (!accepted) return;
+    const result = await cancellation.cancel(slot.appointmentId);
+    if (result.ok || (!result.ok && result.error.code === "IDEMPOTENT")) {
+      agenda.refetch();
+    }
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -41,6 +65,10 @@ export function AgendaScreen({ timezone }: { timezone: string }) {
         />
 
         <section aria-labelledby="selected-date-title">
+          <CachedNotice
+            cachedAt={agenda.cachedAt}
+            fromCache={agenda.fromCache}
+          />
           <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className={styles.sectionEyebrow}>Horários</p>
@@ -97,6 +125,16 @@ export function AgendaScreen({ timezone }: { timezone: string }) {
                       <small>Indisponível para clientes</small>
                     )}
                   </span>
+                  {slot.state === "booked" && slot.appointmentId ? (
+                    <button
+                      className={styles.cancel}
+                      disabled={cancellation.status === "pending"}
+                      onClick={() => void cancelSlot(slot)}
+                      type="button"
+                    >
+                      Cancelar
+                    </button>
+                  ) : null}
                 </li>
               ))}
             </ol>

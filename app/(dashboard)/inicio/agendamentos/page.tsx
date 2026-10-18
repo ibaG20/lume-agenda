@@ -3,7 +3,7 @@ import { AgendaScreen } from "@/features/dashboard/components/agenda-screen";
 import { requireCompleteProfile } from "@/features/auth/server/dashboard-session";
 
 export const metadata: Metadata = {
-  title: "Agendamentos · Agendamento",
+  title: "Agendamentos · Lume Agendas",
 };
 
 export default async function AgendamentosPage() {

@@ -11,6 +11,8 @@ export function useDailyAgenda(date: string) {
     {
       enabled: date.length > 0,
       isEmpty: (data) => data.slots.length === 0,
+      cacheKey: date.length > 0 ? `agenda:${date}` : undefined,
+      cacheTtlMs: 6 * 60 * 60 * 1000,
     },
   );
 }

@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { BrandLogo } from "@/components/atoms/brand-logo";
 import styles from "./index.module.css";
 
 const steps = [
@@ -20,7 +21,9 @@ export function PublicBookingShell({ children }: { children: ReactNode }) {
   return (
     <main className={styles.shell}>
       <header className={styles.header}>
-        <p className={styles.brand}>Lume Agendas</p>
+        <div className={styles.brandRow}>
+          <BrandLogo size={36} />
+        </div>
         <nav aria-label="Etapas do agendamento" className={styles.progress}>
           <ol className="grid grid-cols-3">
             {steps.map((step, index) => (

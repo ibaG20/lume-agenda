@@ -32,12 +32,16 @@ async function loadScheduleGroups() {
 export function useScheduleGroups() {
   return useAsyncResource(loadScheduleGroups, "schedule-groups", {
     isEmpty: (data) => data.length === 0,
+    cacheKey: "schedule-groups",
+    cacheTtlMs: 6 * 60 * 60 * 1000,
   });
 }
 
 export function useSaveScheduleGroup() {
-  const action = useAsyncAction((input: SaveScheduleGroupInput) =>
-    saveScheduleGroup(createBrowserSupabaseClient(), input),
+  const action = useAsyncAction(
+    (input: SaveScheduleGroupInput) =>
+      saveScheduleGroup(createBrowserSupabaseClient(), input),
+    { successMessage: "Horários salvos.", errorToast: true },
   );
 
   return {

@@ -112,17 +112,32 @@
   margin-top: 0.25rem;
 }
 
-.editButton {
-  align-items: center;
+.actions {
   border-top: 1px solid var(--color-base-300);
-  color: var(--color-primary);
   display: flex;
-  font-size: 0.78rem;
-  font-weight: 800;
+  gap: 0.75rem;
   justify-content: space-between;
   margin-top: auto;
   padding-top: 0.9rem;
+}
+
+.deleteButton,
+.editButton {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--color-primary);
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 800;
+  gap: 0.35rem;
+  min-height: 2.4rem;
+  padding: 0;
   text-decoration: none;
+}
+
+.deleteButton {
+  color: var(--color-error);
 }
 
 @media (max-width: 460px) {

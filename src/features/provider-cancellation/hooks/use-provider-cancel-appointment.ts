@@ -8,11 +8,13 @@ import { cancelAppointmentAsProvider } from "../api/cancel-appointment-as-provid
 export function useProviderCancelAppointment() {
   const idempotencyKeyRef = useRef(crypto.randomUUID());
 
-  const action = useAsyncAction((appointmentId: string) =>
-    cancelAppointmentAsProvider(createBrowserSupabaseClient(), {
-      appointmentId,
-      idempotencyKey: idempotencyKeyRef.current,
-    }),
+  const action = useAsyncAction(
+    (appointmentId: string) =>
+      cancelAppointmentAsProvider(createBrowserSupabaseClient(), {
+        appointmentId,
+        idempotencyKey: idempotencyKeyRef.current,
+      }),
+    { successMessage: "Agendamento cancelado.", errorToast: true },
   );
 
   return {

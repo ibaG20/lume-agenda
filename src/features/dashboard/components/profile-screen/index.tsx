@@ -3,7 +3,10 @@
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { AppIcon } from "@/components/atoms/app-icon";
+import { SubmitButton } from "@/components/atoms/submit-button";
 import { PageHeader } from "@/components/molecules/page-header";
+import { Popover } from "@/components/molecules/popover";
+import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { useSignOut } from "@/features/auth";
 import {
   useUpdateProfile,
@@ -35,6 +38,7 @@ export function ProfileScreen({
   firstAccess,
 }: ProfileScreenProps) {
   const router = useRouter();
+  const confirm = useConfirm();
   const update = useUpdateProfile();
   const signOut = useSignOut();
   const [name, setName] = useState(initialProfile?.name ?? "");
@@ -88,6 +92,14 @@ export function ProfileScreen({
   }
 
   async function handleSignOut() {
+    const accepted = await confirm({
+      title: "Sair da conta",
+      description: "Você precisará entrar de novo para ver a agenda.",
+      confirmLabel: "Sair",
+      tone: "danger",
+    });
+    if (!accepted) return;
+
     const result = await signOut.signOut();
     if (result.ok) {
       router.replace("/sign-in");
@@ -165,7 +177,12 @@ export function ProfileScreen({
           </label>
 
           <label className={styles.field}>
-            <span>Fuso horário</span>
+            <span className="inline-flex items-center gap-2">
+              Fuso horário
+              <Popover label="Sobre o fuso horário">
+                Todos os horários da agenda e dos lembretes usam este fuso.
+              </Popover>
+            </span>
             <select
               disabled={busy}
               onChange={(event) =>
@@ -255,9 +272,14 @@ export function ProfileScreen({
               {feedback}
             </p>
           ) : null}
-          <button className={styles.saveButton} disabled={busy} type="submit">
-            {update.status === "pending" ? "Salvando…" : "Salvar perfil"}
-          </button>
+          <SubmitButton
+            className={styles.saveButton}
+            disabled={busy}
+            pending={update.status === "pending"}
+            pendingLabel="Salvando…"
+          >
+            Salvar perfil
+          </SubmitButton>
         </footer>
       </form>
     </div>

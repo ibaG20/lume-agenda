@@ -9,6 +9,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ConfirmProvider } from "@/components/organisms/confirm-dialog";
 import { BookingFlowProvider, useBookingFlow } from "../booking-flow-provider";
 import { DetailsScreen } from ".";
 
@@ -71,9 +72,11 @@ describe("DetailsScreen", () => {
       },
     });
     render(
-      <BookingFlowProvider slug="salao-nails">
-        <SeededDetails />
-      </BookingFlowProvider>,
+      <ConfirmProvider>
+        <BookingFlowProvider slug="salao-nails">
+          <SeededDetails />
+        </BookingFlowProvider>
+      </ConfirmProvider>,
     );
 
     await waitFor(() =>
@@ -90,6 +93,9 @@ describe("DetailsScreen", () => {
     });
     fireEvent.click(
       screen.getByRole("button", { name: "Confirmar agendamento" }),
+    );
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Reservar horário" }),
     );
 
     await waitFor(() => {
@@ -109,9 +115,11 @@ describe("DetailsScreen", () => {
 
   it("keeps the form and focuses validation feedback", async () => {
     render(
-      <BookingFlowProvider slug="salao-nails">
-        <SeededDetails />
-      </BookingFlowProvider>,
+      <ConfirmProvider>
+        <BookingFlowProvider slug="salao-nails">
+          <SeededDetails />
+        </BookingFlowProvider>
+      </ConfirmProvider>,
     );
     await waitFor(() =>
       expect(screen.getByLabelText("Nome completo")).toBeTruthy(),
@@ -132,9 +140,11 @@ describe("DetailsScreen", () => {
 
   it("returns direct access and booking conflicts to the schedule", async () => {
     const { unmount } = render(
-      <BookingFlowProvider slug="salao-nails">
-        <DetailsScreen />
-      </BookingFlowProvider>,
+      <ConfirmProvider>
+        <BookingFlowProvider slug="salao-nails">
+          <DetailsScreen />
+        </BookingFlowProvider>
+      </ConfirmProvider>,
     );
     await waitFor(() =>
       expect(replace).toHaveBeenCalledWith("/salao-nails/agendar"),
@@ -150,9 +160,11 @@ describe("DetailsScreen", () => {
       },
     });
     render(
-      <BookingFlowProvider slug="salao-nails">
-        <SeededDetails />
-      </BookingFlowProvider>,
+      <ConfirmProvider>
+        <BookingFlowProvider slug="salao-nails">
+          <SeededDetails />
+        </BookingFlowProvider>
+      </ConfirmProvider>,
     );
     await waitFor(() =>
       expect(screen.getByLabelText("Nome completo")).toBeTruthy(),
@@ -168,6 +180,9 @@ describe("DetailsScreen", () => {
     });
     fireEvent.click(
       screen.getByRole("button", { name: "Confirmar agendamento" }),
+    );
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Reservar horário" }),
     );
 
     await waitFor(() =>

@@ -7,7 +7,7 @@ import { hasAuthenticatedSession } from "../session";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Entrar · Agendamento",
+  title: "Entrar · Lume Agendas",
   description: "Entre para gerenciar sua agenda.",
 };
 

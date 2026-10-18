@@ -7,7 +7,7 @@ import { hasAuthenticatedSession } from "../session";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Criar conta · Agendamento",
+  title: "Criar conta · Lume Agendas",
   description: "Crie sua conta para organizar sua agenda.",
 };
 

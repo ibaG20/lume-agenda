@@ -16,11 +16,7 @@
   padding: 1.25rem max(1rem, env(safe-area-inset-left));
 }
 
-.brand {
-  color: var(--color-primary);
-  font-size: 1.12rem;
-  font-weight: 900;
-  letter-spacing: -0.035em;
+.brandRow {
   margin: 0 auto 1.15rem;
   max-width: 68rem;
 }
@@ -82,6 +78,28 @@
   color: var(--color-primary-content);
 }
 
+.step[data-active="true"] .stepNumber {
+  animation: scale-in var(--motion-fast) var(--ease-out);
+}
+
+@media (max-width: 1023px) {
+  .progress {
+    background: color-mix(in srgb, var(--color-base-100) 96%, white);
+    border: 1.5px solid var(--color-base-300);
+    border-radius: 1.25rem;
+    bottom: calc(0.7rem + env(safe-area-inset-bottom));
+    left: 0.75rem;
+    padding: 0.55rem 0.35rem;
+    position: fixed;
+    right: 0.75rem;
+    z-index: 30;
+  }
+
+  .content {
+    padding-bottom: 7rem;
+  }
+}
+
 .content {
   margin: 0 auto;
   max-width: 68rem;
@@ -102,8 +120,7 @@
     padding-block: 1.5rem;
   }
 
-  .brand {
-    font-size: 1.35rem;
+  .brandRow {
     margin-bottom: 1.35rem;
   }
 

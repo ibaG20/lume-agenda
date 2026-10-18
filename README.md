@@ -3,7 +3,7 @@
 PWA mobile-first para que microempreendedores publiquem sua disponibilidade e recebam agendamentos, enquanto clientes consultam horários, reservam e cancelam sem criar uma conta.
 
 > [!IMPORTANT]
-> Este repositório está em fase de inicialização. Neste momento, ele contém somente o scaffold web criado com Next.js. Supabase, PostgreSQL, Edge Functions, Upstash Redis, Resend, PWA, testes, observabilidade e CI/CD fazem parte da arquitetura-alvo documentada, mas ainda não estão implementados. Consulte [Estado atual](#estado-atual) e [STACK.md](./STACK.md) antes de assumir que uma integração já existe.
+> O app web já inclui as telas do painel e do agendamento público, Auth via Supabase, testes Vitest e o PWA instalável. PostgreSQL, Edge Functions versionadas neste repositório, Upstash Redis, Resend, observabilidade e CI/CD continuam na arquitetura-alvo. Consulte [Estado atual](#estado-atual) e [STACK.md](./STACK.md) antes de assumir que uma integração já existe.
 
 ## Sumário
 
@@ -63,13 +63,13 @@ Legenda usada nesta documentação:
 | Tailwind CSS | Implementado no scaffold | Tailwind 4 integrado via PostCSS; ainda sem design system do produto |
 | ESLint | Implementado | ESLint 9 com regras Next.js Core Web Vitals e TypeScript |
 | Funcionalidades de agendamento | Planejado | Nenhum fluxo de domínio foi implementado |
-| PWA instalável | Planejado | Manifest, ícones próprios e service worker ainda não existem |
+| PWA instalável | Implementado | `app/manifest.ts`, ícones em `public/icons`, `public/sw.js` e página `public/offline.html`; mutações offline são recusadas |
 | Supabase Auth | Implementado no web | Login, cadastro, Google OAuth PKCE, logout local, refresh e sessão SSR; provedor Google ainda depende de configuração externa |
 | PostgreSQL, migrations e RLS | Planejado | Contrato em `docs/schema.prisma`; sem Prisma Client nem migrations no web |
 | Supabase Edge Functions | Parcial | Contratos e hooks em `src/features`; funções ainda não deployadas |
 | Upstash Redis | Planejado | Cache e invalidação ainda não existem |
 | Resend | Planejado | Envio resiliente de emails ainda não existe |
-| Testes automatizados | Parcial | Vitest cobre mapper, `invokeFunction`, Auth, disponibilidade, reserva, cancelamento, perfil, regras, exceções, agenda, clientes, cancelamento do prestador e o proxy de sessão |
+| Testes automatizados | Parcial | Vitest cobre mapper, `invokeFunction`, Auth, disponibilidade, reserva, cancelamento, perfil, regras, exceções, agenda, clientes, cancelamento do prestador, o proxy de sessão, modais, toasts e o cache offline de leitura |
 | Camada web de API | Implementado | `docs/supabase.md`, `docs/integracao.md` e hooks por caso de uso |
 | CI/CD e observabilidade | Planejado | Não há workflows ou instrumentação versionados |
 | Regras de duração, fuso e precedência | Pendente de decisão | Bloqueadas por DEC-01 |
@@ -615,7 +615,7 @@ Somente lint e build estão configurados. A ausência de testes não significa q
 
 ## PWA, acessibilidade e redes limitadas
 
-PWA é um requisito planejado, não uma funcionalidade atual. Sua implementação deve considerar:
+O shell instalável já está no app (`app/manifest.ts`, ícones, `public/sw.js` e `public/offline.html`). A implementação segue estas restrições:
 
 - manifest com nome, ícones, cores, escopo e modo de exibição;
 - layout mobile-first e alvos de toque adequados;
