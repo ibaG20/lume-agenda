@@ -1,3 +1,9 @@
+import { LOGO_PNG_BASE64 } from "./email-logo.ts";
+import {
+  LOGO_CONTENT_ID,
+  renderBookingConfirmed,
+  renderProviderCancelled,
+} from "./email-templates.ts";
 import { dbError } from "./http.ts";
 import { ApiError, type RequestContext } from "./types.ts";
 
@@ -13,15 +19,6 @@ function requiredEnv(name: string): string {
     throw new ApiError("UNAVAILABLE", 503, "Serviço de email não configurado.");
   }
   return value;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
 }
 
 function formatDay(iso: string, timezone: string): string {
@@ -88,35 +85,23 @@ async function processMessage(
     return false;
   }
 
-  const clientName = escapeHtml(clientResult.data.name);
-  const providerName = escapeHtml(profileResult.data.name);
   const timezone = profileResult.data.timezone ?? "America/Sao_Paulo";
-  const day = escapeHtml(
-    formatDay(appointmentResult.data.start_datetime, timezone),
-  );
-  const start = escapeHtml(
-    formatTime(appointmentResult.data.start_datetime, timezone),
-  );
-  const end = escapeHtml(
-    formatTime(appointmentResult.data.end_datetime, timezone),
-  );
-  const isConfirmation = outbox.event_type === "BOOKING_CONFIRMED";
-  const subject = isConfirmation
-    ? `Agendamento confirmado com ${profileResult.data.name}`
-    : `Agendamento cancelado por ${profileResult.data.name}`;
+  const details = {
+    clientName: clientResult.data.name,
+    providerName: profileResult.data.name,
+    day: formatDay(appointmentResult.data.start_datetime, timezone),
+    start: formatTime(appointmentResult.data.start_datetime, timezone),
+    end: formatTime(appointmentResult.data.end_datetime, timezone),
+  };
   const appUrl = requiredEnv("PUBLIC_APP_URL").replace(/\/$/, "");
   const cancellationUrl =
     `${appUrl}/cancel?token=${appointmentResult.data.cancellation_token}`;
   const rebookUrl = `${appUrl}/${
     encodeURIComponent(profileResult.data.public_slug)
   }/agendar`;
-  const html = isConfirmation
-    ? `<p>Olá, ${clientName}.</p><p>Seu agendamento com ${providerName} foi confirmado para ${day}, das ${start} às ${end}.</p><p><a href="${
-      escapeHtml(cancellationUrl)
-    }">Consultar ou cancelar agendamento</a></p>`
-    : `<p>Olá, ${clientName}.</p><p>Infelizmente ${providerName} precisou cancelar o horário que você escolheu para ${day}, das ${start} às ${end}.</p><p>Você pode escolher outro horário quando quiser:</p><p><a href="${
-      escapeHtml(rebookUrl)
-    }">Agendar outro horário</a></p>`;
+  const { subject, html, text } = outbox.event_type === "BOOKING_CONFIRMED"
+    ? renderBookingConfirmed(details, cancellationUrl)
+    : renderProviderCancelled(details, rebookUrl);
 
   if ((Deno.env.get("EMAIL_MODE") ?? "resend") === "test") return true;
   const response = await fetch("https://api.resend.com/emails", {
@@ -131,6 +116,15 @@ async function processMessage(
       to: [clientResult.data.email],
       subject,
       html,
+      text,
+      attachments: [
+        {
+          content: LOGO_PNG_BASE64,
+          filename: "lume-agendas.png",
+          content_type: "image/png",
+          content_id: LOGO_CONTENT_ID,
+        },
+      ],
     }),
   });
   return response.ok;
