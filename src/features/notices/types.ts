@@ -1,6 +1,6 @@
 export type ProviderNoticeDto = {
   id: string;
-  eventType: "CLIENT_CANCELLED";
+  eventType: "CLIENT_BOOKED" | "CLIENT_CANCELLED";
   clientName: string;
   start: string;
   end: string;

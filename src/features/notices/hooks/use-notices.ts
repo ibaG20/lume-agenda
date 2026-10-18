@@ -13,7 +13,11 @@ function readSeen(): Set<string> | null {
     const raw = sessionStorage.getItem(SEEN_KEY);
     if (raw === null) return null;
     const parsed = JSON.parse(raw) as unknown;
-    return new Set(Array.isArray(parsed) ? parsed.filter((item) => typeof item === "string") : []);
+    return new Set(
+      Array.isArray(parsed)
+        ? parsed.filter((item) => typeof item === "string")
+        : [],
+    );
   } catch {
     return new Set();
   }
@@ -27,8 +31,14 @@ function writeSeen(ids: Set<string>) {
   }
 }
 
-export function showForegroundNotice(notice: ProviderNoticeDto, timezone: string) {
-  if (typeof Notification === "undefined" || Notification.permission !== "granted") {
+export function showForegroundNotice(
+  notice: ProviderNoticeDto,
+  timezone: string,
+) {
+  if (
+    typeof Notification === "undefined" ||
+    Notification.permission !== "granted"
+  ) {
     return;
   }
   const when = new Intl.DateTimeFormat("pt-BR", {
@@ -36,11 +46,15 @@ export function showForegroundNotice(notice: ProviderNoticeDto, timezone: string
     timeStyle: "short",
     timeZone: timezone,
   }).format(new Date(notice.start));
-  const notification = new Notification("Horário cancelado", {
-    body: `${notice.clientName} cancelou o horário de ${when}.`,
-    icon: "/icons/icon-192.png",
-    tag: notice.id,
-  });
+  const booked = notice.eventType === "CLIENT_BOOKED";
+  const notification = new Notification(
+    booked ? "Novo agendamento" : "Horário cancelado",
+    {
+      body: `${notice.clientName} ${booked ? "agendou" : "cancelou"} o horário de ${when}.`,
+      icon: "/icons/icon-192.png",
+      tag: notice.id,
+    },
+  );
   notification.onclick = () => {
     window.focus();
     notification.close();
@@ -69,7 +83,10 @@ export function useNotices() {
     if (seen) {
       for (const notice of notices) {
         if (next.has(notice.id)) continue;
-        showForegroundNotice(notice, resource.data?.timezone ?? "America/Sao_Paulo");
+        showForegroundNotice(
+          notice,
+          resource.data?.timezone ?? "America/Sao_Paulo",
+        );
         next.add(notice.id);
       }
     } else {

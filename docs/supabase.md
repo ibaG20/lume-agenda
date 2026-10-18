@@ -202,7 +202,7 @@ Header `Idempotency-Key` recomendado. Já cancelado → `ok: true` com `status: 
 { appointmentId: string; status: 'CANCELLED' }
 ```
 
-O cancelamento pelo cliente grava um aviso na fila `notice_outbox`, na mesma transação. O painel lista os avisos abertos e o prestador dispensa cada um. A entrega no celular é outra etapa da mesma fila, via Web Push, e não apaga o aviso da tela.
+Novos agendamentos e cancelamentos feitos pelo cliente gravam um aviso na fila `notice_outbox`, na mesma transação da operação. O painel lista os avisos abertos e o prestador dispensa cada um. A entrega no celular é outra etapa da mesma fila, via Web Push, e não apaga o aviso da tela.
 
 ### `listNotices` — `list-notices`
 

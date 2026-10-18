@@ -12,6 +12,7 @@ import { NoticesSection } from ".";
 
 const refetch = vi.fn();
 const dismiss = vi.fn();
+let eventType: "CLIENT_BOOKED" | "CLIENT_CANCELLED" = "CLIENT_CANCELLED";
 
 vi.mock("../../hooks/use-notices", () => ({
   useNotices: () => ({
@@ -21,7 +22,7 @@ vi.mock("../../hooks/use-notices", () => ({
       notices: [
         {
           id: "notice-1",
-          eventType: "CLIENT_CANCELLED",
+          eventType,
           clientName: "Ana Souza",
           start: "2026-10-19T12:00:00.000Z",
           end: "2026-10-19T13:00:00.000Z",
@@ -44,9 +45,19 @@ vi.mock("../../hooks/use-dismiss-notice", () => ({
 
 describe("NoticesSection", () => {
   beforeEach(() => {
+    eventType = "CLIENT_CANCELLED";
     refetch.mockReset();
     dismiss.mockReset();
     dismiss.mockResolvedValue({ ok: true });
+  });
+
+  it("shows a new booking with a dismiss button", () => {
+    eventType = "CLIENT_BOOKED";
+
+    render(<NoticesSection />);
+
+    expect(screen.getByText(/agendou o horário/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Dispensar" })).toBeTruthy();
   });
 
   afterEach(cleanup);

@@ -15,6 +15,10 @@ function localDate(iso: string, timezone: string): string {
     .toString();
 }
 
+function noticeAction(eventType: "CLIENT_BOOKED" | "CLIENT_CANCELLED") {
+  return eventType === "CLIENT_BOOKED" ? "agendou" : "cancelou";
+}
+
 export function NoticesSection() {
   const notices = useNotices();
   const dismissal = useDismissNotice(() => notices.refetch());
@@ -36,7 +40,8 @@ export function NoticesSection() {
         {visible.map((notice) => (
           <li className={styles.notice} key={notice.id}>
             <p>
-              <strong>{notice.clientName}</strong> cancelou o horário de{" "}
+              <strong>{notice.clientName}</strong>{" "}
+              {noticeAction(notice.eventType)} o horário de{" "}
               {formatLongDate(localDate(notice.start, timezone))},{" "}
               {formatTime(notice.start, timezone)}.
             </p>

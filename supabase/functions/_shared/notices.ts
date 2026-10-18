@@ -13,16 +13,17 @@ type NoticeRow = {
   id: string;
   created_at: string;
   appointment_id: string;
+  event_type: "CLIENT_BOOKED" | "CLIENT_CANCELLED";
 };
 
 export async function listNotices(context: RequestContext) {
   const providerIdValue = providerId(context);
   const notices = await context.admin
     .from("notice_outbox")
-    .select("id,created_at,appointment_id")
+    .select("id,created_at,appointment_id,event_type")
     .eq("provider_id", providerIdValue)
     .eq("status", "OPEN")
-    .eq("event_type", "CLIENT_CANCELLED")
+    .in("event_type", ["CLIENT_BOOKED", "CLIENT_CANCELLED"])
     .order("created_at", { ascending: false })
     .limit(20);
   if (notices.error) dbError(notices.error);
@@ -76,7 +77,7 @@ export async function listNotices(context: RequestContext) {
       if (!appointment) return [];
       return [{
         id: row.id,
-        eventType: "CLIENT_CANCELLED" as const,
+        eventType: row.event_type,
         clientName: nameByClient.get(appointment.client_id) ?? "Cliente",
         start: appointment.start_datetime,
         end: appointment.end_datetime,

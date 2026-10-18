@@ -5,6 +5,7 @@ type NoticeRow = {
   id: string;
   provider_id: string;
   appointment_id: string;
+  event_type: "CLIENT_BOOKED" | "CLIENT_CANCELLED";
 };
 
 type PushSubscription = {
@@ -89,7 +90,9 @@ async function deliverNotice(
       .select("id,endpoint,p256dh,auth_key")
       .eq("provider_id", notice.provider_id),
   ]);
-  if (appointment.error || profile.error || subscriptions.error) return "FAILED";
+  if (appointment.error || profile.error || subscriptions.error) {
+    return "FAILED";
+  }
   const targets = (subscriptions.data ?? []) as PushSubscription[];
   if (!Deno.env.get("VAPID_PUBLIC_KEY")?.trim() || targets.length === 0) {
     return "SKIPPED";
@@ -109,9 +112,12 @@ async function deliverNotice(
   const when = appointment.data
     ? formatWhen(appointment.data.start_datetime, timezone)
     : "um horário";
+  const booked = notice.event_type === "CLIENT_BOOKED";
   const payload = JSON.stringify({
-    title: "Horário cancelado",
-    body: `${clientName} cancelou o horário de ${when}.`,
+    title: booked ? "Novo agendamento" : "Horário cancelado",
+    body: `${clientName} ${
+      booked ? "agendou" : "cancelou"
+    } o horário de ${when}.`,
     tag: notice.id,
     url: "/inicio",
   });

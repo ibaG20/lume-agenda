@@ -29,4 +29,22 @@ describe("toNoticeListDto", () => {
     });
     expect(JSON.stringify(dto)).not.toContain("ana@example.com");
   });
+
+  it("preserves booking events", () => {
+    const dto = toNoticeListDto({
+      timezone: "America/Sao_Paulo",
+      notices: [
+        {
+          id: "notice-2",
+          eventType: "CLIENT_BOOKED",
+          clientName: "Bia Lima",
+          start: "2026-10-20T12:00:00.000Z",
+          end: "2026-10-20T13:00:00.000Z",
+          createdAt: "2026-10-18T19:00:00.000Z",
+        },
+      ],
+    });
+
+    expect(dto.notices[0]?.eventType).toBe("CLIENT_BOOKED");
+  });
 });

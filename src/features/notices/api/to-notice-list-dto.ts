@@ -3,7 +3,7 @@ import type { NoticeListDto, ProviderNoticeDto } from "../types";
 function toNotice(data: ProviderNoticeDto): ProviderNoticeDto {
   return {
     id: data.id,
-    eventType: "CLIENT_CANCELLED",
+    eventType: data.eventType,
     clientName: data.clientName,
     start: data.start,
     end: data.end,
