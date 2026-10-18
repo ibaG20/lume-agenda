@@ -34,6 +34,19 @@
   padding: 0.95rem 1rem;
 }
 
+.notice[data-event-type="CLIENT_BOOKED"] {
+  background: color-mix(
+    in srgb,
+    var(--color-success) 10%,
+    var(--color-base-100)
+  );
+  border-color: color-mix(
+    in srgb,
+    var(--color-success) 38%,
+    var(--color-base-300)
+  );
+}
+
 .notice p {
   flex: 1 1 16rem;
   font-size: 0.9rem;

@@ -56,7 +56,9 @@ describe("NoticesSection", () => {
 
     render(<NoticesSection />);
 
-    expect(screen.getByText(/agendou o horário/)).toBeTruthy();
+    expect(
+      screen.getByText(/agendou o horário/).closest("li")?.dataset.eventType,
+    ).toBe("CLIENT_BOOKED");
     expect(screen.getByRole("button", { name: "Dispensar" })).toBeTruthy();
   });
 
@@ -66,7 +68,9 @@ describe("NoticesSection", () => {
     render(<NoticesSection />);
 
     expect(screen.getByText("Ana Souza")).toBeTruthy();
-    expect(screen.getByText(/cancelou o horário/)).toBeTruthy();
+    expect(
+      screen.getByText(/cancelou o horário/).closest("li")?.dataset.eventType,
+    ).toBe("CLIENT_CANCELLED");
     fireEvent.click(screen.getByRole("button", { name: "Dispensar" }));
 
     await waitFor(() => {

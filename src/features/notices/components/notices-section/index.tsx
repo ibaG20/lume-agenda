@@ -38,7 +38,11 @@ export function NoticesSection() {
 
       <ul className={styles.list}>
         {visible.map((notice) => (
-          <li className={styles.notice} key={notice.id}>
+          <li
+            className={styles.notice}
+            data-event-type={notice.eventType}
+            key={notice.id}
+          >
             <p>
               <strong>{notice.clientName}</strong>{" "}
               {noticeAction(notice.eventType)} o horário de{" "}
