@@ -5,7 +5,11 @@ import type {
   User,
 } from "@supabase/supabase-js";
 import { describe, expect, it, vi } from "vitest";
-import { REGISTER_ERROR_MESSAGE, registerWithPassword } from "./register";
+import {
+  REGISTER_ERROR_MESSAGE,
+  REGISTER_RATE_LIMIT_MESSAGE,
+  registerWithPassword,
+} from "./register";
 
 const credentials = {
   email: "prestador@salao.com",
@@ -79,6 +83,35 @@ describe("registerWithPassword", () => {
       expect(result.error.message).not.toContain("@");
     }
   });
+
+  it.each([
+    { status: 429, code: undefined },
+    { status: 400, code: "over_email_send_rate_limit" },
+    { status: 400, code: "over_request_rate_limit" },
+  ])(
+    "explains a temporary rate limit without exposing the provider error (%o)",
+    async ({ status, code }) => {
+      const client = createClient({
+        data: { user: null, session: null },
+        error: {
+          message: "Too many requests for prestador@salao.com",
+          status,
+          code,
+        } as AuthError,
+      });
+
+      const result = await registerWithPassword(client, credentials, {
+        emailRedirectTo: "http://localhost:3000/auth/callback",
+      });
+
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.error.code).toBe("UNAVAILABLE");
+        expect(result.error.message).toBe(REGISTER_RATE_LIMIT_MESSAGE);
+        expect(result.error.message).not.toContain("@");
+      }
+    },
+  );
 
   it("fails safely when Auth returns neither a user nor a session", async () => {
     const client = createClient({

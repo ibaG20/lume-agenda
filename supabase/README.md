@@ -27,6 +27,10 @@ uses the same Resend account and Lume visual identity as the booking emails.
 5. Keep the Email provider and **Confirm email** enabled. The enabled hook
    replaces SMTP delivery while Supabase continues to generate and verify the
    authentication tokens.
+6. In **Authentication > Rate Limits**, set **Emails sent** to a production-safe
+   value supported by the Resend account. The Send Email Hook replaces delivery,
+   but Supabase Auth still applies this project-wide limit and returns
+   `429 over_email_send_rate_limit` when it is exhausted.
 
 The endpoint deliberately has JWT verification disabled because it authenticates
 Supabase Auth through the Standard Webhooks signature. It never logs recipients

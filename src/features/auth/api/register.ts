@@ -5,6 +5,16 @@ import type { RegistrationCredentials, RegistrationResult } from "../types";
 
 export const REGISTER_ERROR_MESSAGE =
   "Não foi possível criar a conta. Revise os dados e tente novamente.";
+export const REGISTER_RATE_LIMIT_MESSAGE =
+  "O limite temporário de envio de e-mails foi atingido. Aguarde e tente novamente.";
+
+function isRateLimitError(error: { code?: string; status?: number }): boolean {
+  return (
+    error.status === 429 ||
+    error.code === "over_email_send_rate_limit" ||
+    error.code === "over_request_rate_limit"
+  );
+}
 
 export async function registerWithPassword(
   client: SupabaseClient,
@@ -20,11 +30,17 @@ export async function registerWithPassword(
   });
 
   if (error) {
+    const rateLimited = isRateLimitError(error);
     return fail(
       toApiError({
-        code:
-          error.status && error.status >= 500 ? "UNAVAILABLE" : "VALIDATION",
-        message: REGISTER_ERROR_MESSAGE,
+        code: rateLimited
+          ? "UNAVAILABLE"
+          : error.status && error.status >= 500
+            ? "UNAVAILABLE"
+            : "VALIDATION",
+        message: rateLimited
+          ? REGISTER_RATE_LIMIT_MESSAGE
+          : REGISTER_ERROR_MESSAGE,
         requestId: newRequestId(),
       }),
     );
