@@ -9,6 +9,10 @@
   width: 100%;
 }
 
+.dialog:not([open]) {
+  display: none;
+}
+
 .dialog::backdrop {
   animation: fade-in var(--motion-base) var(--ease-out);
   background: color-mix(in srgb, var(--color-base-content) 46%, transparent);

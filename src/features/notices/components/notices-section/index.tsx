@@ -91,7 +91,6 @@ export function NoticesSection() {
     notificationStatus === "default" || notificationStatus === "granted";
   const showSection =
     canEnable ||
-    notificationStatus === "denied" ||
     Boolean(notificationError) ||
     notices.status === "pending" ||
     notices.status === "error" ||
@@ -122,14 +121,8 @@ export function NoticesSection() {
           </SubmitButton>
         </div>
       ) : null}
-      {notificationStatus === "denied" ? (
-        <p className={styles.denied} role="status">
-          As notificações estão bloqueadas nas configurações do navegador. Os
-          avisos continuam aparecendo nesta lista.
-        </p>
-      ) : null}
       {notificationError ? (
-        <p className={styles.denied} role="alert">
+        <p className={styles.feedback} role="alert">
           {notificationError}
         </p>
       ) : null}

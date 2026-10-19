@@ -30,14 +30,17 @@
 }
 
 .permission p,
-.denied {
+.feedback {
   color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
-  flex: 1 1 16rem;
   font-size: 0.84rem;
   line-height: 1.5;
 }
 
-.denied {
+.permission p {
+  flex: 1 1 16rem;
+}
+
+.feedback {
   margin: 0;
 }
 
@@ -88,7 +91,7 @@
 
 @media (min-width: 1024px) {
   .permission,
-  .denied {
+  .feedback {
     display: none;
   }
 }
