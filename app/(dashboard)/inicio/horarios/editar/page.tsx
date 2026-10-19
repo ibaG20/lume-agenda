@@ -47,11 +47,7 @@ export default async function EditarHorariosPage({
 
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader
-        eyebrow="Editar grupo"
-        title={group.name}
-        description="Altere os dias, faixas e o estado deste grupo."
-      />
+      <PageHeader title="Editar horários" size="medium" />
       <ScheduleGroupForm
         initialValue={{
           id: group.id,

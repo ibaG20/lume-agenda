@@ -47,6 +47,17 @@
   outline: 2px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
+.weekdaysField {
+  border: 0;
+  padding: 0;
+}
+
+.weekdaysField legend {
+  font-size: 0.75rem;
+  font-weight: 750;
+  margin-bottom: 0.4rem;
+}
+
 .dayOption {
   cursor: pointer;
   position: relative;

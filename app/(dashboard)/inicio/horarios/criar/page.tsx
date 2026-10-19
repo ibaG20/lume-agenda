@@ -9,11 +9,7 @@ export const metadata: Metadata = {
 export default function CriarHorariosPage() {
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader
-        eyebrow="Novo grupo"
-        title="Criar horários"
-        description="Selecione dias com a mesma rotina e informe quando seus clientes podem agendar."
-      />
+      <PageHeader title="Criar horários" size="medium" />
       <ScheduleGroupForm mode="create" />
     </div>
   );

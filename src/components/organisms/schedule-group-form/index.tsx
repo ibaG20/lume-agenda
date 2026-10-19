@@ -80,13 +80,14 @@ export function ScheduleGroupForm({
 
   return (
     <form className="flex flex-col gap-6" onSubmit={handleSubmit} noValidate>
-      <section className={styles.card} aria-labelledby="group-data-title">
+      <section className={styles.card} aria-labelledby="routine-title">
         <header>
-          <h2 className={styles.cardTitle} id="group-data-title">
-            Dados do grupo
+          <h2 className={styles.cardTitle} id="routine-title">
+            Grupo de horários
           </h2>
           <p className={styles.cardDescription}>
-            Use um nome fácil de reconhecer, como “Semana” ou “Sábado”.
+            Dê um nome ao grupo e selecione os dias em que os horários se
+            repetem.
           </p>
         </header>
         <label className={styles.field}>
@@ -95,39 +96,30 @@ export function ScheduleGroupForm({
             disabled={busy}
             maxLength={120}
             onChange={(event) => setName(event.target.value)}
-            placeholder="Ex.: Horário da semana"
+            placeholder="Ex.: Segunda a sexta"
             required
             value={name}
           />
         </label>
-      </section>
-
-      <section className={styles.card} aria-labelledby="weekdays-title">
-        <header>
-          <h2 className={styles.cardTitle} id="weekdays-title">
-            Dias da semana
-          </h2>
-          <p className={styles.cardDescription}>
-            As mesmas faixas serão aplicadas a todos os dias marcados.
-          </p>
-        </header>
-        <fieldset className="grid grid-cols-4 gap-2 sm:grid-cols-7">
-          <legend className="sr-only">Selecione os dias</legend>
-          {WEEKDAYS.map((day) => (
-            <label
-              className={styles.dayOption}
-              data-selected={days.includes(day.value)}
-              key={day.value}
-            >
-              <input
-                checked={days.includes(day.value)}
-                disabled={busy}
-                onChange={() => toggleDay(day.value)}
-                type="checkbox"
-              />
-              <span>{day.short}</span>
-            </label>
-          ))}
+        <fieldset className={styles.weekdaysField}>
+          <legend>Dias da semana</legend>
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+            {WEEKDAYS.map((day) => (
+              <label
+                className={styles.dayOption}
+                data-selected={days.includes(day.value)}
+                key={day.value}
+              >
+                <input
+                  checked={days.includes(day.value)}
+                  disabled={busy}
+                  onChange={() => toggleDay(day.value)}
+                  type="checkbox"
+                />
+                <span>{day.short}</span>
+              </label>
+            ))}
+          </div>
         </fieldset>
       </section>
 
