@@ -11,6 +11,7 @@ describe("Skeleton", () => {
     const { container } = render(<Skeleton width="8rem" />);
     const bone = container.querySelector("span");
     expect(bone?.getAttribute("aria-hidden")).toBe("true");
+    expect(bone?.classList.contains("skeleton")).toBe(true);
     expect(bone?.getAttribute("style")).toContain("8rem");
   });
 });
