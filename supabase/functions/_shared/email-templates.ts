@@ -44,6 +44,7 @@ type Layout = {
   title: string;
   intro: string;
   details: EmailDetails;
+  audience?: "client" | "provider";
   action: { label: string; url: string };
   note: string;
 };
@@ -75,6 +76,14 @@ function renderLayout(layout: Layout): string {
     ? COLOR.successSoft
     : COLOR.errorSoft;
   const { details } = layout;
+  const audience = layout.audience ?? "client";
+  const recipientName = audience === "client"
+    ? details.clientName
+    : details.providerName;
+  const counterpartLabel = audience === "client" ? "Com" : "Cliente";
+  const counterpartName = audience === "client"
+    ? details.providerName
+    : details.clientName;
   const day = escapeHtml(capitalize(details.day));
   const time = `${escapeHtml(details.start)} às ${escapeHtml(details.end)}`;
   const url = escapeHtml(layout.action.url);
@@ -141,14 +150,14 @@ function renderLayout(layout: Layout): string {
   }</h1>
 
 <p style="margin:14px 0 0;font-family:${FONT};font-size:15px;line-height:1.6;color:${COLOR.muted};">Olá, <strong style="color:${COLOR.text};">${
-    escapeHtml(details.clientName)
+    escapeHtml(recipientName)
   }</strong>. ${layout.intro}</p>
 
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:26px;background-color:${COLOR.page};border:1.5px solid ${COLOR.soft};border-radius:12px;">
 <tr>
 <td style="padding:6px 20px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-${detailRow("Com", escapeHtml(details.providerName))}
+${detailRow(counterpartLabel, escapeHtml(counterpartName))}
 ${detailRow("Data", day)}
 ${detailRow("Horário", time, true)}
 </table>
@@ -182,9 +191,15 @@ ${detailRow("Horário", time, true)}
 
 <tr>
 <td style="padding:24px 8px 0;font-family:${FONT};font-size:12px;line-height:1.6;color:${COLOR.subtle};text-align:center;">
-Você recebeu este e-mail porque fez um agendamento com ${
-    escapeHtml(details.providerName)
-  } pela <strong style="color:${COLOR.muted};">Lume Agendas</strong>.<br>
+${
+    audience === "client"
+      ? `Você recebeu este e-mail porque fez um agendamento com ${
+        escapeHtml(details.providerName)
+      } pela <strong style="color:${COLOR.muted};">Lume Agendas</strong>.`
+      : `Você recebeu este e-mail porque ${
+        escapeHtml(details.clientName)
+      } agendou um horário com você pela <strong style="color:${COLOR.muted};">Lume Agendas</strong>.`
+  }<br>
 Esta é uma mensagem automática, não é preciso respondê-la.
 </td>
 </tr>
@@ -268,6 +283,44 @@ export function renderProviderCancelled(
       `Horário: ${details.start} às ${details.end}`,
       "",
       `Escolher outro horário: ${rebookUrl}`,
+      "",
+      "Lume Agendas",
+    ]),
+  };
+}
+
+export function renderClientCancelled(
+  details: EmailDetails,
+  agendaUrl: string,
+): RenderedEmail {
+  const client = escapeHtml(details.clientName);
+  const day = capitalize(details.day);
+  return {
+    subject: `${details.clientName} cancelou um agendamento`,
+    html: renderLayout({
+      preheader:
+        `${details.clientName} cancelou o horário de ${day}, das ${details.start} às ${details.end}.`,
+      tone: "error",
+      eyebrow: "Cancelamento do cliente",
+      title: "Um horário foi liberado",
+      intro:
+        `<strong style="color:${COLOR.text};">${client}</strong> cancelou o agendamento abaixo. O horário voltou a ficar disponível na sua agenda.`,
+      details,
+      audience: "provider",
+      action: { label: "Ver agenda", url: agendaUrl },
+      note:
+        "O cancelamento também foi registrado nos avisos do painel para você consultar e dispensar quando quiser.",
+    }),
+    text: renderText([
+      `Olá, ${details.providerName}.`,
+      "",
+      `${details.clientName} cancelou o agendamento abaixo. O horário voltou a ficar disponível na sua agenda.`,
+      "",
+      `Cliente: ${details.clientName}`,
+      `Data: ${day}`,
+      `Horário: ${details.start} às ${details.end}`,
+      "",
+      `Ver agenda: ${agendaUrl}`,
       "",
       "Lume Agendas",
     ]),

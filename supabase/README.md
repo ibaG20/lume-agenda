@@ -22,7 +22,7 @@ The repository still records DEC-01 through DEC-04 as open. This implementation 
 - active weekly groups cannot contain overlapping intervals;
 - the existing globally unique client email is preserved, with a provider-specific `ProviderClient` snapshot so one provider can never enumerate personal data supplied to another;
 - cancellation preserves the appointment with status `CANCELLED`;
-- booking confirmation and provider cancellation create deduplicated outbox events; client cancellation email remains disabled until DEC-04 is accepted.
+- booking confirmation, provider cancellation, and client cancellation create deduplicated outbox events; client cancellations notify the provider account by email as well as through the in-app notice.
 
 When the decisions are accepted, replace these rules in a new forward-only migration and update this document, `docs/schema.prisma`, and `docs/supabase.md` together.
 

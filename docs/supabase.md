@@ -202,7 +202,7 @@ Header `Idempotency-Key` recomendado. Já cancelado → `ok: true` com `status: 
 { appointmentId: string; status: 'CANCELLED' }
 ```
 
-Novos agendamentos e cancelamentos feitos pelo cliente gravam um aviso na fila `notice_outbox`, na mesma transação da operação. O painel lista os avisos abertos e o prestador dispensa cada um. A entrega no celular é outra etapa da mesma fila, via Web Push, e não apaga o aviso da tela.
+Novos agendamentos e cancelamentos feitos pelo cliente gravam um aviso na fila `notice_outbox`, na mesma transação da operação. O cancelamento também grava um evento deduplicado na `email_outbox`, enviado ao e-mail da conta do prestador. O painel lista os avisos abertos e o prestador dispensa cada um. A entrega no celular é outra etapa da mesma fila, via Web Push, e não apaga o aviso da tela.
 
 ### `listNotices` — `list-notices`
 
@@ -363,7 +363,7 @@ Ver também [integracao.md](./integracao.md).
 | `useBookingCalendar` | `get-booking-calendar` | leitura agregada de regras, exceções e reservas; cache Redis por data |
 | `useBookAppointment` | `book-appointment` | `Client`, `Appointment`; invalida cache; outbox de email |
 | `useCancellationPreview` | `get-cancellation` | leitura `Appointment` |
-| `useCancelAppointment` | `cancel-appointment` | `Appointment.status`; cache |
+| `useCancelAppointment` | `cancel-appointment` | `Appointment.status`; aviso; email ao prestador; cache |
 | `useProfile` / `useUpdateProfile` | `get-profile` / `update-profile` | `profiles` |
 | `useGroups` / `useGroupMutation` | `*-groups` / `set-group-active` | `AvailabilityRuleGroup` |
 | `useRules` / `useRuleMutation` | `*-rules` | `AvailabilityRule` |

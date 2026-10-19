@@ -2,6 +2,7 @@ import { LOGO_PNG_BASE64 } from "./email-logo.ts";
 import {
   LOGO_CONTENT_ID,
   renderBookingConfirmed,
+  renderClientCancelled,
   renderProviderCancelled,
 } from "./email-templates.ts";
 import { dbError } from "./http.ts";
@@ -9,7 +10,10 @@ import { ApiError, type RequestContext } from "./types.ts";
 
 type OutboxRow = {
   id: string;
-  event_type: "BOOKING_CONFIRMED" | "PROVIDER_CANCELLED";
+  event_type:
+    | "BOOKING_CONFIRMED"
+    | "PROVIDER_CANCELLED"
+    | "CLIENT_CANCELLED";
   appointment_id: string;
 };
 
@@ -99,9 +103,21 @@ async function processMessage(
   const rebookUrl = `${appUrl}/${
     encodeURIComponent(profileResult.data.public_slug)
   }/agendar`;
-  const { subject, html, text } = outbox.event_type === "BOOKING_CONFIRMED"
+  const agendaUrl = `${appUrl}/inicio/agendamentos`;
+  const rendered = outbox.event_type === "BOOKING_CONFIRMED"
     ? renderBookingConfirmed(details, cancellationUrl)
-    : renderProviderCancelled(details, rebookUrl);
+    : outbox.event_type === "PROVIDER_CANCELLED"
+    ? renderProviderCancelled(details, rebookUrl)
+    : renderClientCancelled(details, agendaUrl);
+
+  let recipientEmail = clientResult.data.email;
+  if (outbox.event_type === "CLIENT_CANCELLED") {
+    const providerResult = await context.admin.auth.admin.getUserById(
+      appointmentResult.data.provider_id,
+    );
+    if (providerResult.error || !providerResult.data.user.email) return false;
+    recipientEmail = providerResult.data.user.email;
+  }
 
   if ((Deno.env.get("EMAIL_MODE") ?? "resend") === "test") return true;
   const response = await fetch("https://api.resend.com/emails", {
@@ -113,10 +129,10 @@ async function processMessage(
     },
     body: JSON.stringify({
       from: requiredEnv("RESEND_FROM"),
-      to: [clientResult.data.email],
-      subject,
-      html,
-      text,
+      to: [recipientEmail],
+      subject: rendered.subject,
+      html: rendered.html,
+      text: rendered.text,
       attachments: [
         {
           content: LOGO_PNG_BASE64,

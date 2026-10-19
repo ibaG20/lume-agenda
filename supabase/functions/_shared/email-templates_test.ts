@@ -1,6 +1,7 @@
 import {
   LOGO_CONTENT_ID,
   renderBookingConfirmed,
+  renderClientCancelled,
   renderProviderCancelled,
 } from "./email-templates.ts";
 
@@ -41,6 +42,21 @@ Deno.test("cancellation email links to rebooking", () => {
     "rebook link",
   );
   assert(email.text.includes("Escolher outro horário"), "plain text action");
+});
+
+Deno.test("client cancellation email addresses the provider and links to the agenda", () => {
+  const email = renderClientCancelled(
+    details,
+    "https://app.example.com/inicio/agendamentos",
+  );
+  assert(email.subject === "Ana <script> cancelou um agendamento", "subject");
+  assert(
+    email.html.includes('href="https://app.example.com/inicio/agendamentos"'),
+    "agenda link",
+  );
+  assert(email.html.includes("Cliente"), "client detail label");
+  assert(email.text.startsWith("Olá, Salão & Cia."), "provider greeting");
+  assert(email.text.includes("Cliente: Ana <script>"), "client detail");
 });
 
 Deno.test("escapes client and provider names in HTML", () => {
