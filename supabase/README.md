@@ -33,4 +33,9 @@ When the decisions are accepted, replace these rules in a new forward-only migra
 - Public flows use narrowly scoped Edge Functions and server-only RPCs.
 - Transaction RPC execution is revoked from `public`, `anon`, and `authenticated`; only `service_role` can call it.
 - The service role, JWTs, cancellation tokens, email addresses, and phone numbers are never logged.
-- The email worker requires `x-worker-secret`; schedule it from a trusted runner or Supabase Cron/Vault.
+- The email and Web Push workers require `x-worker-secret`; schedule
+  `process-email-outbox` and `process-notice-outbox` from a trusted runner or
+  Supabase Cron/Vault.
+- Web Push also requires one matching `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY`
+  pair and `VAPID_SUBJECT` in the Edge Functions secrets. The public key is
+  returned to the authenticated PWA; the private key never leaves the worker.

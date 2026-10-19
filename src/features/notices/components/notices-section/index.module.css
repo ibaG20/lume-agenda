@@ -12,6 +12,35 @@
   text-transform: uppercase;
 }
 
+.permission {
+  align-items: center;
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 8%,
+    var(--color-base-100)
+  );
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-primary) 35%, var(--color-base-300));
+  border-radius: var(--radius-box);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+}
+
+.permission p,
+.denied {
+  color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
+  flex: 1 1 16rem;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.denied {
+  margin: 0;
+}
+
 .list {
   display: flex;
   flex-direction: column;

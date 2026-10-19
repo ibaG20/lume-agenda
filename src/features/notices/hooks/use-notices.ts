@@ -67,13 +67,14 @@ export function useNotices() {
     "notices",
     { cacheKey: "notices" },
   );
+  const refetch = resource.refetch;
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      if (document.visibilityState === "visible") resource.refetch();
+      if (document.visibilityState === "visible") refetch();
     }, 30_000);
     return () => window.clearInterval(timer);
-  }, [resource.refetch]);
+  }, [refetch]);
 
   useEffect(() => {
     const notices = resource.data?.notices;

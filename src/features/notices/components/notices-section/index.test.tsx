@@ -10,9 +10,21 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NoticesSection } from ".";
 
-const refetch = vi.fn();
-const dismiss = vi.fn();
-let eventType: "CLIENT_BOOKED" | "CLIENT_CANCELLED" = "CLIENT_CANCELLED";
+const mocks = vi.hoisted(() => ({
+  dismiss: vi.fn(),
+  enableNotifications: vi.fn(),
+  eventType: "CLIENT_CANCELLED" as "CLIENT_BOOKED" | "CLIENT_CANCELLED",
+  getNotificationStatus: vi.fn(),
+  refetch: vi.fn(),
+}));
+
+vi.mock("../../enable-notifications", () => ({
+  enableMobileNotifications: mocks.enableNotifications,
+  getMobileNotificationStatus: mocks.getNotificationStatus,
+}));
+vi.mock("@/lib/supabase/browser", () => ({
+  createBrowserSupabaseClient: () => ({}),
+}));
 
 vi.mock("../../hooks/use-notices", () => ({
   useNotices: () => ({
@@ -22,7 +34,7 @@ vi.mock("../../hooks/use-notices", () => ({
       notices: [
         {
           id: "notice-1",
-          eventType,
+          eventType: mocks.eventType,
           clientName: "Ana Souza",
           start: "2026-10-19T12:00:00.000Z",
           end: "2026-10-19T13:00:00.000Z",
@@ -31,7 +43,7 @@ vi.mock("../../hooks/use-notices", () => ({
       ],
     },
     error: undefined,
-    refetch,
+    refetch: mocks.refetch,
   }),
 }));
 
@@ -39,20 +51,24 @@ vi.mock("../../hooks/use-dismiss-notice", () => ({
   useDismissNotice: () => ({
     status: "idle",
     error: undefined,
-    dismiss,
+    dismiss: mocks.dismiss,
   }),
 }));
 
 describe("NoticesSection", () => {
   beforeEach(() => {
-    eventType = "CLIENT_CANCELLED";
-    refetch.mockReset();
-    dismiss.mockReset();
-    dismiss.mockResolvedValue({ ok: true });
+    mocks.eventType = "CLIENT_CANCELLED";
+    mocks.refetch.mockReset();
+    mocks.dismiss.mockReset();
+    mocks.dismiss.mockResolvedValue({ ok: true });
+    mocks.enableNotifications.mockReset();
+    mocks.enableNotifications.mockResolvedValue("enabled");
+    mocks.getNotificationStatus.mockReset();
+    mocks.getNotificationStatus.mockResolvedValue("enabled");
   });
 
   it("shows a new booking with a dismiss button", () => {
-    eventType = "CLIENT_BOOKED";
+    mocks.eventType = "CLIENT_BOOKED";
 
     render(<NoticesSection />);
 
@@ -74,9 +90,28 @@ describe("NoticesSection", () => {
     fireEvent.click(screen.getByRole("button", { name: "Dispensar" }));
 
     await waitFor(() => {
-      expect(dismiss).toHaveBeenCalledWith("notice-1");
+      expect(mocks.dismiss).toHaveBeenCalledWith("notice-1");
       expect(screen.queryByText("Ana Souza")).toBeNull();
     });
     expect(screen.queryByRole("region", { name: "Avisos" })).toBeNull();
+  });
+
+  it("registers this device when notifications are not enabled yet", async () => {
+    mocks.getNotificationStatus.mockResolvedValue("default");
+    render(<NoticesSection />);
+
+    const button = await screen.findByRole("button", {
+      name: "Ativar avisos",
+    });
+    fireEvent.click(button);
+
+    await waitFor(() =>
+      expect(mocks.enableNotifications).toHaveBeenCalledOnce(),
+    );
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("button", { name: "Ativar avisos" }),
+      ).toBeNull(),
+    );
   });
 });

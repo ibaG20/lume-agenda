@@ -1,9 +1,16 @@
 "use client";
 
-import { startTransition, useOptimistic, useState } from "react";
+import { startTransition, useEffect, useOptimistic, useState } from "react";
 import { SubmitButton } from "@/components/atoms/submit-button";
+import { ResourceFeedback } from "@/components/molecules/resource-feedback";
 import { formatLongDate, formatTime } from "@/lib/date-time/dashboard";
+import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { Temporal } from "@js-temporal/polyfill";
+import {
+  enableMobileNotifications,
+  getMobileNotificationStatus,
+  type MobileNotificationStatus,
+} from "../../enable-notifications";
 import { useDismissNotice } from "../../hooks/use-dismiss-notice";
 import { useNotices } from "../../hooks/use-notices";
 import styles from "./index.module.css";
@@ -23,6 +30,10 @@ export function NoticesSection() {
   const notices = useNotices();
   const dismissal = useDismissNotice(() => notices.refetch());
   const [hiddenIds, setHiddenIds] = useState<string[]>([]);
+  const [notificationStatus, setNotificationStatus] =
+    useState<MobileNotificationStatus>();
+  const [notificationError, setNotificationError] = useState<string>();
+  const [enablingNotifications, setEnablingNotifications] = useState(false);
   const [optimisticHiddenIds, hideOptimistically] = useOptimistic(
     hiddenIds,
     (current, noticeId: string) => [...current, noticeId],
@@ -32,6 +43,39 @@ export function NoticesSection() {
     notices.data?.notices.filter(
       (notice) => !optimisticHiddenIds.includes(notice.id),
     ) ?? [];
+
+  useEffect(() => {
+    let active = true;
+    void getMobileNotificationStatus()
+      .then((status) => {
+        if (active) setNotificationStatus(status);
+      })
+      .catch(() => {
+        if (active) setNotificationStatus("granted");
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function enableNotifications() {
+    setEnablingNotifications(true);
+    setNotificationError(undefined);
+    try {
+      const status = await enableMobileNotifications(
+        createBrowserSupabaseClient(),
+      );
+      setNotificationStatus(status);
+    } catch (error) {
+      setNotificationError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível ativar as notificações.",
+      );
+    } finally {
+      setEnablingNotifications(false);
+    }
+  }
 
   function dismissNotice(noticeId: string) {
     startTransition(async () => {
@@ -43,7 +87,17 @@ export function NoticesSection() {
     });
   }
 
-  if (visible.length === 0) return null;
+  const canEnable =
+    notificationStatus === "default" || notificationStatus === "granted";
+  const showSection =
+    canEnable ||
+    notificationStatus === "denied" ||
+    Boolean(notificationError) ||
+    notices.status === "pending" ||
+    notices.status === "error" ||
+    visible.length > 0;
+
+  if (!showSection) return null;
 
   return (
     <section aria-labelledby="notices-title" className={styles.section}>
@@ -51,30 +105,73 @@ export function NoticesSection() {
         Avisos
       </h2>
 
-      <ul className={styles.list}>
-        {visible.map((notice) => (
-          <li
-            className={styles.notice}
-            data-event-type={notice.eventType}
-            key={notice.id}
+      {canEnable ? (
+        <div className={styles.permission}>
+          <p>
+            Ative os avisos do celular para saber quando um cliente agendar ou
+            cancelar, mesmo com o app fechado.
+          </p>
+          <SubmitButton
+            className="btn btn-primary btn-sm"
+            onClick={() => void enableNotifications()}
+            pending={enablingNotifications}
+            pendingLabel="Ativando…"
+            type="button"
           >
-            <p>
-              <strong>{notice.clientName}</strong>{" "}
-              {noticeAction(notice.eventType)} o horário de{" "}
-              {formatLongDate(localDate(notice.start, timezone))},{" "}
-              {formatTime(notice.start, timezone)}.
-            </p>
-            <SubmitButton
-              className="btn btn-outline btn-sm"
-              onClick={() => dismissNotice(notice.id)}
-              pending={dismissal.status === "pending"}
-              type="button"
+            Ativar avisos
+          </SubmitButton>
+        </div>
+      ) : null}
+      {notificationStatus === "denied" ? (
+        <p className={styles.denied} role="status">
+          As notificações estão bloqueadas nas configurações do navegador. Os
+          avisos continuam aparecendo nesta lista.
+        </p>
+      ) : null}
+      {notificationError ? (
+        <p className={styles.denied} role="alert">
+          {notificationError}
+        </p>
+      ) : null}
+
+      {notices.status === "pending" && !notices.data ? (
+        <ResourceFeedback kind="loading" title="Carregando avisos…" />
+      ) : null}
+      {notices.status === "error" ? (
+        <ResourceFeedback
+          description={notices.error.message}
+          kind="error"
+          onRetry={notices.refetch}
+          title="Não foi possível carregar os avisos"
+        />
+      ) : null}
+
+      {visible.length > 0 ? (
+        <ul className={styles.list}>
+          {visible.map((notice) => (
+            <li
+              className={styles.notice}
+              data-event-type={notice.eventType}
+              key={notice.id}
             >
-              Dispensar
-            </SubmitButton>
-          </li>
-        ))}
-      </ul>
+              <p>
+                <strong>{notice.clientName}</strong>{" "}
+                {noticeAction(notice.eventType)} o horário de{" "}
+                {formatLongDate(localDate(notice.start, timezone))},{" "}
+                {formatTime(notice.start, timezone)}.
+              </p>
+              <SubmitButton
+                className="btn btn-outline btn-sm"
+                onClick={() => dismissNotice(notice.id)}
+                pending={dismissal.status === "pending"}
+                type="button"
+              >
+                Dispensar
+              </SubmitButton>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </section>
   );
 }

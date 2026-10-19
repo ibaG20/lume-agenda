@@ -238,6 +238,8 @@ Não inclui e-mail, telefone nem token.
 
 `GET` devolve `{ vapidPublicKey: string | null }`. `POST` `{ endpoint, p256dh, authKey }` grava a inscrição do PWA. O worker `process-notice-outbox` usa essa inscrição para o aviso no celular.
 
+No ambiente hospedado, configure o mesmo par `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY`, além de `VAPID_SUBJECT`, nos secrets das Edge Functions. Agende `process-notice-outbox` em um runner confiável ou no Supabase Cron/Vault, enviando o mesmo `x-worker-secret` configurado em `EMAIL_WORKER_SECRET`; gravar a outbox, sozinho, não executa o envio.
+
 ## Funções do prestador (JWT)
 
 Exigem sessão válida e `auth.uid()` correspondente ao `provider_id` do recurso (`UNAUTHORIZED` se cruzar prestadores).
