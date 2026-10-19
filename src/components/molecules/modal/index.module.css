@@ -51,7 +51,12 @@
 
 @media (max-width: 640px) {
   .dialog {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    justify-content: flex-end;
     margin: 0;
+    max-height: 100dvh;
     padding: 0;
   }
 
@@ -61,6 +66,8 @@
     border-radius: 1.15rem 1.15rem 0 0;
     margin-top: auto;
     max-width: none;
+    max-height: 100%;
+    overflow-y: auto;
     padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
     width: 100%;
   }
