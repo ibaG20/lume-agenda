@@ -12,6 +12,27 @@ supabase functions serve --env-file supabase/functions/.env.local
 
 Copy `supabase/functions/.env.example` to `supabase/functions/.env.local` and provide only local/test credentials. Supabase injects `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` when functions run locally or hosted.
 
+## Authentication emails with Resend
+
+The `send-auth-email` Edge Function replaces Supabase Auth's built-in sender and
+uses the same Resend account and Lume visual identity as the booking emails.
+
+1. Verify the sending domain in Resend and set `RESEND_API_KEY` and
+   `RESEND_FROM` as Supabase Edge Function secrets.
+2. Deploy with `supabase functions deploy send-auth-email --no-verify-jwt`.
+3. In **Authentication > Hooks**, create a **Send Email** HTTPS hook pointing to
+   `https://<project-ref>.supabase.co/functions/v1/send-auth-email`.
+4. Generate the hook secret in the dashboard and save its complete value
+   (`v1,whsec_...`) as the `SEND_EMAIL_HOOK_SECRET` Edge Function secret.
+5. Keep the Email provider and **Confirm email** enabled. The enabled hook
+   replaces SMTP delivery while Supabase continues to generate and verify the
+   authentication tokens.
+
+The endpoint deliberately has JWT verification disabled because it authenticates
+Supabase Auth through the Standard Webhooks signature. It never logs recipients
+or confirmation tokens. `EMAIL_MODE=test` verifies hook requests without calling
+Resend during local tests.
+
 ## Explicit interim rules
 
 The repository still records DEC-01 through DEC-04 as open. This implementation therefore keeps the undecided behavior narrow and visible:

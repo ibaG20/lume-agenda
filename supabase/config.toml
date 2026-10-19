@@ -24,3 +24,7 @@ verify_jwt = false
 [functions.process-notice-outbox]
 verify_jwt = false
 
+# Called by Supabase Auth and authenticated with the Standard Webhooks signature.
+[functions.send-auth-email]
+verify_jwt = false
+
