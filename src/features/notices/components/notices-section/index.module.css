@@ -85,3 +85,10 @@
 .notice strong {
   font-weight: 800;
 }
+
+@media (min-width: 1024px) {
+  .permission,
+  .denied {
+    display: none;
+  }
+}

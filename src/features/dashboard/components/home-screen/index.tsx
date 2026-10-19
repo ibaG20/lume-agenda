@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { AppIcon } from "@/components/atoms/app-icon";
 import { AppLink } from "@/components/atoms/app-link";
 import { PageHeader } from "@/components/molecules/page-header";
@@ -73,7 +74,15 @@ export function HomeScreen() {
         ) : null}
         {(agenda.status === "empty" || agenda.status === "success") &&
         booked.length === 0 ? (
-          <p className={styles.empty}>Nenhum agendamento hoje.</p>
+          <div className={styles.empty}>
+            <Image
+              alt="Nenhum agendamento hoje."
+              className={styles.emptyIllustration}
+              height={268}
+              src="/illustrations/empty-agenda.png"
+              width={640}
+            />
+          </div>
         ) : null}
         {booked.length > 0 && agenda.data ? (
           <ol className="flex flex-col gap-3">

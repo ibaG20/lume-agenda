@@ -68,8 +68,15 @@
 }
 
 .empty {
-  color: color-mix(in srgb, var(--color-base-content) 65%, transparent);
-  font-size: 0.9rem;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.emptyIllustration {
+  height: auto;
+  max-width: 100%;
+  width: min(32rem, 100%);
 }
 
 .appointment {
