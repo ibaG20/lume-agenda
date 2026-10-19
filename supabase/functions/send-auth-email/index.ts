@@ -1,4 +1,4 @@
-import { Webhook } from "standardwebhooks";
+import { Webhook } from "npm:standardwebhooks@1.0.0";
 import {
   type AuthHookPayload,
   buildAuthEmailDeliveries,
