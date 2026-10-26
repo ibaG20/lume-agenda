@@ -44,7 +44,7 @@ async function sendPush(
   const publicKey = Deno.env.get("VAPID_PUBLIC_KEY")?.trim();
   const privateKey = Deno.env.get("VAPID_PRIVATE_KEY")?.trim();
   const subject = Deno.env.get("VAPID_SUBJECT")?.trim() ||
-    "mailto:agendas@lume.app";
+    "mailto:agendas@agendinha.app";
   if (!publicKey || !privateKey) return "failed";
 
   try {

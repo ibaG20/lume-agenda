@@ -15,7 +15,7 @@ Copy `supabase/functions/.env.example` to `supabase/functions/.env.local` and pr
 ## Authentication emails with Resend
 
 The `send-auth-email` Edge Function replaces Supabase Auth's built-in sender and
-uses the same Resend account and Lume visual identity as the booking emails.
+uses the same Resend account and Agendinha visual identity as the booking emails.
 
 1. Verify the sending domain in Resend and set `RESEND_API_KEY` and
    `RESEND_FROM` as Supabase Edge Function secrets.

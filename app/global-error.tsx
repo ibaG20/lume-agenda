@@ -19,7 +19,7 @@ export default function GlobalError({
           padding: "2.5rem 1.25rem",
         }}
       >
-        <h1 style={{ fontSize: "1.6rem" }}>O Lume Agendas encontrou um erro</h1>
+        <h1 style={{ fontSize: "1.6rem" }}>A Agendinha encontrou um erro</h1>
         <p style={{ lineHeight: 1.5, maxWidth: "32rem" }}>
           Recarregue a página. Se o problema continuar, tente de novo mais
           tarde.

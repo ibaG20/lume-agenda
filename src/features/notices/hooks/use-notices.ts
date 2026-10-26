@@ -6,7 +6,7 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { listNotices } from "../api/list-notices";
 import type { ProviderNoticeDto } from "../types";
 
-const SEEN_KEY = "lume-notice-seen";
+const SEEN_KEY = "agendinha-notice-seen";
 
 function readSeen(): Set<string> | null {
   try {

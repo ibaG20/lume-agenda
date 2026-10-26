@@ -155,7 +155,7 @@ describe("useAsyncResource", () => {
 
     expect(result.current.data).toEqual({ items: [0, 1] });
     expect(
-      JSON.parse(window.localStorage.getItem("lume-read:mutable") ?? ""),
+      JSON.parse(window.localStorage.getItem("agendinha-read:mutable") ?? ""),
     ).toMatchObject({
       data: { items: [0, 1] },
     });
@@ -163,7 +163,7 @@ describe("useAsyncResource", () => {
 
   it("shows the last stored payload when the next read fails", async () => {
     window.localStorage.setItem(
-      "lume-read:agenda:today",
+      "agendinha-read:agenda:today",
       JSON.stringify({ data: { slots: [1] }, savedAt: Date.now() }),
     );
     const { result } = renderHook(() =>
@@ -181,7 +181,7 @@ describe("useAsyncResource", () => {
 
   it("keeps an expired snapshot when the next read fails", async () => {
     window.localStorage.setItem(
-      "lume-read:agenda:today",
+      "agendinha-read:agenda:today",
       JSON.stringify({
         data: { slots: [2] },
         savedAt: Date.now() - 24 * 60 * 60 * 1000,
@@ -203,12 +203,12 @@ describe("useAsyncResource", () => {
 
   it("clears stored reads", () => {
     window.localStorage.setItem(
-      "lume-read:profile",
+      "agendinha-read:profile",
       JSON.stringify({ data: { name: "Ana" }, savedAt: Date.now() }),
     );
     window.localStorage.setItem("other", "keep");
     clearReadCache();
-    expect(window.localStorage.getItem("lume-read:profile")).toBeNull();
+    expect(window.localStorage.getItem("agendinha-read:profile")).toBeNull();
     expect(window.localStorage.getItem("other")).toBe("keep");
   });
 });

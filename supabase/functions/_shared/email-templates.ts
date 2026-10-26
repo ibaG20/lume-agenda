@@ -1,4 +1,4 @@
-export const LOGO_CONTENT_ID = "lume-logo";
+export const LOGO_CONTENT_ID = "agendinha-logo";
 
 const COLOR = {
   page: "#f3f7f7",
@@ -120,9 +120,9 @@ function renderLayout(layout: Layout): string {
 <table role="presentation" cellpadding="0" cellspacing="0" border="0">
 <tr>
 <td style="vertical-align:middle;padding-right:12px;">
-<img src="cid:${LOGO_CONTENT_ID}" width="40" height="40" alt="Lume Agendas" style="display:block;width:40px;height:40px;border:0;border-radius:10px;">
+<img src="cid:${LOGO_CONTENT_ID}" width="40" height="40" alt="Agendinha" style="display:block;width:40px;height:40px;border:0;border-radius:10px;">
 </td>
-<td style="vertical-align:middle;font-family:${FONT};font-size:17px;font-weight:800;letter-spacing:-0.02em;color:${COLOR.text};">Lume Agendas</td>
+<td style="vertical-align:middle;font-family:${FONT};font-size:17px;font-weight:800;letter-spacing:-0.02em;color:${COLOR.text};">Agendinha</td>
 </tr>
 </table>
 </td>
@@ -195,10 +195,10 @@ ${
     audience === "client"
       ? `Você recebeu este e-mail porque fez um agendamento com ${
         escapeHtml(details.providerName)
-      } pela <strong style="color:${COLOR.muted};">Lume Agendas</strong>.`
+      } pela <strong style="color:${COLOR.muted};">Agendinha</strong>.`
       : `Você recebeu este e-mail porque ${
         escapeHtml(details.clientName)
-      } agendou um horário com você pela <strong style="color:${COLOR.muted};">Lume Agendas</strong>.`
+      } agendou um horário com você pela <strong style="color:${COLOR.muted};">Agendinha</strong>.`
   }<br>
 Esta é uma mensagem automática, não é preciso respondê-la.
 </td>
@@ -248,7 +248,7 @@ export function renderBookingConfirmed(
       "",
       "O link é pessoal, não compartilhe este e-mail.",
       "",
-      "Lume Agendas",
+      "Agendinha",
     ]),
   };
 }
@@ -284,7 +284,7 @@ export function renderProviderCancelled(
       "",
       `Escolher outro horário: ${rebookUrl}`,
       "",
-      "Lume Agendas",
+      "Agendinha",
     ]),
   };
 }
@@ -322,7 +322,7 @@ export function renderClientCancelled(
       "",
       `Ver agenda: ${agendaUrl}`,
       "",
-      "Lume Agendas",
+      "Agendinha",
     ]),
   };
 }

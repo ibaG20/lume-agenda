@@ -16,9 +16,9 @@ function payload(
     email_data: {
       token: "123456",
       token_hash: "signup-hash",
-      redirect_to: "https://lume.example.com/auth/callback?next=/inicio",
+      redirect_to: "https://agendinha.example.com/auth/callback?next=/inicio",
       email_action_type: action,
-      site_url: "https://lume.example.com",
+      site_url: "https://agendinha.example.com",
       token_new: "",
       token_hash_new: "",
       ...overrides,
@@ -34,12 +34,12 @@ Deno.test("signup email uses the Supabase verification endpoint", () => {
 
   assert(delivery.to === "ana@example.com", "signup recipient");
   assert(
-    delivery.rendered.subject === "Confirme sua conta na Lume Agendas",
+    delivery.rendered.subject === "Confirme sua conta na Agendinha",
     "signup subject",
   );
   assert(
     delivery.rendered.html.includes(
-      "https://project.supabase.co/auth/v1/verify?token=signup-hash&amp;type=signup&amp;redirect_to=https%3A%2F%2Flume.example.com%2Fauth%2Fcallback%3Fnext%3D%2Finicio",
+      "https://project.supabase.co/auth/v1/verify?token=signup-hash&amp;type=signup&amp;redirect_to=https%3A%2F%2Fagendinha.example.com%2Fauth%2Fcallback%3Fnext%3D%2Finicio",
     ),
     "confirmation URL",
   );

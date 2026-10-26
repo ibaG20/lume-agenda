@@ -27,7 +27,7 @@ export function InstallPrompt() {
 
   return (
     <aside className={styles.banner}>
-      <p>Instale o Lume Agendas na tela inicial para abrir como um app.</p>
+      <p>Instale a Agendinha na tela inicial para abrir como um app.</p>
       <div className={styles.actions}>
         <button
           className="btn btn-primary btn-sm"

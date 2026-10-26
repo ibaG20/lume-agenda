@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { ScheduleGroupForm } from "@/components/organisms/schedule-group-form";
 
 export const metadata: Metadata = {
-  title: "Criar horários · Lume Agendas",
+  title: "Criar horários · Agendinha",
 };
 
 export default function CriarHorariosPage() {

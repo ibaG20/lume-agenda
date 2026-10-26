@@ -90,42 +90,42 @@ function contentFor(
   switch (action) {
     case "signup":
       return {
-        subject: "Confirme sua conta na Lume Agendas",
-        preheader: "Confirme seu e-mail para começar a usar a Lume Agendas.",
+        subject: "Confirme sua conta na Agendinha",
+        preheader: "Confirme seu e-mail para começar a usar a Agendinha.",
         eyebrow: "Confirmação de cadastro",
         title: "Só falta confirmar seu e-mail",
         intro:
           "Recebemos seu cadastro. Confirme este endereço para ativar sua conta e acessar sua agenda.",
         action: { label: "Confirmar minha conta", url: options.url! },
         note:
-          "Se você não criou uma conta na Lume Agendas, pode ignorar esta mensagem com segurança.",
+          "Se você não criou uma conta na Agendinha, pode ignorar esta mensagem com segurança.",
       };
     case "invite":
       return {
-        subject: "Você recebeu um convite para a Lume Agendas",
-        preheader: "Aceite o convite para acessar a Lume Agendas.",
+        subject: "Você recebeu um convite para a Agendinha",
+        preheader: "Aceite o convite para acessar a Agendinha.",
         eyebrow: "Convite",
         title: "Sua agenda está esperando por você",
         intro:
-          "Você foi convidado para usar a Lume Agendas. Aceite o convite para concluir seu acesso.",
+          "Você foi convidado para usar a Agendinha. Aceite o convite para concluir seu acesso.",
         action: { label: "Aceitar convite", url: options.url! },
         note: "Se você não esperava este convite, pode ignorar esta mensagem.",
       };
     case "magiclink":
       return {
-        subject: "Seu acesso à Lume Agendas",
+        subject: "Seu acesso à Agendinha",
         preheader: "Use este link seguro para entrar na sua conta.",
         eyebrow: "Acesso seguro",
         title: "Entre na sua conta",
         intro:
-          "Use o botão abaixo para entrar na Lume Agendas sem precisar digitar sua senha.",
-        action: { label: "Entrar na Lume Agendas", url: options.url! },
+          "Use o botão abaixo para entrar na Agendinha sem precisar digitar sua senha.",
+        action: { label: "Entrar na Agendinha", url: options.url! },
         note:
           "Este link é pessoal e expira em breve. Não encaminhe esta mensagem para outras pessoas.",
       };
     case "recovery":
       return {
-        subject: "Redefina sua senha da Lume Agendas",
+        subject: "Redefina sua senha da Agendinha",
         preheader: "Crie uma nova senha para recuperar seu acesso.",
         eyebrow: "Recuperação de acesso",
         title: "Vamos criar uma nova senha",
@@ -138,7 +138,7 @@ function contentFor(
     case "email_change":
     case "email":
       return {
-        subject: "Confirme seu novo e-mail na Lume Agendas",
+        subject: "Confirme seu novo e-mail na Agendinha",
         preheader: "Confirme a alteração do endereço de e-mail da sua conta.",
         eyebrow: "Alteração de e-mail",
         title: "Confirme seu novo endereço",
@@ -153,7 +153,7 @@ function contentFor(
       };
     case "reauthentication":
       return {
-        subject: "Seu código de verificação da Lume Agendas",
+        subject: "Seu código de verificação da Agendinha",
         preheader: "Use este código para confirmar sua identidade.",
         eyebrow: "Verificação de segurança",
         title: "Confirme que é você",
@@ -215,7 +215,7 @@ function securityNotification(
   intro: string,
 ): AuthEmailContent {
   return {
-    subject: `${title} | Lume Agendas`,
+    subject: `${title} | Agendinha`,
     preheader: intro,
     eyebrow,
     title,
@@ -244,7 +244,7 @@ function render(content: AuthEmailContent): RenderedEmail {
       "",
       content.note,
       "",
-      "Lume Agendas",
+      "Agendinha",
     ].join("\n"),
     html: `<!doctype html>
 <html lang="pt-BR" xmlns="http://www.w3.org/1999/xhtml">
@@ -263,8 +263,8 @@ function render(content: AuthEmailContent): RenderedEmail {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${COLOR.page};"><tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" class="container" width="560" cellpadding="0" cellspacing="0" border="0" style="width:560px;max-width:560px;">
 <tr><td style="padding:0 4px 20px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-<td style="vertical-align:middle;padding-right:12px;"><img src="cid:${LOGO_CONTENT_ID}" width="40" height="40" alt="Lume Agendas" style="display:block;width:40px;height:40px;border:0;border-radius:10px;"></td>
-<td style="vertical-align:middle;font-family:${FONT};font-size:17px;font-weight:800;color:${COLOR.text};">Lume Agendas</td>
+<td style="vertical-align:middle;padding-right:12px;"><img src="cid:${LOGO_CONTENT_ID}" width="40" height="40" alt="Agendinha" style="display:block;width:40px;height:40px;border:0;border-radius:10px;"></td>
+<td style="vertical-align:middle;font-family:${FONT};font-size:17px;font-weight:800;color:${COLOR.text};">Agendinha</td>
 </tr></table></td></tr>
 <tr><td style="background-color:${COLOR.card};border:1.5px solid ${COLOR.border};border-radius:14px;overflow:hidden;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr><td style="height:6px;line-height:6px;font-size:0;background-color:${COLOR.primary};">&nbsp;</td></tr>
@@ -292,7 +292,7 @@ ${
       escapeHtml(content.note)
     }</div>
 </td></tr></table></td></tr>
-<tr><td style="padding:24px 8px 0;font-family:${FONT};font-size:12px;line-height:1.6;color:${COLOR.subtle};text-align:center;">Esta é uma mensagem automática de segurança da <strong>Lume Agendas</strong>.<br>Não é preciso respondê-la.</td></tr>
+<tr><td style="padding:24px 8px 0;font-family:${FONT};font-size:12px;line-height:1.6;color:${COLOR.subtle};text-align:center;">Esta é uma mensagem automática de segurança da <strong>Agendinha</strong>.<br>Não é preciso respondê-la.</td></tr>
 </table></td></tr></table>
 </body></html>`,
   };

@@ -36,7 +36,7 @@ export function BrandLogo({
   return (
     <span className={styles.logo} data-tone={tone}>
       <BrandMark size={size} />
-      {wordmark ? <span className={styles.word}>Lume Agendas</span> : null}
+      {wordmark ? <span className={styles.word}>Agendinha</span> : null}
     </span>
   );
 }

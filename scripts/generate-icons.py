@@ -1,4 +1,4 @@
-"""Rasterize the Lume mark into PWA PNG icons. Run with Pillow installed."""
+"""Rasterize the Agendinha mark into PWA PNG icons. Run with Pillow installed."""
 
 from pathlib import Path
 

@@ -16,7 +16,7 @@ const idleState = {
   error: undefined,
 };
 
-export const READ_CACHE_PREFIX = "lume-read:";
+export const READ_CACHE_PREFIX = "agendinha-read:";
 const DEFAULT_CACHE_TTL_MS = 12 * 60 * 60 * 1000;
 const STALE_MAX_MS = 7 * 24 * 60 * 60 * 1000;
 

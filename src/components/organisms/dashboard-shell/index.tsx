@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { AppIcon } from "@/components/atoms/app-icon";
 import { AppLink } from "@/components/atoms/app-link";
 import { BrandLogo } from "@/components/atoms/brand-logo";
+import { FirstAccessTutorial } from "@/components/organisms/first-access-tutorial";
 import styles from "./index.module.css";
 
 const navigation = [
@@ -18,7 +19,12 @@ const navigation = [
   { href: "/perfil", label: "Perfil", icon: "profile" as const },
 ];
 
-export function DashboardShell({ children }: { children: ReactNode }) {
+type DashboardShellProps = {
+  children: ReactNode;
+  userId: string;
+};
+
+export function DashboardShell({ children, userId }: DashboardShellProps) {
   const pathname = usePathname();
 
   return (
@@ -100,6 +106,10 @@ export function DashboardShell({ children }: { children: ReactNode }) {
           })}
         </nav>
       </div>
+      <FirstAccessTutorial
+        enabled={pathname.startsWith("/inicio")}
+        userId={userId}
+      />
     </div>
   );
 }

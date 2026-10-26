@@ -37,7 +37,7 @@ describe("useSignOut", () => {
 
   it("clears stored reads after a successful sign-out", async () => {
     window.localStorage.setItem(
-      "lume-read:profile",
+      "agendinha-read:profile",
       JSON.stringify({ data: { name: "Ana" }, savedAt: Date.now() }),
     );
     signOutApi.mockResolvedValue({
@@ -52,6 +52,6 @@ describe("useSignOut", () => {
       await result.current.signOut();
     });
 
-    expect(window.localStorage.getItem("lume-read:profile")).toBeNull();
+    expect(window.localStorage.getItem("agendinha-read:profile")).toBeNull();
   });
 });

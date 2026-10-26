@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ScheduleListScreen } from "@/features/dashboard/components/schedule-list-screen";
 
 export const metadata: Metadata = {
-  title: "Horários · Lume Agendas",
+  title: "Horários · Agendinha",
 };
 
 export default function HorariosPage() {

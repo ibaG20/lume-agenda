@@ -4,7 +4,7 @@ import { requireDashboardUser } from "@/features/auth/server/dashboard-session";
 import { getProfile } from "@/features/profile";
 
 export const metadata: Metadata = {
-  title: "Perfil · Lume Agendas",
+  title: "Perfil · Agendinha",
 };
 
 type PerfilPageProps = {

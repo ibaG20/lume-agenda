@@ -6,7 +6,7 @@ import {
 } from "@/features/public-booking";
 
 export const metadata: Metadata = {
-  title: "Agendar · Lume Agendas",
+  title: "Agendar · Agendinha",
   description: "Escolha uma data e reserve seu horário online.",
 };
 

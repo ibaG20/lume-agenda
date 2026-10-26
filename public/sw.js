@@ -1,4 +1,4 @@
-const CACHE_NAME = "lume-agendas-v3";
+const CACHE_NAME = "agendinha-v3";
 const START_URL = "/inicio";
 const PRECACHE = [
   "/offline.html",
@@ -115,12 +115,12 @@ self.addEventListener("push", (event) => {
   } catch {
     payload = {};
   }
-  const title = payload.title || "Lume Agendas";
+  const title = payload.title || "Agendinha";
   const options = {
     body: payload.body || "Um cliente cancelou um horário.",
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
-    tag: payload.tag || "lume-notice",
+    tag: payload.tag || "agendinha-notice",
     data: { url: payload.url || START_URL },
   };
   event.waitUntil(self.registration.showNotification(title, options));

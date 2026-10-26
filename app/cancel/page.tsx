@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CancelAppointmentScreen } from "@/features/cancellation/components/cancel-appointment-screen";
 
 export const metadata: Metadata = {
-  title: "Cancelar agendamento · Lume Agendas",
+  title: "Cancelar agendamento · Agendinha",
   description: "Confira o horário e cancele somente se quiser liberá-lo.",
 };
 

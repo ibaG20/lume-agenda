@@ -40,7 +40,7 @@ async function sendWithResend(
       text: delivery.rendered.text,
       attachments: [{
         content: LOGO_PNG_BASE64,
-        filename: "lume-agendas.png",
+        filename: "agendinha.png",
         content_type: "image/png",
         content_id: LOGO_CONTENT_ID,
       }],

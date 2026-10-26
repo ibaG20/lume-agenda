@@ -21,7 +21,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Lume Agendas",
+  title: "Agendinha",
   description: "Gerencie seus horários e agendamentos em um só lugar.",
 };
 

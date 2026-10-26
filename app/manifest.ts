@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Lume Agendas",
-    short_name: "Lume",
+    name: "Agendinha",
+    short_name: "Agendinha",
     description: "Gerencie seus horários e agendamentos em um só lugar.",
     start_url: "/inicio",
     scope: "/",
