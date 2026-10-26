@@ -18,14 +18,38 @@ function requiredEnv(name: string): string {
   return value;
 }
 
-function allowedOrigins(): Set<string> {
-  const configured = Deno.env.get("ALLOWED_ORIGINS") ??
-    "http://localhost:3000,http://127.0.0.1:3000";
+function normalizedOrigin(value: string): string | undefined {
+  try {
+    const url = new URL(value.trim());
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return undefined;
+    }
+    return url.origin;
+  } catch {
+    return undefined;
+  }
+}
+
+export function allowedOriginsFrom(
+  configured: string | undefined,
+  publicAppUrl: string | undefined,
+): Set<string> {
+  const candidates = (
+    configured ?? "http://localhost:3000,http://127.0.0.1:3000"
+  ).split(",");
+  if (publicAppUrl) candidates.push(publicAppUrl);
+
   return new Set(
-    configured
-      .split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean),
+    candidates
+      .map(normalizedOrigin)
+      .filter((origin): origin is string => origin !== undefined),
+  );
+}
+
+function allowedOrigins(): Set<string> {
+  return allowedOriginsFrom(
+    Deno.env.get("ALLOWED_ORIGINS"),
+    Deno.env.get("PUBLIC_APP_URL"),
   );
 }
 
@@ -40,15 +64,17 @@ function corsHeaders(request: Request): Headers {
     Vary: "Origin",
   });
   const origin = request.headers.get("origin");
-  if (origin && allowedOrigins().has(origin)) {
-    headers.set("Access-Control-Allow-Origin", origin);
+  const normalized = origin ? normalizedOrigin(origin) : undefined;
+  if (normalized && allowedOrigins().has(normalized)) {
+    headers.set("Access-Control-Allow-Origin", normalized);
   }
   return headers;
 }
 
 function assertAllowedOrigin(request: Request): void {
   const origin = request.headers.get("origin");
-  if (origin && !allowedOrigins().has(origin)) {
+  const normalized = origin ? normalizedOrigin(origin) : undefined;
+  if (origin && (!normalized || !allowedOrigins().has(normalized))) {
     throw new ApiError("UNAUTHORIZED", 403, "Origem não autorizada.");
   }
 }

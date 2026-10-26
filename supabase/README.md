@@ -17,6 +17,21 @@ Copy `supabase/functions/.env.example` to `supabase/functions/.env.local` and pr
 The `send-auth-email` Edge Function replaces Supabase Auth's built-in sender and
 uses the same Resend account and Agendinha visual identity as the booking emails.
 
+## CORS em produção
+
+Configure `PUBLIC_APP_URL` com a URL pública da aplicação. Ela é adicionada
+automaticamente às origens permitidas pelas Edge Functions. Para aceitar mais
+de um domínio (por exemplo, produção e homologação), configure também
+`ALLOWED_ORIGINS` com uma lista separada por vírgulas:
+
+```sh
+supabase secrets set PUBLIC_APP_URL=https://app.example.com
+supabase secrets set ALLOWED_ORIGINS=https://app.example.com,https://staging.example.com
+```
+
+Depois de alterar os secrets ou este código compartilhado, publique novamente
+as Edge Functions.
+
 1. Verify the sending domain in Resend and set `RESEND_API_KEY` and
    `RESEND_FROM` as Supabase Edge Function secrets.
 2. Deploy with `supabase functions deploy send-auth-email --no-verify-jwt`.
