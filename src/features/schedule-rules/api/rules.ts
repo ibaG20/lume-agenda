@@ -12,12 +12,25 @@ import { isDayOfWeek } from "./day-of-week";
 const requireSession = true;
 
 function toRuleDto(data: AvailabilityRuleDto): AvailabilityRuleDto {
+  const slotDurationMinutes = data.slotDurationMinutes ?? 60;
+  const startMinutes =
+    Number(data.startTime.slice(0, 2)) * 60 +
+    Number(data.startTime.slice(3, 5));
+  const endMinutes =
+    Number(data.endTime.slice(0, 2)) * 60 + Number(data.endTime.slice(3, 5));
   return {
     id: data.id,
     groupId: data.groupId,
     dayOfWeek: data.dayOfWeek,
     startTime: data.startTime,
     endTime: data.endTime,
+    slotDurationMinutes,
+    appointmentCount:
+      data.appointmentCount ??
+      Math.max(
+        1,
+        Math.floor((endMinutes - startMinutes) / slotDurationMinutes),
+      ),
   };
 }
 

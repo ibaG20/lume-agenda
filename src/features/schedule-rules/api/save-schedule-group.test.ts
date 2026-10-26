@@ -7,14 +7,20 @@ function createClient() {
     data: {
       ok: true,
       data: {
-        group: { id: "group-1", name: "Semana", isActive: true },
+        group: {
+          id: "group-1",
+          name: "Semana",
+          isActive: true,
+        },
         rules: [
           {
             id: "rule-1",
             groupId: "group-1",
             dayOfWeek: 1,
             startTime: "08:00:00",
-            endTime: "12:00:00",
+            endTime: "11:00:00",
+            slotDurationMinutes: 45,
+            appointmentCount: 4,
             providerId: "secret",
           },
         ],
@@ -41,7 +47,13 @@ describe("saveScheduleGroup", () => {
     const input = {
       name: "Semana",
       days: [1, 2, 3, 4, 5] as const,
-      ranges: [{ startTime: "08:00", endTime: "12:00" }],
+      ranges: [
+        {
+          startTime: "08:00",
+          slotDurationMinutes: 45,
+          appointmentCount: 4,
+        },
+      ],
       isActive: true,
     };
     const result = await saveScheduleGroup(client, {

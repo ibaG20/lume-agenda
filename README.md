@@ -72,7 +72,7 @@ Legenda usada nesta documentação:
 | Testes automatizados | Parcial | Vitest cobre mapper, `invokeFunction`, Auth, disponibilidade, reserva, cancelamento, perfil, regras, exceções, agenda, clientes, cancelamento do prestador, o proxy de sessão, modais, toasts e o cache offline de leitura |
 | Camada web de API | Implementado | `docs/supabase.md`, `docs/integracao.md` e hooks por caso de uso |
 | CI/CD e observabilidade | Planejado | Não há workflows ou instrumentação versionados |
-| Regras de duração, fuso e precedência | Pendente de decisão | Bloqueadas por DEC-01 |
+| Regras de duração, fuso e precedência | Parcialmente definidas | Duração e quantidade por faixa, com início livre e término calculado; demais pontos seguem em DEC-01 |
 | Política transacional e de acesso | Pendente de decisão | Bloqueada por DEC-02 |
 | Identidade dos clientes | Pendente de decisão | Bloqueada por DEC-03 |
 | Política final de cancelamento e emails | Pendente de decisão | Bloqueada por DEC-04 |
@@ -279,7 +279,7 @@ As seguintes propostas complementares devem ser tratadas como **não aprovadas**
 - representar intervalos como `[início, fim)`, incluindo o início e excluindo o fim;
 - exigir `início < fim`;
 - não oferecer horários no passado;
-- usar uma duração configurável por prestador no MVP;
+- usar duração e quantidade configuráveis por faixa de horários no MVP;
 - armazenar um timezone IANA por prestador;
 - dar precedência a bloqueios sobre horários extras;
 - tornar cancelamento e criação com retry idempotentes;
@@ -728,12 +728,12 @@ Responsáveis, estimativas e datas ainda não foram atribuídos porque a capacid
 
 Estas decisões são bloqueadores reais. O código e a documentação não devem escolher silenciosamente uma alternativa.
 
-### DEC-01 — duração e cálculo dos horários
+### DEC-01 — duração e cálculo dos horários (parcialmente decidida)
 
 Deve definir:
 
-- duração única por prestador ou catálogo de serviços;
-- passo/granularidade dos slots;
+- duração e quantidade configuráveis por faixa de horários;
+- passo dos slots igual à duração configurada, ancorado no início livre da faixa;
 - significado de conflito entre grupos;
 - precedência entre bloqueio e horário extra;
 - antecedência mínima e horizonte máximo;
@@ -741,7 +741,7 @@ Deve definir:
 - timezone e horário de verão;
 - impacto de mudanças em reservas existentes.
 
-Proposta atual, ainda sujeita a aceite: duração configurável por prestador, timezone IANA e intervalos `[início, fim)`.
+Decisão implementada: cada faixa define início, duração e quantidade de atendimentos; o término é calculado automaticamente. Timezone IANA e intervalos `[início, fim)` permanecem como base do cálculo atual.
 
 ### DEC-02 — API, transação e políticas de acesso
 

@@ -264,16 +264,20 @@ Update envia um subconjunto: `name`, `publicSlug`, `phone`, `timezone`. Slug dup
 Hooks: `useGroups`, `useGroupMutation`.
 
 ```ts
-type RuleGroupDto = { id: string; name: string; isActive: boolean };
+type RuleGroupDto = {
+  id: string;
+  name: string;
+  isActive: boolean;
+};
 ```
 
 - `create-group` `POST` `{ name: string }`
 - `update-group` `PATCH` `{ id: string; name?: string }`
 - `delete-group` `POST` `{ id: string }`
 - `set-group-active` `POST` `{ id: string; isActive: boolean }` — ativação conflitante → `CONFLICT`
-- `save-schedule-group` `POST` `{ id?: string; name: string; days: number[]; ranges: Array<{ startTime: string; endTime: string }>; isActive: boolean }` — cria ou substitui grupo e regras na mesma transação
+- `save-schedule-group` `POST` `{ id?: string; name: string; days: number[]; ranges: Array<{ startTime: string; slotDurationMinutes: number; appointmentCount: number }>; isActive: boolean }` — calcula o término e cria ou substitui grupo e regras na mesma transação
 
-`save-schedule-group` aplica o produto cartesiano entre dias e faixas, valida alinhamento em `:00`/`:30`, duração em horas completas e sobreposições. Escritas invalidam a disponibilidade no servidor.
+`save-schedule-group` aplica o produto cartesiano entre dias e faixas, aceita início em qualquer minuto e calcula `fim = início + duração × quantidade`. Duração e quantidade são validadas por faixa, e sobreposições são impedidas. Escritas invalidam a disponibilidade no servidor.
 
 ### Regras — `list-rules` / `create-rule` / `update-rule` / `delete-rule`
 
@@ -286,6 +290,8 @@ type AvailabilityRuleDto = {
   dayOfWeek: number; // 1 = segunda … 7 = domingo
   startTime: string; // HH:mm:ss
   endTime: string;
+  slotDurationMinutes: number;
+  appointmentCount: number;
 };
 ```
 

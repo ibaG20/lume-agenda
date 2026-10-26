@@ -10,7 +10,12 @@ import {
   type SaveScheduleGroupInput,
   type ScheduleTimeRangeInput,
 } from "@/features/schedule-rules";
-import { WEEKDAYS, validateSchedule } from "./index.function";
+import {
+  calculatedEndTime,
+  formatDuration,
+  WEEKDAYS,
+  validateSchedule,
+} from "./index.function";
 import styles from "./index.module.css";
 
 type ScheduleGroupFormProps = {
@@ -20,7 +25,8 @@ type ScheduleGroupFormProps = {
 
 const defaultRange: ScheduleTimeRangeInput = {
   startTime: "08:00",
-  endTime: "12:00",
+  slotDurationMinutes: 60,
+  appointmentCount: 4,
 };
 
 export function ScheduleGroupForm({
@@ -49,7 +55,7 @@ export function ScheduleGroupForm({
   function updateRange(
     index: number,
     field: keyof ScheduleTimeRangeInput,
-    value: string,
+    value: string | number,
   ) {
     setRanges((current) =>
       current.map((range, rangeIndex) =>
@@ -130,7 +136,8 @@ export function ScheduleGroupForm({
               Faixas de atendimento
             </h2>
             <p className={styles.cardDescription}>
-              Cada faixa será dividida em horários de 1 hora.
+              Defina o início, a duração e quantos atendimentos serão feitos. O
+              término é calculado automaticamente.
             </p>
           </div>
           <button
@@ -139,7 +146,11 @@ export function ScheduleGroupForm({
             onClick={() =>
               setRanges((current) => [
                 ...current,
-                { startTime: "13:00", endTime: "17:00" },
+                {
+                  startTime: "13:00",
+                  slotDurationMinutes: 60,
+                  appointmentCount: 4,
+                },
               ])
             }
             type="button"
@@ -162,24 +173,64 @@ export function ScheduleGroupForm({
                     updateRange(index, "startTime", event.target.value)
                   }
                   required
-                  step={1800}
+                  step={60}
                   type="time"
                   value={range.startTime}
                 />
               </label>
               <label className={styles.field}>
-                <span>Fim</span>
+                <span>Duração (minutos)</span>
                 <input
                   disabled={busy}
-                  onChange={(event) =>
-                    updateRange(index, "endTime", event.target.value)
-                  }
+                  onChange={(event) => {
+                    const value = event.target.valueAsNumber;
+                    updateRange(
+                      index,
+                      "slotDurationMinutes",
+                      Number.isNaN(value) ? 0 : value,
+                    );
+                  }}
+                  inputMode="numeric"
+                  max={1439}
+                  min={1}
                   required
-                  step={1800}
-                  type="time"
-                  value={range.endTime}
+                  step={1}
+                  type="number"
+                  value={range.slotDurationMinutes}
                 />
+                <small>{formatDuration(range.slotDurationMinutes)}</small>
               </label>
+              <label className={styles.field}>
+                <span>Atendimentos</span>
+                <input
+                  disabled={busy}
+                  inputMode="numeric"
+                  max={999}
+                  min={1}
+                  onChange={(event) => {
+                    const value = event.target.valueAsNumber;
+                    updateRange(
+                      index,
+                      "appointmentCount",
+                      Number.isNaN(value) ? 0 : value,
+                    );
+                  }}
+                  required
+                  step={1}
+                  type="number"
+                  value={range.appointmentCount}
+                />
+                <small>Quantidade nesta faixa</small>
+              </label>
+              <div className={styles.calculatedEnd}>
+                <span>Término calculado</span>
+                <output>{calculatedEndTime(range) ?? "—"}</output>
+                <small>
+                  {range.appointmentCount > 0
+                    ? `${range.appointmentCount} horário${range.appointmentCount === 1 ? "" : "s"}`
+                    : "Informe a quantidade"}
+                </small>
+              </div>
               {ranges.length > 1 ? (
                 <button
                   className={styles.removeButton}

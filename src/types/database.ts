@@ -31,6 +31,8 @@ export type AvailabilityRuleRow = {
   dayOfWeek: number;
   startTime: string;
   endTime: string;
+  slotDurationMinutes: number;
+  appointmentCount: number;
 };
 
 export type ClientRow = {

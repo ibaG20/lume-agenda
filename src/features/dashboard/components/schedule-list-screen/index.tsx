@@ -7,7 +7,9 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { Popover } from "@/components/molecules/popover";
 import { ResourceFeedback } from "@/components/molecules/resource-feedback";
 import {
+  summarizeCapacity,
   summarizeDays,
+  summarizeDurations,
   summarizeRanges,
 } from "@/components/organisms/schedule-group-form/index.function";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
@@ -167,6 +169,18 @@ export function ScheduleListScreen() {
                   <dt className={styles.detailLabel}>Faixas</dt>
                   <dd className={styles.detailValue}>
                     {summarizeRanges(group.rules)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className={styles.detailLabel}>Duração</dt>
+                  <dd className={styles.detailValue}>
+                    {summarizeDurations(group.rules)} por atendimento
+                  </dd>
+                </div>
+                <div>
+                  <dt className={styles.detailLabel}>Capacidade</dt>
+                  <dd className={styles.detailValue}>
+                    {summarizeCapacity(group.rules)}
                   </dd>
                 </div>
               </dl>

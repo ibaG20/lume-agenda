@@ -60,7 +60,11 @@ function profileDto(row: Record<string, unknown>) {
 }
 
 function groupDto(row: Record<string, unknown>) {
-  return { id: row.id, name: row.name, isActive: row.is_active };
+  return {
+    id: row.id,
+    name: row.name,
+    isActive: row.is_active,
+  };
 }
 
 function ruleDto(row: Record<string, unknown>) {
@@ -70,6 +74,8 @@ function ruleDto(row: Record<string, unknown>) {
     dayOfWeek: row.day_of_week,
     startTime: row.start_time,
     endTime: row.end_time,
+    slotDurationMinutes: row.slot_duration_minutes,
+    appointmentCount: row.appointment_count,
   };
 }
 
@@ -394,6 +400,14 @@ function minutesFromTime(value: string): number {
   return hours * 60 + minutes;
 }
 
+function timeFromMinutes(value: number): string {
+  const hours = Math.floor(value / 60);
+  const minutes = value % 60;
+  return `${String(hours).padStart(2, "0")}:${
+    String(minutes).padStart(2, "0")
+  }:00`;
+}
+
 export async function saveScheduleGroup(context: RequestContext) {
   const { id: providerId, client } = provider(context);
   const id = context.input.id === undefined ? null : uuid(context.input, "id");
@@ -426,20 +440,28 @@ export async function saveScheduleGroup(context: RequestContext) {
     }
     const input = range as JsonRecord;
     const startTime = timeString(input, "startTime");
-    const endTime = timeString(input, "endTime");
-    assertTimeInterval(startTime, endTime);
-    const start = minutesFromTime(startTime);
-    const end = minutesFromTime(endTime);
-    if (start % 30 !== 0 || end % 30 !== 0 || (end - start) % 60 !== 0) {
+    const slotDurationMinutes = requiredInteger(
+      input,
+      "slotDurationMinutes",
+      1,
+      1439,
+    );
+    const appointmentCount = requiredInteger(input, "appointmentCount", 1, 999);
+    const endMinutes = minutesFromTime(startTime) +
+      slotDurationMinutes * appointmentCount;
+    if (endMinutes >= 24 * 60) {
       throw new ApiError(
         "VALIDATION",
         400,
-        `A faixa ${
-          index + 1
-        } deve usar intervalos de 30 minutos e conter horas completas.`,
+        `A faixa ${index + 1} precisa terminar antes da meia-noite.`,
       );
     }
-    return { startTime, endTime };
+    return {
+      startTime,
+      endTime: timeFromMinutes(endMinutes),
+      slotDurationMinutes,
+      appointmentCount,
+    };
   });
 
   if (
@@ -644,7 +666,9 @@ export async function listRules(context: RequestContext) {
   const groupId = uuid(context.input, "groupId");
   const result = await client
     .from("AvailabilityRule")
-    .select("id,group_id,day_of_week,start_time,end_time")
+    .select(
+      "id,group_id,day_of_week,start_time,end_time,slot_duration_minutes,appointment_count",
+    )
     .eq("group_id", groupId)
     .order("day_of_week")
     .order("start_time");
@@ -659,6 +683,8 @@ export async function createRule(context: RequestContext) {
   const startTime = timeString(context.input, "startTime");
   const endTime = timeString(context.input, "endTime");
   assertTimeInterval(startTime, endTime);
+  const slotDurationMinutes = minutesFromTime(endTime) -
+    minutesFromTime(startTime);
   await assertNoRuleConflict(context, providerId, groupId, {
     day_of_week: dayOfWeek,
     start_time: startTime,
@@ -671,8 +697,12 @@ export async function createRule(context: RequestContext) {
       day_of_week: dayOfWeek,
       start_time: startTime,
       end_time: endTime,
+      slot_duration_minutes: slotDurationMinutes,
+      appointment_count: 1,
     })
-    .select("id,group_id,day_of_week,start_time,end_time")
+    .select(
+      "id,group_id,day_of_week,start_time,end_time,slot_duration_minutes,appointment_count",
+    )
     .single();
   if (result.error) dbError(result.error);
   await invalidateAvailability(providerId);
@@ -684,7 +714,9 @@ export async function updateRule(context: RequestContext) {
   const id = uuid(context.input, "id");
   const current = await client
     .from("AvailabilityRule")
-    .select("id,group_id,day_of_week,start_time,end_time")
+    .select(
+      "id,group_id,day_of_week,start_time,end_time,slot_duration_minutes,appointment_count",
+    )
     .eq("id", id)
     .maybeSingle();
   if (current.error) dbError(current.error);
@@ -703,6 +735,7 @@ export async function updateRule(context: RequestContext) {
     end_time: endTime ?? current.data.end_time,
   };
   assertTimeInterval(nextRule.start_time, nextRule.end_time);
+  const scheduleChanged = startTime !== undefined || endTime !== undefined;
   await assertNoRuleConflict(
     context,
     providerId,
@@ -716,9 +749,16 @@ export async function updateRule(context: RequestContext) {
       day_of_week: dayOfWeek,
       start_time: startTime,
       end_time: endTime,
+      slot_duration_minutes: scheduleChanged
+        ? minutesFromTime(nextRule.end_time) -
+          minutesFromTime(nextRule.start_time)
+        : undefined,
+      appointment_count: scheduleChanged ? 1 : undefined,
     })
     .eq("id", id)
-    .select("id,group_id,day_of_week,start_time,end_time")
+    .select(
+      "id,group_id,day_of_week,start_time,end_time,slot_duration_minutes,appointment_count",
+    )
     .single();
   if (result.error) dbError(result.error);
   await invalidateAvailability(providerId);

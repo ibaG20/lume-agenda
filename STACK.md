@@ -518,7 +518,7 @@ A disponibilidade de uma data resulta da combinação de:
 7. reservas confirmadas;
 8. regra de precedência aprovada.
 
-DEC-01 precisa fechar os itens ainda ambíguos antes da implementação definitiva.
+A duração e a quantidade de atendimentos são definidas por faixa. Os slots usam essa duração como passo, ancorados no início livre, e o término é calculado automaticamente. Os demais pontos de DEC-01 continuam sujeitos às regras documentadas.
 
 ### Papel do Upstash Redis
 

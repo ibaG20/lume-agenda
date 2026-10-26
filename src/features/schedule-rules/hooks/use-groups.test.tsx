@@ -22,7 +22,11 @@ vi.mock("../api/groups", () => ({
   setGroupActive: (...args: unknown[]) => setGroupActive(...args),
 }));
 
-const group = { id: "group-1", name: "Semana", isActive: false };
+const group = {
+  id: "group-1",
+  name: "Semana",
+  isActive: false,
+};
 
 describe("useGroups", () => {
   beforeEach(() => {

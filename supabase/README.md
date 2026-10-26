@@ -37,19 +37,20 @@ Supabase Auth through the Standard Webhooks signature. It never logs recipients
 or confirmation tokens. `EMAIL_MODE=test` verifies hook requests without calling
 Resend during local tests.
 
-## Explicit interim rules
+## Explicit scheduling rules
 
-The repository still records DEC-01 through DEC-04 as open. This implementation therefore keeps the undecided behavior narrow and visible:
+The scheduling behavior is kept explicit and visible:
 
 - recurring rule times and public `date` are interpreted in UTC, and the API returns `timezone: "UTC"`;
-- each availability interval is returned as a bookable window; no unapproved fixed slot duration is invented;
+- each recurring range defines its slot duration and number of appointments, defaulting existing schedules to 60-minute slots;
+- recurring ranges may begin at any minute, and their end is calculated from `start + duration × appointment count`;
 - a blocking override takes precedence over recurring and extra availability;
 - active weekly groups cannot contain overlapping intervals;
 - the existing globally unique client email is preserved, with a provider-specific `ProviderClient` snapshot so one provider can never enumerate personal data supplied to another;
 - cancellation preserves the appointment with status `CANCELLED`;
 - booking confirmation, provider cancellation, and client cancellation create deduplicated outbox events; client cancellations notify the provider account by email as well as through the in-app notice.
 
-When the decisions are accepted, replace these rules in a new forward-only migration and update this document, `docs/schema.prisma`, and `docs/supabase.md` together.
+Future scheduling changes must use a new forward-only migration and update this document, `docs/schema.prisma`, and `docs/supabase.md` together.
 
 ## Security boundary
 

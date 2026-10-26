@@ -24,6 +24,35 @@ export function timeMinutes(value: string): number {
   return hours * 60 + minutes;
 }
 
+export function formatDuration(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (hours === 0) return `${remainingMinutes} min`;
+  if (remainingMinutes === 0) return `${hours}h`;
+  return `${hours}h ${remainingMinutes}min`;
+}
+
+export function calculatedEndTime(
+  range: ScheduleTimeRangeInput,
+): string | undefined {
+  if (
+    !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(range.startTime) ||
+    !Number.isInteger(range.slotDurationMinutes) ||
+    range.slotDurationMinutes < 1 ||
+    !Number.isInteger(range.appointmentCount) ||
+    range.appointmentCount < 1
+  ) {
+    return undefined;
+  }
+  const end =
+    timeMinutes(range.startTime) +
+    range.slotDurationMinutes * range.appointmentCount;
+  if (end >= 24 * 60) return undefined;
+  return `${String(Math.floor(end / 60)).padStart(2, "0")}:${String(
+    end % 60,
+  ).padStart(2, "0")}`;
+}
+
 export function validateSchedule(
   input: SaveScheduleGroupInput,
 ): string | undefined {
@@ -31,14 +60,26 @@ export function validateSchedule(
   if (input.days.length === 0) return "Selecione ao menos um dia da semana.";
   if (input.ranges.length === 0)
     return "Adicione ao menos uma faixa de horário.";
-
   for (const range of input.ranges) {
-    const start = timeMinutes(range.startTime);
-    const end = timeMinutes(range.endTime);
-    if (end <= start)
-      return "O fim de cada faixa deve ser posterior ao início.";
-    if (start % 30 !== 0 || end % 30 !== 0 || (end - start) % 60 !== 0) {
-      return "Cada faixa deve usar passos de 30 minutos e conter horas completas.";
+    if (!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(range.startTime)) {
+      return "Informe um horário de início válido para cada faixa.";
+    }
+    if (
+      !Number.isInteger(range.slotDurationMinutes) ||
+      range.slotDurationMinutes < 1 ||
+      range.slotDurationMinutes > 1439
+    ) {
+      return "Informe uma duração entre 1 e 1439 minutos.";
+    }
+    if (
+      !Number.isInteger(range.appointmentCount) ||
+      range.appointmentCount < 1 ||
+      range.appointmentCount > 999
+    ) {
+      return "Informe uma quantidade entre 1 e 999 atendimentos.";
+    }
+    if (!calculatedEndTime(range)) {
+      return "A duração e a quantidade precisam terminar antes da meia-noite.";
     }
   }
 
@@ -48,7 +89,8 @@ export function validateSchedule(
   if (
     sorted.some((range, index) => {
       const next = sorted[index + 1];
-      return next ? range.endTime > next.startTime : false;
+      const endTime = calculatedEndTime(range);
+      return next && endTime ? endTime > next.startTime : false;
     })
   ) {
     return "As faixas de horário não podem se sobrepor.";
@@ -68,7 +110,8 @@ export function formValuesFromRules(rules: AvailabilityRuleDto[]): {
     .filter((rule) => rule.dayOfWeek === firstDay)
     .map((rule) => ({
       startTime: rule.startTime.slice(0, 5),
-      endTime: rule.endTime.slice(0, 5),
+      slotDurationMinutes: rule.slotDurationMinutes,
+      appointmentCount: rule.appointmentCount,
     }));
   return { days, ranges };
 }
@@ -98,5 +141,20 @@ export function summarizeRanges(rules: AvailabilityRuleDto[]): string {
       return true;
     })
     .map((rule) => `${rule.startTime.slice(0, 5)}–${rule.endTime.slice(0, 5)}`)
+    .join(" · ");
+}
+
+export function summarizeCapacity(rules: AvailabilityRuleDto[]): string {
+  const firstDay = [...new Set(rules.map((rule) => rule.dayOfWeek))].sort()[0];
+  const count = rules
+    .filter((rule) => rule.dayOfWeek === firstDay)
+    .reduce((total, rule) => total + rule.appointmentCount, 0);
+  return `${count} atendimento${count === 1 ? "" : "s"} por dia`;
+}
+
+export function summarizeDurations(rules: AvailabilityRuleDto[]): string {
+  return [...new Set(rules.map((rule) => rule.slotDurationMinutes))]
+    .sort((a, b) => a - b)
+    .map(formatDuration)
     .join(" · ");
 }

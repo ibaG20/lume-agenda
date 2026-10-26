@@ -26,6 +26,8 @@ export type AvailabilityRuleDto = {
   dayOfWeek: DayOfWeek;
   startTime: string;
   endTime: string;
+  slotDurationMinutes: number;
+  appointmentCount: number;
 };
 
 export type CreateRuleInput = {
@@ -44,7 +46,8 @@ export type UpdateRuleInput = {
 
 export type ScheduleTimeRangeInput = {
   startTime: string;
-  endTime: string;
+  slotDurationMinutes: number;
+  appointmentCount: number;
 };
 
 export type SaveScheduleGroupInput = {

@@ -28,7 +28,17 @@ vi.mock("@/features/schedule-rules", () => ({
         id: "group-1",
         name: "Manhã",
         isActive: false,
-        rules: [],
+        rules: [
+          {
+            id: "rule-1",
+            groupId: "group-1",
+            dayOfWeek: 1,
+            startTime: "08:00:00",
+            endTime: "12:30:00",
+            slotDurationMinutes: 90,
+            appointmentCount: 3,
+          },
+        ],
       },
     ],
     error: undefined,
@@ -66,6 +76,13 @@ describe("ScheduleListScreen", () => {
 
     expect((toggle as HTMLInputElement).checked).toBe(true);
     expect(setActive).toHaveBeenCalledWith({ id: "group-1", isActive: true });
+  });
+
+  it("shows the configured duration and daily capacity", () => {
+    render(<ScheduleListScreen />);
+
+    expect(screen.getByText("1h 30min por atendimento")).toBeTruthy();
+    expect(screen.getByText("3 atendimentos por dia")).toBeTruthy();
   });
 
   it("removes a confirmed group immediately", async () => {

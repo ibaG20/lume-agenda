@@ -30,6 +30,8 @@ export async function saveScheduleGroup(
         dayOfWeek: rule.dayOfWeek,
         startTime: rule.startTime,
         endTime: rule.endTime,
+        slotDurationMinutes: rule.slotDurationMinutes,
+        appointmentCount: rule.appointmentCount,
       })),
     },
     result.requestId,

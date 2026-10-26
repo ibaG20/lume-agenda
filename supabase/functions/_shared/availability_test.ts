@@ -2,7 +2,7 @@ import {
   calendarDateRange,
   localRuleRange,
   rangesOverlap,
-  splitIntoHourlySlots,
+  splitIntoSlots,
 } from "./availability.ts";
 import { availabilityCacheKey } from "./cache.ts";
 
@@ -16,46 +16,45 @@ function assertEquals(actual: unknown, expected: unknown) {
   }
 }
 
-Deno.test("splits ranges into exact one-hour slots and drops the remainder", () => {
-  const slots = splitIntoHourlySlots([
+Deno.test("splits ranges using the configured duration and drops the remainder", () => {
+  const slots = splitIntoSlots([
     { start: "2026-10-01T11:30:00.000Z", end: "2026-10-01T16:00:00.000Z" },
-  ]);
-  assertEquals(slots.length, 4);
+  ], 45);
+  assertEquals(slots.length, 6);
   assertEquals(slots[0], {
     start: "2026-10-01T11:30:00.000Z",
-    end: "2026-10-01T12:30:00.000Z",
+    end: "2026-10-01T12:15:00.000Z",
   });
 });
 
-Deno.test("splits a 13:00-17:00 Sao Paulo range into four local-hour slots", () => {
+Deno.test("splits a range from an arbitrary minute into 90-minute slots", () => {
   const range = localRuleRange(
     "2026-10-08",
-    "13:00:00",
-    "17:00:00",
+    "15:20:00",
+    "19:50:00",
     "America/Sao_Paulo",
   );
-  const slots = splitIntoHourlySlots([range]);
+  const slots = splitIntoSlots([range], 90);
 
   assertEquals(slots, [
-    { start: "2026-10-08T16:00:00.000Z", end: "2026-10-08T17:00:00.000Z" },
-    { start: "2026-10-08T17:00:00.000Z", end: "2026-10-08T18:00:00.000Z" },
-    { start: "2026-10-08T18:00:00.000Z", end: "2026-10-08T19:00:00.000Z" },
-    { start: "2026-10-08T19:00:00.000Z", end: "2026-10-08T20:00:00.000Z" },
+    { start: "2026-10-08T18:20:00.000Z", end: "2026-10-08T19:50:00.000Z" },
+    { start: "2026-10-08T19:50:00.000Z", end: "2026-10-08T21:20:00.000Z" },
+    { start: "2026-10-08T21:20:00.000Z", end: "2026-10-08T22:50:00.000Z" },
   ]);
 });
 
 Deno.test("uses the current availability cache schema", () => {
   assertEquals(
     availabilityCacheKey("provider-1", "3", "2026-10-08"),
-    "availability:v2:provider-1:3:2026-10-08",
+    "availability:v4:provider-1:3:2026-10-08",
   );
 });
 
 Deno.test("keeps each source range anchored independently", () => {
-  const slots = splitIntoHourlySlots([
+  const slots = splitIntoSlots([
     { start: "2026-10-01T11:30:00Z", end: "2026-10-01T13:30:00Z" },
     { start: "2026-10-01T11:00:00Z", end: "2026-10-01T12:00:00Z" },
-  ]);
+  ], 60);
 
   assertEquals(slots, [
     { start: "2026-10-01T11:30:00.000Z", end: "2026-10-01T12:30:00.000Z" },

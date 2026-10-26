@@ -26,9 +26,11 @@ type DbRange = {
 };
 
 type RuleRow = {
+  group_id: string;
   day_of_week: number;
   start_time: string;
   end_time: string;
+  slot_duration_minutes: number;
 };
 
 function millis(range: TimeRange): [number, number] {
@@ -69,15 +71,18 @@ export function localRuleRange(
   };
 }
 
-export function splitIntoHourlySlots(ranges: TimeRange[]): TimeRange[] {
-  const hour = 3_600_000;
+export function splitIntoSlots(
+  ranges: TimeRange[],
+  durationMinutes: number,
+): TimeRange[] {
+  const duration = durationMinutes * 60_000;
   return ranges.flatMap((range) => {
     const [start, end] = millis(range);
     const slots: TimeRange[] = [];
-    for (let cursor = start; cursor + hour <= end; cursor += hour) {
+    for (let cursor = start; cursor + duration <= end; cursor += duration) {
       slots.push({
         start: new Date(cursor).toISOString(),
-        end: new Date(cursor + hour).toISOString(),
+        end: new Date(cursor + duration).toISOString(),
       });
     }
     return slots;
@@ -131,9 +136,10 @@ function calculateDateAvailability(
     .epochMilliseconds;
   const recurring = rules
     .filter((rule) => rule.day_of_week === plainDate.dayOfWeek)
-    .map((rule) =>
-      localRuleRange(date, rule.start_time, rule.end_time, timezone)
-    );
+    .map((rule) => ({
+      ...localRuleRange(date, rule.start_time, rule.end_time, timezone),
+      durationMinutes: rule.slot_duration_minutes,
+    }));
   const dateOverrides = overrides.flatMap((row) => {
     const range = clipped(
       { start: row.start_datetime, end: row.end_datetime },
@@ -166,7 +172,14 @@ function calculateDateAvailability(
   const unavailable = [...blocks, ...bookings];
   const availableByInterval = new Map<string, TimeRange>();
 
-  for (const slot of splitIntoHourlySlots([...recurring, ...extras])) {
+  const candidateSlots = [
+    ...recurring.flatMap(({ durationMinutes, ...range }) =>
+      splitIntoSlots([range], durationMinutes)
+    ),
+    ...splitIntoSlots(extras, 60),
+  ];
+
+  for (const slot of candidateSlots) {
     if (
       millis(slot)[0] >= now &&
       !unavailable.some((range) => rangesOverlap(slot, range))
@@ -236,7 +249,9 @@ export async function calculateDays(
   if (groupIds.length > 0) {
     const rulesResult = await admin
       .from("AvailabilityRule")
-      .select("day_of_week,start_time,end_time")
+      .select(
+        "group_id,day_of_week,start_time,end_time,slot_duration_minutes",
+      )
       .in("group_id", groupIds);
     if (rulesResult.error) dbError(rulesResult.error);
     rules = (rulesResult.data ?? []) as RuleRow[];

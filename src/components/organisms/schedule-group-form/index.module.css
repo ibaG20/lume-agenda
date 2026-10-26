@@ -47,6 +47,12 @@
   outline: 2px solid color-mix(in srgb, var(--color-primary) 18%, transparent);
 }
 
+.field small {
+  color: color-mix(in srgb, var(--color-base-content) 65%, transparent);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
 .weekdaysField {
   border: 0;
   padding: 0;
@@ -93,14 +99,47 @@
 }
 
 .rangeRow {
-  align-items: end;
+  align-items: start;
   background: var(--color-base-200);
   border: 0;
   border-radius: var(--radius-field);
   display: grid;
   gap: 0.75rem;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   padding: 0.8rem;
+}
+
+.calculatedEnd {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.calculatedEnd > span {
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.calculatedEnd output {
+  align-items: center;
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 7%,
+    var(--color-base-100)
+  );
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-primary) 25%, var(--color-base-300));
+  border-radius: var(--radius-field);
+  display: flex;
+  font-size: 1rem;
+  font-weight: 800;
+  min-height: 2.9rem;
+  padding: 0.65rem 0.8rem;
+}
+
+.calculatedEnd small {
+  color: color-mix(in srgb, var(--color-base-content) 65%, transparent);
+  font-size: 0.72rem;
 }
 
 .addButton,
@@ -201,10 +240,11 @@
   }
 
   .rangeRow {
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .removeButton {
-    grid-column: auto;
+    grid-column: 1 / -1;
+    justify-self: end;
   }
 }

@@ -3,7 +3,6 @@
 // migrations do Supabase; o Next.js só fala com Auth e Edge Functions.
 //
 // Decisões ainda abertas (não inventar colunas aqui):
-// DEC-01 — timezone IANA, duração e passo dos slots no prestador
 // DEC-03 — unicidade de Client: email global (abaixo) vs (provider_id, email)
 // DEC-04 — outbox de email, expiração do token de cancelamento
 
@@ -53,6 +52,8 @@ model AvailabilityRule {
   dayOfWeek Int    @map("day_of_week")
   startTime DateTime @db.Time @map("start_time")
   endTime   DateTime @db.Time @map("end_time")
+  slotDurationMinutes Int @default(60) @map("slot_duration_minutes") @db.SmallInt
+  appointmentCount Int @default(1) @map("appointment_count") @db.SmallInt
 
   group AvailabilityRuleGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
 

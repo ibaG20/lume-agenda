@@ -2,7 +2,7 @@ import { ApiError } from "./types.ts";
 
 type RedisValue = { result?: unknown };
 
-const availabilityCacheSchemaVersion = "v2";
+const availabilityCacheSchemaVersion = "v4";
 
 export function availabilityCacheKey(
   providerId: string,
