@@ -1,4 +1,4 @@
-export const TUTORIAL_STORAGE_PREFIX = "agendinha:tutorial-concluido:v1:";
+export const TUTORIAL_STORAGE_PREFIX = "agendinha:tutorial-concluido:v2:";
 
 export function tutorialStorageKey(userId: string) {
   return `${TUTORIAL_STORAGE_PREFIX}${userId}`;

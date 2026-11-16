@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppIcon } from "@/components/atoms/app-icon";
 import { Modal } from "@/components/molecules/modal";
 import { hasCompletedTutorial, saveTutorialCompletion } from "./index.function";
@@ -8,89 +9,116 @@ import styles from "./index.module.css";
 
 const steps = [
   {
-    title: "Bem-vinda à Agendinha",
+    title: "Painel do dia",
     icon: "home" as const,
+    path: "/inicio",
     description:
-      "Aqui você acompanha seu dia e encontra atalhos para as tarefas mais importantes da sua agenda.",
+      "Esta é a visão geral da sua agenda. Aqui você acompanha os atendimentos de hoje, avisos e atalhos para as tarefas principais.",
     tips: [
-      "Veja os próximos atendimentos logo ao entrar.",
-      "Acesse rapidamente agendamentos e horários.",
+      "Consulte os próximos atendimentos logo ao entrar.",
+      "Use os atalhos para gerenciar agendamentos e horários.",
     ],
   },
   {
-    title: "Agendamentos",
-    icon: "calendar" as const,
-    description:
-      "Consulte sua agenda por dia para saber quais horários estão livres, ocupados ou bloqueados.",
-    tips: [
-      "Toque em uma data para ver os horários daquele dia.",
-      "Abra um horário ocupado para conferir ou cancelar o atendimento.",
-    ],
-  },
-  {
-    title: "Horários",
+    title: "Configure seus horários",
     icon: "clock" as const,
+    path: "/inicio/horarios",
     description:
-      "Defina os dias e períodos em que você atende. A Agendinha usa essas regras para oferecer horários aos clientes.",
+      "Nesta tela você administra os grupos que definem os dias e períodos em que atende.",
     tips: [
-      "Crie rotinas diferentes para cada dia da semana.",
-      "Ative, edite ou remova uma regra quando sua rotina mudar.",
+      "Ative, edite ou exclua grupos quando sua rotina mudar.",
+      "Grupos ativos não podem ter horários conflitantes.",
     ],
   },
   {
-    title: "Criar novo horário",
+    title: "Crie um grupo de horários",
     icon: "plus" as const,
+    path: "/inicio/horarios/criar",
     description:
-      "Use o botão + no celular ou a área Horários no computador para cadastrar uma nova disponibilidade.",
+      "Cadastre uma rotina informando os dias da semana, o início, a duração e a quantidade de atendimentos.",
     tips: [
-      "Escolha os dias, o período de atendimento e a duração.",
-      "Revise os dados antes de salvar para evitar conflitos.",
+      "Use um nome que ajude a identificar a rotina depois.",
+      "O término do período é calculado automaticamente.",
     ],
   },
   {
     title: "Perfil e link de agendamento",
     icon: "profile" as const,
+    path: "/perfil",
     description:
-      "Mantenha seus dados atualizados e copie seu link público para receber agendamentos dos clientes.",
+      "Mantenha seus dados atualizados e copie o link público que seus clientes usarão para agendar.",
     tips: [
       "Confira o fuso horário usado na agenda e nos lembretes.",
-      "Compartilhe seu link por mensagem ou nas redes sociais.",
+      "Compartilhe o link por mensagem ou nas redes sociais.",
+    ],
+  },
+  {
+    title: "Gerencie seus agendamentos",
+    icon: "calendar" as const,
+    path: "/inicio/agendamentos",
+    description:
+      "Consulte sua agenda por dia para saber quais horários estão livres, ocupados ou bloqueados.",
+    tips: [
+      "Selecione uma data para conferir os horários daquele dia.",
+      "Abra um horário para inativar, reativar ou cancelar um atendimento.",
     ],
   },
 ];
 
 type FirstAccessTutorialProps = {
   enabled: boolean;
+  pathname: string;
   userId: string;
 };
 
 export function FirstAccessTutorial({
   enabled,
+  pathname,
   userId,
 }: FirstAccessTutorialProps) {
+  const router = useRouter();
+  const startedRef = useRef(false);
   const [open, setOpen] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const step = steps[stepIndex];
   const isLastStep = stepIndex === steps.length - 1;
 
   useEffect(() => {
-    if (!enabled || hasCompletedTutorial(userId)) return;
+    const replayRequested =
+      pathname === "/inicio" &&
+      new URLSearchParams(window.location.search).get("guia") === "1";
+
+    if (!replayRequested && (!enabled || startedRef.current)) return;
+    if (!replayRequested && hasCompletedTutorial(userId)) {
+      startedRef.current = true;
+      return;
+    }
+
+    startedRef.current = true;
     const timeoutId = window.setTimeout(() => {
       setStepIndex(0);
       setOpen(true);
+      if (replayRequested || pathname !== steps[0].path) {
+        router.replace(steps[0].path, { scroll: false });
+      }
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
-  }, [enabled, userId]);
+  }, [enabled, pathname, router, userId]);
 
   function finishTutorial() {
     saveTutorialCompletion(userId);
     setOpen(false);
   }
 
+  function goToStep(index: number) {
+    setStepIndex(index);
+    router.replace(steps[index].path, { scroll: false });
+  }
+
   return (
     <Modal
-      description="Um guia rápido das atividades do seu painel."
+      description="Conheça as principais telas enquanto navega pelo seu painel."
       footer={
         <>
           <button
@@ -98,12 +126,12 @@ export function FirstAccessTutorial({
             onClick={finishTutorial}
             type="button"
           >
-            Pular tutorial
+            Pular guia
           </button>
           {stepIndex > 0 ? (
             <button
               className="btn btn-ghost"
-              onClick={() => setStepIndex((current) => current - 1)}
+              onClick={() => goToStep(stepIndex - 1)}
               type="button"
             >
               Voltar
@@ -116,11 +144,11 @@ export function FirstAccessTutorial({
                 finishTutorial();
                 return;
               }
-              setStepIndex((current) => current + 1);
+              goToStep(stepIndex + 1);
             }}
             type="button"
           >
-            {isLastStep ? "Começar a usar" : "Próximo"}
+            {isLastStep ? "Concluir guia" : "Próximo"}
           </button>
         </>
       }

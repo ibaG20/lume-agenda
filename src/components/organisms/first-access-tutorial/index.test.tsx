@@ -7,49 +7,133 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FirstAccessTutorial } from "./index";
 import { tutorialStorageKey } from "./index.function";
 
+const { replace } = vi.hoisted(() => ({ replace: vi.fn() }));
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ replace }),
+}));
+
+function renderTutorial(pathname = "/inicio", enabled = true) {
+  return render(
+    <FirstAccessTutorial
+      enabled={enabled}
+      pathname={pathname}
+      userId="user-a"
+    />,
+  );
+}
+
 describe("FirstAccessTutorial", () => {
-  beforeEach(() => window.localStorage.clear());
+  beforeEach(() => {
+    replace.mockReset();
+    window.localStorage.clear();
+    window.history.replaceState(null, "", "/inicio");
+  });
   afterEach(cleanup);
 
-  it("explains every activity and saves completion", async () => {
-    render(<FirstAccessTutorial enabled userId="user-a" />);
+  it("navigates through every activity and saves completion", async () => {
+    renderTutorial();
 
     expect(
-      await screen.findByRole("heading", { name: "Bem-vinda à Agendinha" }),
+      await screen.findByRole("heading", { name: "Painel do dia" }),
     ).toBeTruthy();
 
     const next = screen.getByRole("button", { name: "Próximo" });
     fireEvent.click(next);
-    expect(screen.getByRole("heading", { name: "Agendamentos" })).toBeTruthy();
-    fireEvent.click(next);
-    expect(screen.getByRole("heading", { name: "Horários" })).toBeTruthy();
-    fireEvent.click(next);
     expect(
-      screen.getByRole("heading", { name: "Criar novo horário" }),
+      screen.getByRole("heading", { name: "Configure seus horários" }),
     ).toBeTruthy();
-    fireEvent.click(next);
-    expect(
-      screen.getByRole("heading", { name: "Perfil e link de agendamento" }),
-    ).toBeTruthy();
+    expect(replace).toHaveBeenLastCalledWith("/inicio/horarios", {
+      scroll: false,
+    });
 
-    fireEvent.click(screen.getByRole("button", { name: "Começar a usar" }));
+    fireEvent.click(screen.getByRole("button", { name: "Voltar" }));
+    expect(screen.getByRole("heading", { name: "Painel do dia" })).toBeTruthy();
+    expect(replace).toHaveBeenLastCalledWith("/inicio", { scroll: false });
+
+    fireEvent.click(next);
+    fireEvent.click(next);
+    expect(
+      screen.getByRole("heading", { name: "Crie um grupo de horários" }),
+    ).toBeTruthy();
+    expect(replace).toHaveBeenLastCalledWith("/inicio/horarios/criar", {
+      scroll: false,
+    });
+
+    fireEvent.click(next);
+    expect(
+      screen.getByRole("heading", {
+        name: "Perfil e link de agendamento",
+      }),
+    ).toBeTruthy();
+    expect(replace).toHaveBeenLastCalledWith("/perfil", { scroll: false });
+
+    fireEvent.click(next);
+    expect(
+      screen.getByRole("heading", { name: "Gerencie seus agendamentos" }),
+    ).toBeTruthy();
+    expect(replace).toHaveBeenLastCalledWith("/inicio/agendamentos", {
+      scroll: false,
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Concluir guia" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     expect(window.localStorage.getItem(tutorialStorageKey("user-a"))).toBe("1");
   });
 
-  it("does not open after the tutorial was completed", async () => {
+  it("skips the guide from its explicit action", async () => {
+    renderTutorial();
+
+    await screen.findByRole("heading", { name: "Painel do dia" });
+    fireEvent.click(screen.getByRole("button", { name: "Pular guia" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(window.localStorage.getItem(tutorialStorageKey("user-a"))).toBe("1");
+  });
+
+  it.each(["cancel", "backdrop"])(
+    "treats %s as skipping the guide",
+    async (action) => {
+      renderTutorial();
+      const dialog = await screen.findByRole("dialog");
+
+      if (action === "cancel") {
+        fireEvent(dialog, new Event("cancel", { cancelable: true }));
+      } else {
+        fireEvent.click(dialog);
+      }
+
+      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+      expect(window.localStorage.getItem(tutorialStorageKey("user-a"))).toBe(
+        "1",
+      );
+    },
+  );
+
+  it("does not open after the guide was completed", async () => {
     window.localStorage.setItem(tutorialStorageKey("user-a"), "1");
-    render(<FirstAccessTutorial enabled userId="user-a" />);
+    renderTutorial();
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });
 
+  it("replays a completed guide when requested by the help page", async () => {
+    window.localStorage.setItem(tutorialStorageKey("user-a"), "1");
+    window.history.replaceState(null, "", "/inicio?guia=1");
+    renderTutorial();
+
+    expect(
+      await screen.findByRole("heading", { name: "Painel do dia" }),
+    ).toBeTruthy();
+    expect(replace).toHaveBeenCalledWith("/inicio", { scroll: false });
+  });
+
   it("does not open outside the complete dashboard", async () => {
-    render(<FirstAccessTutorial enabled={false} userId="user-a" />);
+    renderTutorial("/perfil", false);
 
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     expect(

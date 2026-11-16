@@ -1,0 +1,162 @@
+.guideCard {
+  align-items: flex-start;
+  background: color-mix(
+    in srgb,
+    var(--color-primary) 9%,
+    var(--color-base-100)
+  );
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-primary) 24%, var(--color-base-300));
+  border-radius: var(--radius-box);
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.guideIcon {
+  align-items: center;
+  background: var(--color-primary);
+  border-radius: 0.85rem;
+  color: var(--color-primary-content);
+  display: inline-flex;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
+}
+
+.guideCard h2 {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.guideCard p {
+  color: color-mix(in srgb, var(--color-base-content) 72%, transparent);
+  line-height: 1.5;
+  margin-top: 0.2rem;
+}
+
+.guideButton {
+  align-items: center;
+  background: var(--color-primary);
+  border-radius: var(--radius-field);
+  color: var(--color-primary-content);
+  display: inline-flex;
+  font-weight: 750;
+  gap: 0.45rem;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0.65rem 0.9rem;
+  text-decoration: none;
+}
+
+.sectionNav {
+  align-self: start;
+  background: var(--color-base-100);
+  border: 1.5px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  padding: 1.1rem;
+}
+
+.sectionNav h2 {
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sectionNav ol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  list-style: none;
+  margin-top: 0.65rem;
+}
+
+.sectionNav a {
+  border-radius: var(--radius-field);
+  color: color-mix(in srgb, var(--color-base-content) 76%, transparent);
+  display: block;
+  font-weight: 650;
+  padding: 0.65rem 0.75rem;
+  text-decoration: none;
+}
+
+.sectionNav a:hover {
+  background: var(--color-base-200);
+  color: var(--color-primary);
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+}
+
+.questions {
+  background: var(--color-base-100);
+  border: 1.5px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  overflow: hidden;
+}
+
+.question + .question {
+  border-top: 1.5px solid var(--color-base-300);
+}
+
+.question summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-weight: 750;
+  gap: 1rem;
+  justify-content: space-between;
+  list-style: none;
+  min-height: 3.5rem;
+  padding: 1rem;
+}
+
+.question summary::-webkit-details-marker {
+  display: none;
+}
+
+.question summary:hover {
+  background: var(--color-base-200);
+}
+
+.question summary svg {
+  flex: 0 0 auto;
+  transition: transform var(--motion-base) var(--ease-out);
+}
+
+.question[open] summary {
+  color: var(--color-primary);
+}
+
+.question[open] summary svg {
+  transform: rotate(45deg);
+}
+
+.answer {
+  color: color-mix(in srgb, var(--color-base-content) 76%, transparent);
+  line-height: 1.65;
+  padding: 0 1rem 1rem;
+}
+
+.answer a {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+@media (min-width: 640px) {
+  .guideCard {
+    align-items: center;
+    grid-template-columns: auto 1fr auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sectionNav {
+    position: sticky;
+    top: 2rem;
+  }
+}

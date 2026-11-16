@@ -26,6 +26,7 @@ type DashboardShellProps = {
 
 export function DashboardShell({ children, userId }: DashboardShellProps) {
   const pathname = usePathname();
+  const helpActive = pathname.startsWith("/ajuda");
 
   return (
     <div className="flex min-h-svh bg-base-200 text-base-content">
@@ -52,13 +53,35 @@ export function DashboardShell({ children, userId }: DashboardShellProps) {
             );
           })}
         </nav>
-        <p className={styles.sidebarHint}>Sua agenda, simples e organizada.</p>
+        <div className={styles.sidebarFooter}>
+          <AppLink
+            aria-current={helpActive ? "page" : undefined}
+            className={styles.navLink}
+            data-active={helpActive}
+            href="/ajuda"
+          >
+            <AppIcon name="info" />
+            <span>Ajuda</span>
+          </AppLink>
+          <p className={styles.sidebarHint}>
+            Sua agenda, simples e organizada.
+          </p>
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className={styles.mobileHeader}>
           <AppLink className={styles.brand} href="/inicio">
             <BrandLogo />
+          </AppLink>
+          <AppLink
+            aria-current={helpActive ? "page" : undefined}
+            aria-label="Ajuda e perguntas frequentes"
+            className={styles.mobileHelp}
+            data-active={helpActive}
+            href="/ajuda"
+          >
+            <AppIcon name="info" size={21} />
           </AppLink>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-36 pt-6 sm:px-6 lg:px-10 lg:pb-10 lg:pt-10">
@@ -108,6 +131,7 @@ export function DashboardShell({ children, userId }: DashboardShellProps) {
       </div>
       <FirstAccessTutorial
         enabled={pathname.startsWith("/inicio")}
+        pathname={pathname}
         userId={userId}
       />
     </div>

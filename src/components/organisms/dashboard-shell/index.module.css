@@ -43,18 +43,44 @@
   color: color-mix(in srgb, var(--color-neutral-content) 55%, transparent);
   font-size: 0.78rem;
   line-height: 1.5;
+  padding: 0.5rem 0.85rem 0;
+}
+
+.sidebarFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   margin-top: auto;
-  padding: 1rem 0.85rem 0;
 }
 
 .mobileHeader {
+  align-items: center;
   background: var(--color-base-100);
   border-bottom: 1.5px solid var(--color-base-300);
   color: var(--color-base-content);
+  display: flex;
+  justify-content: space-between;
   padding: 0.75rem 1rem;
   position: sticky;
   top: 0;
   z-index: 20;
+}
+
+.mobileHelp {
+  align-items: center;
+  border-radius: 999px;
+  color: color-mix(in srgb, var(--color-base-content) 68%, transparent);
+  display: inline-flex;
+  height: 2.75rem;
+  justify-content: center;
+  text-decoration: none;
+  width: 2.75rem;
+}
+
+.mobileHelp:hover,
+.mobileHelp[data-active="true"] {
+  background: var(--color-base-200);
+  color: var(--color-primary);
 }
 
 .dock {
