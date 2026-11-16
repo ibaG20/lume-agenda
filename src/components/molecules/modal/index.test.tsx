@@ -33,9 +33,11 @@ describe("Modal", () => {
     expect(
       screen.getByRole("heading", { name: "Cancelar agendamento" }),
     ).toBeTruthy();
-    const dialog = screen.getByRole("dialog");
+    const dialog = screen.getByRole("dialog") as HTMLDialogElement;
     fireEvent.click(dialog);
     expect(screen.queryByRole("dialog")).toBeNull();
+    expect(dialog.open).toBe(false);
+    expect(dialog.hasAttribute("open")).toBe(false);
   });
 
   it("closes when escape is pressed", () => {

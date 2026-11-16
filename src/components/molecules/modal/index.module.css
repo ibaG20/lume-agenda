@@ -114,7 +114,7 @@
 }
 
 @media (max-width: 640px) {
-  .dialog {
+  .dialog[open] {
     display: flex;
     flex-direction: column;
     height: 100dvh;
@@ -136,7 +136,7 @@
     width: 100%;
   }
 
-  .dialog[data-placement] {
+  .dialog[open][data-placement] {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
