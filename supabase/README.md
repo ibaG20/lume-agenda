@@ -46,6 +46,9 @@ as Edge Functions.
    value supported by the Resend account. The Send Email Hook replaces delivery,
    but Supabase Auth still applies this project-wide limit and returns
    `429 over_email_send_rate_limit` when it is exhausted.
+7. In **Authentication > URL Configuration**, add each deployed callback URL
+   (for example, `https://app.example.com/auth/callback`) to the allowed redirect
+   URLs. Cadastro, OAuth e recuperação de senha usam esse callback PKCE.
 
 The endpoint deliberately has JWT verification disabled because it authenticates
 Supabase Auth through the Standard Webhooks signature. It never logs recipients

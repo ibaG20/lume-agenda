@@ -37,3 +37,23 @@ export function signInErrorUrl(
   }
   return url;
 }
+
+export function authCallbackErrorUrl(
+  request: NextRequest,
+  error: "oauth_callback" | "unavailable",
+  nextPath = "/",
+): URL {
+  const safeNextPath = normalizeNextPath(nextPath);
+  const destination = new URL(safeNextPath, request.url);
+
+  if (destination.pathname === "/reset-password") {
+    const url = new URL("/forgot-password", request.url);
+    url.searchParams.set(
+      "error",
+      error === "unavailable" ? "unavailable" : "invalid_link",
+    );
+    return url;
+  }
+
+  return signInErrorUrl(request, error, safeNextPath);
+}

@@ -97,4 +97,14 @@ describe("SignInScreen", () => {
         .disabled,
     ).toBe(true);
   });
+
+  it("links to password recovery", () => {
+    render(<SignInScreen configured nextPath="/" />);
+
+    expect(
+      screen
+        .getByRole("link", { name: "Esqueci minha senha" })
+        .getAttribute("href"),
+    ).toBe("/forgot-password");
+  });
 });

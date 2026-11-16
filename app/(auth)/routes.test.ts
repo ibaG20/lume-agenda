@@ -149,4 +149,16 @@ describe("Auth route handlers", () => {
     );
     expect(unavailable.headers.get("location")).toContain("error=unavailable");
   });
+
+  it("returns an invalid recovery link to the recovery request screen", async () => {
+    const response = await authCallback(
+      new NextRequest(
+        "http://localhost:3000/auth/callback?next=%2Freset-password",
+      ),
+    );
+
+    expect(response.headers.get("location")).toBe(
+      "http://localhost:3000/forgot-password?error=invalid_link",
+    );
+  });
 });

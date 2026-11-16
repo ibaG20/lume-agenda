@@ -10,19 +10,24 @@ export function BrandMark({ size = 40 }: { size?: number }) {
   return (
     <svg aria-hidden="true" height={size} viewBox="0 0 64 64" width={size}>
       <rect fill="#0a5558" height="64" rx="16" width="64" />
-      <path
-        d="M20 36c1.2-8 7.2-14 14.2-14 5.4 0 10 3.2 12.2 8"
+      <circle
+        cx="32"
+        cy="32"
         fill="none"
+        r="18"
         stroke="#f3fffe"
-        strokeLinecap="round"
         strokeWidth="4.5"
       />
-      <path
-        d="M44 28c-1.2 8-7.2 14-14.2 14-5.4 0-10-3.2-12.2-8"
+      <circle
+        cx="32"
+        cy="32"
         fill="none"
+        pathLength="2"
+        r="18"
         stroke="#d7c4a3"
-        strokeLinecap="round"
+        strokeDasharray="1 1"
         strokeWidth="4.5"
+        transform="rotate(20 32 32)"
       />
     </svg>
   );

@@ -103,9 +103,17 @@ export function SignInScreen({
         </fieldset>
 
         <fieldset className="fieldset">
-          <label className="fieldset-legend" htmlFor="sign-in-password">
-            Senha
-          </label>
+          <div className="flex items-center justify-between gap-3">
+            <label className="fieldset-legend" htmlFor="sign-in-password">
+              Senha
+            </label>
+            <Link
+              className="text-xs font-semibold text-primary underline-offset-4 hover:underline"
+              href="/forgot-password"
+            >
+              Esqueci minha senha
+            </Link>
+          </div>
           <input
             autoComplete="current-password"
             className="input input-bordered w-full"

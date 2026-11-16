@@ -64,7 +64,7 @@ Legenda usada nesta documentação:
 | ESLint | Implementado | ESLint 9 com regras Next.js Core Web Vitals e TypeScript |
 | Funcionalidades de agendamento | Planejado | Nenhum fluxo de domínio foi implementado |
 | PWA instalável | Implementado | `app/manifest.ts`, ícones em `public/icons`, `public/sw.js` e página `public/offline.html`; mutações offline são recusadas |
-| Supabase Auth | Implementado no web | Login, cadastro, Google OAuth PKCE, logout local, refresh e sessão SSR; provedor Google ainda depende de configuração externa |
+| Supabase Auth | Implementado no web | Login, cadastro, recuperação de senha por e-mail, Google OAuth PKCE, logout local, refresh e sessão SSR; provedor Google ainda depende de configuração externa |
 | PostgreSQL, migrations e RLS | Planejado | Contrato em `docs/schema.prisma`; sem Prisma Client nem migrations no web |
 | Supabase Edge Functions | Parcial | Contratos e hooks em `src/features`; funções ainda não deployadas |
 | Upstash Redis | Planejado | Cache e invalidação ainda não existem |

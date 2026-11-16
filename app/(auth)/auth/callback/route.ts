@@ -3,9 +3,9 @@ import { normalizeNextPath } from "@/features/auth";
 import { hasPublicEnv } from "@/lib/env/public";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
+  authCallbackErrorUrl,
   createAuthHeaderCollector,
   redirectWithAuthHeaders,
-  signInErrorUrl,
 } from "../../route-utils";
 
 export const dynamic = "force-dynamic";
@@ -18,14 +18,14 @@ export async function GET(request: NextRequest) {
 
   if (!hasPublicEnv()) {
     return redirectWithAuthHeaders(
-      signInErrorUrl(request, "unavailable", nextPath),
+      authCallbackErrorUrl(request, "unavailable", nextPath),
       302,
     );
   }
 
   if (!code) {
     return redirectWithAuthHeaders(
-      signInErrorUrl(request, "oauth_callback", nextPath),
+      authCallbackErrorUrl(request, "oauth_callback", nextPath),
       302,
     );
   }
@@ -41,14 +41,14 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       return redirectWithAuthHeaders(
-        signInErrorUrl(request, "oauth_callback", nextPath),
+        authCallbackErrorUrl(request, "oauth_callback", nextPath),
         302,
         collector.headers,
       );
     }
   } catch {
     return redirectWithAuthHeaders(
-      signInErrorUrl(request, "oauth_callback", nextPath),
+      authCallbackErrorUrl(request, "oauth_callback", nextPath),
       302,
       collector.headers,
     );

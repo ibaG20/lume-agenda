@@ -1,4 +1,4 @@
-const CACHE_NAME = "agendinha-v4";
+const CACHE_NAME = "agendinha-v5";
 const START_URL = "/inicio";
 const PRECACHE = [
   "/offline.html",
@@ -37,6 +37,8 @@ function isAuthPath(pathname) {
     pathname.startsWith("/sign-in") ||
     pathname.startsWith("/sign-out") ||
     pathname.startsWith("/register") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password") ||
     pathname.startsWith("/refresh")
   );
 }

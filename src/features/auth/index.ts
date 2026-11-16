@@ -1,13 +1,20 @@
 export { signInWithOAuth, signInWithPassword } from "./api/sign-in";
 export { signOut } from "./api/sign-out";
 export { registerWithPassword } from "./api/register";
+export { requestPasswordReset, updatePassword } from "./api/password-recovery";
 export { refreshSession } from "./api/refresh-session";
 export { useSession } from "./hooks/use-session";
 export { useSignIn } from "./hooks/use-sign-in";
 export { useSignOut } from "./hooks/use-sign-out";
 export { useRegister } from "./hooks/use-register";
+export {
+  usePasswordResetRequest,
+  usePasswordUpdate,
+} from "./hooks/use-password-recovery";
 export { SignInScreen } from "./components/sign-in-screen";
 export { RegisterScreen } from "./components/register-screen";
+export { ForgotPasswordScreen } from "./components/forgot-password-screen";
+export { ResetPasswordScreen } from "./components/reset-password-screen";
 export {
   createAuthCallbackUrl,
   createAuthPageHref,

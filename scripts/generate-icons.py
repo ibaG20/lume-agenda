@@ -1,4 +1,4 @@
-"""Rasterize the Agendinha mark into PWA PNG icons. Run with Pillow installed."""
+"""Rasterize the Agendinha mark into browser and PWA icons. Run with Pillow installed."""
 
 from pathlib import Path
 
@@ -56,6 +56,11 @@ def main() -> None:
     render(512, False).save(icons / "icon-512.png")
     render(512, True).save(icons / "icon-maskable-512.png")
     render(180, False).save(ROOT / "app" / "apple-icon.png")
+    render(256, False).save(
+        ROOT / "app" / "favicon.ico",
+        format="ICO",
+        sizes=[(16, 16), (32, 32), (48, 48), (256, 256)],
+    )
 
 
 if __name__ == "__main__":
