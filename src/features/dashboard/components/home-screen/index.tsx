@@ -25,7 +25,11 @@ export function HomeScreen() {
       <PageHeader size="medium" title="Painel do dia" />
 
       <section className="grid gap-3 sm:grid-cols-2" aria-label="Ações rápidas">
-        <AppLink className={styles.primaryAction} href="/inicio/agendamentos">
+        <AppLink
+          className={styles.primaryAction}
+          data-tutorial-target="home-actions"
+          href="/inicio/agendamentos"
+        >
           <span className={styles.actionIcon}>
             <AppIcon name="calendar" />
           </span>

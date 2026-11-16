@@ -193,7 +193,11 @@ export function ProfileScreen({
         </section>
 
         <aside className="flex flex-col gap-6">
-          <section className={styles.card} aria-labelledby="public-link-title">
+          <section
+            aria-labelledby="public-link-title"
+            className={styles.card}
+            data-tutorial-target="profile-link"
+          >
             <header>
               <h2 className={styles.cardTitle} id="public-link-title">
                 Site de agendamento

@@ -53,4 +53,44 @@ describe("Modal", () => {
     );
     expect(onClose).toHaveBeenCalled();
   });
+
+  it("places a guided modal beside a highlighted target", () => {
+    render(
+      <Modal
+        onClose={() => undefined}
+        open
+        placement="right"
+        spotlight={{ top: 24, left: 32, width: 180, height: 72 }}
+        title="Guia"
+      >
+        <p>Passo atual</p>
+      </Modal>,
+    );
+
+    const dialog = screen.getByRole("dialog");
+    const spotlight = dialog.querySelector<HTMLElement>("[data-spotlight]");
+
+    expect(dialog.dataset.placement).toBe("right");
+    expect(spotlight?.querySelector("svg")).toBeTruthy();
+    expect(spotlight?.style.top).toBe("24px");
+    expect(spotlight?.style.left).toBe("32px");
+    expect(spotlight?.style.width).toBe("180px");
+    expect(spotlight?.style.height).toBe("72px");
+  });
+
+  it("keeps a non-dismissible modal open after backdrop and escape", () => {
+    const onClose = vi.fn();
+    render(
+      <Modal dismissible={false} onClose={onClose} open title="Guia">
+        <p>Use os botões do guia.</p>
+      </Modal>,
+    );
+
+    const dialog = screen.getByRole("dialog");
+    fireEvent.click(dialog);
+    fireEvent(dialog, new Event("cancel", { cancelable: true }));
+
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByRole("dialog")).toBeTruthy();
+  });
 });

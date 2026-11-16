@@ -14,7 +14,7 @@ export function PageHeader({
   title,
   description,
   action,
-  size = "large",
+  size = "medium",
 }: PageHeaderProps) {
   return (
     <header className="flex items-start justify-between gap-4">

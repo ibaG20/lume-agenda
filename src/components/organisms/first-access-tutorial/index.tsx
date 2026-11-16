@@ -12,10 +12,9 @@ const steps = [
     title: "Painel do dia",
     icon: "home" as const,
     path: "/inicio",
-    description:
-      "Esta é a visão geral da sua agenda. Aqui você acompanha os atendimentos de hoje, avisos e atalhos para as tarefas principais.",
-    tips: [
-      "Consulte os próximos atendimentos logo ao entrar.",
+    target: "home-actions",
+    description: [
+      "Acompanhe os atendimentos e avisos do dia.",
       "Use os atalhos para gerenciar agendamentos e horários.",
     ],
   },
@@ -23,47 +22,50 @@ const steps = [
     title: "Configure seus horários",
     icon: "clock" as const,
     path: "/inicio/horarios",
-    description:
-      "Nesta tela você administra os grupos que definem os dias e períodos em que atende.",
-    tips: [
-      "Ative, edite ou exclua grupos quando sua rotina mudar.",
-      "Grupos ativos não podem ter horários conflitantes.",
+    target: "schedule-create",
+    description: [
+      "Crie grupos para definir os dias e períodos em que atende.",
+      "Use Novo grupo para adicionar uma rotina.",
     ],
   },
   {
     title: "Crie um grupo de horários",
     icon: "plus" as const,
     path: "/inicio/horarios/criar",
-    description:
-      "Cadastre uma rotina informando os dias da semana, o início, a duração e a quantidade de atendimentos.",
-    tips: [
-      "Use um nome que ajude a identificar a rotina depois.",
-      "O término do período é calculado automaticamente.",
+    target: "schedule-routine",
+    description: [
+      "Dê um nome à rotina e selecione os dias da semana.",
+      "Informe início, duração e quantidade de atendimentos.",
     ],
   },
   {
     title: "Perfil e link de agendamento",
     icon: "profile" as const,
     path: "/perfil",
-    description:
-      "Mantenha seus dados atualizados e copie o link público que seus clientes usarão para agendar.",
-    tips: [
-      "Confira o fuso horário usado na agenda e nos lembretes.",
-      "Compartilhe o link por mensagem ou nas redes sociais.",
+    target: "profile-link",
+    description: [
+      "Defina o endereço público usado pelos seus clientes.",
+      "Copie e compartilhe o link de agendamento.",
     ],
   },
   {
     title: "Gerencie seus agendamentos",
     icon: "calendar" as const,
     path: "/inicio/agendamentos",
-    description:
-      "Consulte sua agenda por dia para saber quais horários estão livres, ocupados ou bloqueados.",
-    tips: [
-      "Selecione uma data para conferir os horários daquele dia.",
-      "Abra um horário para inativar, reativar ou cancelar um atendimento.",
+    target: "agenda-calendar",
+    description: [
+      "Selecione uma data para consultar os horários do dia.",
+      "Veja quais estão livres, ocupados ou inativos.",
     ],
   },
 ];
+
+type Spotlight = {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+};
 
 type FirstAccessTutorialProps = {
   enabled: boolean;
@@ -80,6 +82,8 @@ export function FirstAccessTutorial({
   const startedRef = useRef(false);
   const [open, setOpen] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
+  const [placement, setPlacement] = useState<"left" | "right">("right");
+  const [spotlight, setSpotlight] = useState<Spotlight>();
   const step = steps[stepIndex];
   const isLastStep = stepIndex === steps.length - 1;
 
@@ -106,19 +110,88 @@ export function FirstAccessTutorial({
     return () => window.clearTimeout(timeoutId);
   }, [enabled, pathname, router, userId]);
 
+  useEffect(() => {
+    if (!open) return;
+
+    let frameId = 0;
+    let settleTimeoutId = 0;
+    let targetWasPositioned = false;
+
+    function measureTarget() {
+      const target = document.querySelector<HTMLElement>(
+        `[data-tutorial-target="${step.target}"]`,
+      );
+
+      if (!target) {
+        setSpotlight(undefined);
+        return;
+      }
+
+      if (!targetWasPositioned) {
+        targetWasPositioned = true;
+        if (typeof target.scrollIntoView === "function") {
+          target.scrollIntoView({ block: "center" });
+        }
+        settleTimeoutId = window.setTimeout(scheduleMeasurement, 100);
+      }
+
+      const rect = target.getBoundingClientRect();
+      const padding = 8;
+      const viewportPadding = 8;
+      const top = Math.max(viewportPadding, rect.top - padding);
+      const left = Math.max(viewportPadding, rect.left - padding);
+      const right = Math.min(
+        window.innerWidth - viewportPadding,
+        rect.right + padding,
+      );
+      const bottom = Math.min(
+        window.innerHeight - viewportPadding,
+        rect.bottom + padding,
+      );
+
+      setSpotlight({
+        top,
+        left,
+        width: Math.max(0, right - left),
+        height: Math.max(0, bottom - top),
+      });
+      setPlacement(left > window.innerWidth - right ? "left" : "right");
+    }
+
+    function scheduleMeasurement() {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(measureTarget);
+    }
+
+    scheduleMeasurement();
+    const observer = new MutationObserver(scheduleMeasurement);
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener("resize", scheduleMeasurement);
+    window.addEventListener("scroll", scheduleMeasurement, true);
+
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(frameId);
+      window.clearTimeout(settleTimeoutId);
+      window.removeEventListener("resize", scheduleMeasurement);
+      window.removeEventListener("scroll", scheduleMeasurement, true);
+    };
+  }, [open, pathname, step.target]);
+
   function finishTutorial() {
     saveTutorialCompletion(userId);
     setOpen(false);
   }
 
   function goToStep(index: number) {
+    setSpotlight(undefined);
     setStepIndex(index);
     router.replace(steps[index].path, { scroll: false });
   }
 
   return (
     <Modal
-      description="Conheça as principais telas enquanto navega pelo seu painel."
+      dismissible={false}
       footer={
         <>
           <button
@@ -154,6 +227,8 @@ export function FirstAccessTutorial({
       }
       onClose={finishTutorial}
       open={open}
+      placement={placement}
+      spotlight={spotlight}
       title={step.title}
     >
       <section aria-live="polite">
@@ -161,18 +236,17 @@ export function FirstAccessTutorial({
           <span className={styles.icon}>
             <AppIcon name={step.icon} size={26} />
           </span>
-          <p className={styles.description}>
+          <div className={styles.description}>
             <span className={styles.stepLabel}>
               Passo {stepIndex + 1} de {steps.length}
             </span>
-            {step.description}
-          </p>
+            <ul>
+              {step.description.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <ul className={styles.tips}>
-          {step.tips.map((tip) => (
-            <li key={tip}>{tip}</li>
-          ))}
-        </ul>
         <ol className={styles.progress} aria-label="Progresso do tutorial">
           {steps.map((item, index) => (
             <li

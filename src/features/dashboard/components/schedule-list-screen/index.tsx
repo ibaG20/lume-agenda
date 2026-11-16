@@ -89,6 +89,7 @@ export function ScheduleListScreen() {
             </Popover>
             <AppLink
               className={styles.createButton}
+              data-tutorial-target="schedule-create"
               href="/inicio/horarios/criar"
             >
               <AppIcon name="plus" size={19} />

@@ -29,8 +29,10 @@ describe("HelpScreen", () => {
     render(<HelpScreen />);
 
     expect(
-      screen.getByRole("link", { name: "Perfil" }).getAttribute("href"),
-    ).toBe("/perfil");
+      screen
+        .getAllByRole("link", { name: "Perfil" })
+        .every((link) => link.getAttribute("href") === "/perfil"),
+    ).toBe(true);
     expect(
       screen
         .getAllByRole("link", { name: "Agendamentos" })

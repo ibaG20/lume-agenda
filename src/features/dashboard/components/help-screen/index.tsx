@@ -11,7 +11,7 @@ const faqSections = [
         question: "Como altero meus dados e o link de agendamento?",
         answer: (
           <>
-            Acesse <AppLink href="/perfil">Perfil</AppLink>, atualize seus
+            Acesse <AppLink href="/perfil">Perfil</AppLink>, para atualizar seus
             dados, o fuso horário ou o endereço público e salve. O botão de
             copiar gera o link que você pode enviar aos clientes.
           </>
@@ -21,7 +21,7 @@ const faqSections = [
         question: "Como meus clientes fazem um agendamento?",
         answer: (
           <>
-            Compartilhe o link disponível no seu perfil. O cliente escolhe uma
+            Compartilhe o link disponível no seu <AppLink href="/perfil">Perfil</AppLink>. O cliente escolhe uma
             data e um horário livre, informa os dados de contato e confirma a
             reserva sem precisar criar uma conta.
           </>
@@ -116,7 +116,6 @@ export function HelpScreen() {
       <PageHeader
         eyebrow="Central de ajuda"
         title="Como podemos ajudar?"
-        description="Encontre respostas rápidas sobre as principais funções da sua agenda."
       />
 
       <aside className={styles.guideCard} aria-labelledby="guide-title">
@@ -125,26 +124,11 @@ export function HelpScreen() {
         </span>
         <div>
           <h2 id="guide-title">Prefere ver o passo a passo?</h2>
-          <p>
-            Reabra o guia interativo e visite cada tela do painel novamente.
-          </p>
         </div>
         <AppLink className={styles.guideButton} href="/inicio?guia=1">
           Rever guia <AppIcon name="chevron-right" size={18} />
         </AppLink>
       </aside>
-
-      <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-        <nav className={styles.sectionNav} aria-label="Seções da ajuda">
-          <h2>Neste guia</h2>
-          <ol>
-            {faqSections.map((section, index) => (
-              <li key={section.title}>
-                <a href={`#faq-${index + 1}`}>{section.title}</a>
-              </li>
-            ))}
-          </ol>
-        </nav>
 
         <div className="flex flex-col gap-8">
           {faqSections.map((section, sectionIndex) => (
@@ -173,6 +157,5 @@ export function HelpScreen() {
           ))}
         </div>
       </div>
-    </div>
   );
 }

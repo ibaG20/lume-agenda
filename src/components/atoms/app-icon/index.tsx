@@ -9,6 +9,7 @@ type AppIconName =
   | "copy"
   | "logout"
   | "info"
+  | "alert"
   | "trash";
 
 type AppIconProps = {
@@ -52,6 +53,12 @@ const paths: Record<AppIconName, React.ReactNode> = {
     <>
       <circle cx="12" cy="12" r="9" />
       <path d="M12 11v6M12 8h.01" />
+    </>
+  ),
+  alert: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v6M12 17h.01" />
     </>
   ),
   trash: (

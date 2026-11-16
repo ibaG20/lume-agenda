@@ -86,7 +86,11 @@ export function ScheduleGroupForm({
 
   return (
     <form className="flex flex-col gap-6" onSubmit={handleSubmit} noValidate>
-      <section className={styles.card} aria-labelledby="routine-title">
+      <section
+        aria-labelledby="routine-title"
+        className={styles.card}
+        data-tutorial-target="schedule-routine"
+      >
         <header>
           <h2 className={styles.cardTitle} id="routine-title">
             Grupo de horários

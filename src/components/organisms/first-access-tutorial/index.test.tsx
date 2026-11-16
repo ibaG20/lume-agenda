@@ -96,7 +96,7 @@ describe("FirstAccessTutorial", () => {
   });
 
   it.each(["cancel", "backdrop"])(
-    "treats %s as skipping the guide",
+    "keeps the guide open after %s",
     async (action) => {
       renderTutorial();
       const dialog = await screen.findByRole("dialog");
@@ -107,10 +107,10 @@ describe("FirstAccessTutorial", () => {
         fireEvent.click(dialog);
       }
 
-      await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-      expect(window.localStorage.getItem(tutorialStorageKey("user-a"))).toBe(
-        "1",
-      );
+      expect(screen.getByRole("dialog")).toBeTruthy();
+      expect(
+        window.localStorage.getItem(tutorialStorageKey("user-a")),
+      ).toBeNull();
     },
   );
 

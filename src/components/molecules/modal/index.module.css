@@ -18,6 +18,17 @@
   background: color-mix(in srgb, var(--color-base-content) 46%, transparent);
 }
 
+.dialog[data-placement] {
+  height: 100dvh;
+  margin: 0;
+  max-height: 100dvh;
+  padding: 1rem;
+}
+
+.dialog[data-placement]::backdrop {
+  background: transparent;
+}
+
 .panel {
   animation: scale-in var(--motion-base) var(--ease-out);
   background: var(--color-base-100);
@@ -30,6 +41,55 @@
   margin-inline: auto;
   max-width: 28rem;
   padding: 1.25rem;
+}
+
+.dialog[data-placement] .panel {
+  animation-name: fade-in;
+  margin: 0;
+  max-width: 22rem;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: calc(100% - 2rem);
+  z-index: 2;
+}
+
+.dialog[data-placement="left"] .panel {
+  left: 1rem;
+}
+
+.dialog[data-placement="right"] .panel {
+  right: 1rem;
+}
+
+.spotlight {
+  border: 3px solid var(--color-error);
+  border-radius: calc(var(--radius-box) + 0.35rem);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--color-error) 28%, transparent),
+    0 0 0 9999px color-mix(in srgb, var(--color-base-content) 20%, transparent);
+  pointer-events: none;
+  position: fixed;
+  transition:
+    inset var(--motion-base) var(--ease-out),
+    width var(--motion-base) var(--ease-out),
+    height var(--motion-base) var(--ease-out);
+  z-index: 1;
+}
+
+.spotlight span {
+  align-items: center;
+  background: var(--color-error);
+  border-radius: 999px;
+  color: var(--color-error-content);
+  display: flex;
+  height: 1.8rem;
+  justify-content: center;
+  left: 0.65rem;
+  position: absolute;
+  top: 0;
+  transform: translateY(-55%);
+  width: 1.8rem;
 }
 
 .header h2 {
@@ -73,6 +133,29 @@
     max-height: 100%;
     overflow-y: auto;
     padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    width: 100%;
+  }
+
+  .dialog[data-placement] {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0;
+  }
+
+  .dialog[data-placement] .panel {
+    border-bottom: 0;
+    border-radius: 1.15rem 1.15rem 0 0;
+    left: auto;
+    margin-top: auto;
+    max-height: 48dvh;
+    max-width: none;
+    overflow-y: auto;
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
     width: 100%;
   }
 }

@@ -32,34 +32,33 @@
 
 .description {
   color: var(--color-base-content);
+  flex: 1;
   line-height: 1.55;
   margin: 0;
 }
 
-.tips {
-  background: var(--color-base-200);
-  border-radius: var(--radius-field);
+.description ul {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.35rem;
   list-style: none;
-  margin-top: 1rem;
-  padding: 0.85rem;
+  margin: 0;
+  padding: 0;
 }
 
-.tips li {
+.description li {
   align-items: baseline;
   display: flex;
-  gap: 0.55rem;
+  gap: 0.45rem;
 }
 
-.tips li::before {
+.description li::before {
   background: var(--color-primary);
   border-radius: 999px;
   content: "";
   flex: 0 0 auto;
-  height: 0.42rem;
-  width: 0.42rem;
+  height: 0.35rem;
+  width: 0.35rem;
 }
 
 .progress {

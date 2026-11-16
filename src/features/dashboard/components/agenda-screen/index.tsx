@@ -49,11 +49,13 @@ export function AgendaScreen({ timezone }: { timezone: string }) {
       <PageHeader size="medium" title="Agendamentos" />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(19rem,23rem)_1fr]">
-        <MonthCalendar
-          onSelect={setSelectedDate}
-          selectedDate={selectedDate}
-          timezone={timezone}
-        />
+        <div data-tutorial-target="agenda-calendar">
+          <MonthCalendar
+            onSelect={setSelectedDate}
+            selectedDate={selectedDate}
+            timezone={timezone}
+          />
+        </div>
 
         <section aria-labelledby="selected-date-title">
           <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
