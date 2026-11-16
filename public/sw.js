@@ -1,4 +1,4 @@
-const CACHE_NAME = "agendinha-v3";
+const CACHE_NAME = "agendinha-v4";
 const START_URL = "/inicio";
 const PRECACHE = [
   "/offline.html",
@@ -42,13 +42,12 @@ function isAuthPath(pathname) {
 }
 
 function isStaticAsset(pathname) {
+  if (pathname.startsWith("/_next/")) return false;
   return (
-    pathname.startsWith("/_next/static/") ||
     pathname.startsWith("/icons/") ||
     pathname.endsWith(".svg") ||
     pathname.endsWith(".png") ||
-    pathname.endsWith(".woff2") ||
-    pathname.endsWith(".css")
+    pathname.endsWith(".woff2")
   );
 }
 

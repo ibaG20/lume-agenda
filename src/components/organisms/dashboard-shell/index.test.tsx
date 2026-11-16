@@ -1,13 +1,21 @@
 /** @vitest-environment jsdom */
 
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DashboardShell } from "./index";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/ajuda" }));
 vi.mock("next/offline", () => ({ useOffline: () => false }));
 vi.mock("@/components/organisms/first-access-tutorial", () => ({
-  FirstAccessTutorial: () => null,
+  FirstAccessTutorial: ({
+    onOpenChange,
+  }: {
+    onOpenChange?: (open: boolean) => void;
+  }) => (
+    <button onClick={() => onOpenChange?.(true)} type="button">
+      Abrir guia
+    </button>
+  ),
 }));
 
 describe("DashboardShell", () => {
@@ -29,5 +37,21 @@ describe("DashboardShell", () => {
     expect(desktopHelp.getAttribute("aria-current")).toBe("page");
     expect(mobileHelp.getAttribute("href")).toBe("/ajuda");
     expect(mobileHelp.getAttribute("aria-current")).toBe("page");
+  });
+
+  it("removes the mobile dock while the guide is open", () => {
+    render(
+      <DashboardShell userId="user-a">
+        <p>Conteúdo</p>
+      </DashboardShell>,
+    );
+
+    expect(
+      screen.getByRole("navigation", { name: "Navegação principal" }),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Abrir guia" }));
+    expect(
+      screen.queryByRole("navigation", { name: "Navegação principal" }),
+    ).toBeNull();
   });
 });

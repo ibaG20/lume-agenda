@@ -84,7 +84,11 @@ describe("HomeScreen", () => {
 
     render(<HomeScreen />);
 
-    expect(screen.getByAltText("Nenhum agendamento hoje.")).toBeTruthy();
+    expect(
+      screen
+        .getByAltText("Nenhum agendamento hoje.")
+        .getAttribute("loading"),
+    ).toBe("eager");
     expect(screen.queryByText("Nenhum agendamento hoje.")).toBeNull();
   });
 });

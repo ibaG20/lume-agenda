@@ -87,7 +87,10 @@ export function Modal({
           </span>
         </div>
       ) : null}
-      <div className={styles.panel}>
+      <div
+        className={styles.panel}
+        data-tutorial-panel={placement ? "" : undefined}
+      >
         <header className={styles.header}>
           <h2 id={titleId}>{title}</h2>
           {description ? <p id={descriptionId}>{description}</p> : null}

@@ -69,18 +69,22 @@ type Spotlight = {
 
 type FirstAccessTutorialProps = {
   enabled: boolean;
+  onOpenChange?: (open: boolean) => void;
   pathname: string;
   userId: string;
 };
 
 export function FirstAccessTutorial({
   enabled,
+  onOpenChange,
   pathname,
   userId,
 }: FirstAccessTutorialProps) {
   const router = useRouter();
   const startedRef = useRef(false);
+  const pendingStepRef = useRef<number | undefined>(undefined);
   const [open, setOpen] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [placement, setPlacement] = useState<"left" | "right">("right");
   const [spotlight, setSpotlight] = useState<Spotlight>();
@@ -102,13 +106,29 @@ export function FirstAccessTutorial({
     const timeoutId = window.setTimeout(() => {
       setStepIndex(0);
       setOpen(true);
+      onOpenChange?.(true);
       if (replayRequested || pathname !== steps[0].path) {
         router.replace(steps[0].path, { scroll: false });
       }
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
-  }, [enabled, pathname, router, userId]);
+  }, [enabled, onOpenChange, pathname, router, userId]);
+
+  useEffect(() => {
+    const pendingStep = pendingStepRef.current;
+    if (pendingStep === undefined || steps[pendingStep].path !== pathname) {
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      pendingStepRef.current = undefined;
+      setStepIndex(pendingStep);
+      setNavigating(false);
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -116,38 +136,78 @@ export function FirstAccessTutorial({
     let frameId = 0;
     let settleTimeoutId = 0;
     let targetWasPositioned = false;
+    let observedTarget: HTMLElement | undefined;
+    const resizeObserver =
+      typeof ResizeObserver === "function"
+        ? new ResizeObserver(scheduleMeasurement)
+        : undefined;
 
     function measureTarget() {
-      const target = document.querySelector<HTMLElement>(
+      const targets = document.querySelectorAll<HTMLElement>(
         `[data-tutorial-target="${step.target}"]`,
       );
+      const target = Array.from(targets).find((candidate) => {
+        const rect = candidate.getBoundingClientRect();
+        const style = window.getComputedStyle(candidate);
+        return (
+          rect.width > 0 &&
+          rect.height > 0 &&
+          style.display !== "none" &&
+          style.visibility !== "hidden"
+        );
+      });
 
       if (!target) {
         setSpotlight(undefined);
         return;
       }
 
+      if (target !== observedTarget) {
+        resizeObserver?.disconnect();
+        resizeObserver?.observe(target);
+        observedTarget = target;
+      }
+
+      const padding = 8;
+      const viewportPadding = 8;
+      const panel = document.querySelector<HTMLElement>(
+        "[data-tutorial-panel]",
+      );
+      const panelRect = panel?.getBoundingClientRect();
+      const isMobile = window.innerWidth <= 640;
+      const availableBottom =
+        isMobile &&
+        panelRect &&
+        panelRect.top > viewportPadding &&
+        panelRect.top < window.innerHeight
+          ? panelRect.top - 12
+          : window.innerHeight - viewportPadding;
+
+      const rect = target.getBoundingClientRect();
       if (!targetWasPositioned) {
         targetWasPositioned = true;
-        if (typeof target.scrollIntoView === "function") {
-          target.scrollIntoView({ block: "center" });
+        const availableHeight = availableBottom - viewportPadding;
+        const desiredTop =
+          rect.height <= availableHeight
+            ? viewportPadding + (availableHeight - rect.height) / 2
+            : viewportPadding;
+        const scrollOffset = rect.top - desiredTop;
+
+        if (Math.abs(scrollOffset) > 1) {
+          window.scrollBy({ top: scrollOffset, behavior: "auto" });
+          settleTimeoutId = window.setTimeout(scheduleMeasurement, 100);
+          return;
         }
         settleTimeoutId = window.setTimeout(scheduleMeasurement, 100);
       }
 
-      const rect = target.getBoundingClientRect();
-      const padding = 8;
-      const viewportPadding = 8;
       const top = Math.max(viewportPadding, rect.top - padding);
       const left = Math.max(viewportPadding, rect.left - padding);
       const right = Math.min(
         window.innerWidth - viewportPadding,
         rect.right + padding,
       );
-      const bottom = Math.min(
-        window.innerHeight - viewportPadding,
-        rect.bottom + padding,
-      );
+      const bottom = Math.min(availableBottom, rect.bottom + padding);
 
       setSpotlight({
         top,
@@ -168,24 +228,38 @@ export function FirstAccessTutorial({
     observer.observe(document.body, { childList: true, subtree: true });
     window.addEventListener("resize", scheduleMeasurement);
     window.addEventListener("scroll", scheduleMeasurement, true);
+    window.visualViewport?.addEventListener("resize", scheduleMeasurement);
+    window.visualViewport?.addEventListener("scroll", scheduleMeasurement);
 
     return () => {
       observer.disconnect();
+      resizeObserver?.disconnect();
       window.cancelAnimationFrame(frameId);
       window.clearTimeout(settleTimeoutId);
       window.removeEventListener("resize", scheduleMeasurement);
       window.removeEventListener("scroll", scheduleMeasurement, true);
+      window.visualViewport?.removeEventListener("resize", scheduleMeasurement);
+      window.visualViewport?.removeEventListener("scroll", scheduleMeasurement);
     };
   }, [open, pathname, step.target]);
 
   function finishTutorial() {
+    pendingStepRef.current = undefined;
     saveTutorialCompletion(userId);
+    setNavigating(false);
+    setSpotlight(undefined);
     setOpen(false);
+    onOpenChange?.(false);
   }
 
   function goToStep(index: number) {
     setSpotlight(undefined);
-    setStepIndex(index);
+    if (steps[index].path === pathname) {
+      setStepIndex(index);
+      return;
+    }
+    pendingStepRef.current = index;
+    setNavigating(true);
     router.replace(steps[index].path, { scroll: false });
   }
 
@@ -204,6 +278,7 @@ export function FirstAccessTutorial({
           {stepIndex > 0 ? (
             <button
               className="btn btn-ghost"
+              disabled={navigating}
               onClick={() => goToStep(stepIndex - 1)}
               type="button"
             >
@@ -212,6 +287,7 @@ export function FirstAccessTutorial({
           ) : null}
           <button
             className="btn btn-primary"
+            disabled={navigating}
             onClick={() => {
               if (isLastStep) {
                 finishTutorial();

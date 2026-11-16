@@ -83,6 +83,7 @@ export function HomeScreen() {
               alt="Nenhum agendamento hoje."
               className={styles.emptyIllustration}
               height={268}
+              loading="eager"
               src="/illustrations/empty-agenda.png"
               width={640}
             />

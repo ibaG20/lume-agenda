@@ -71,6 +71,7 @@ describe("Modal", () => {
     const spotlight = dialog.querySelector<HTMLElement>("[data-spotlight]");
 
     expect(dialog.dataset.placement).toBe("right");
+    expect(dialog.querySelector("[data-tutorial-panel]")).toBeTruthy();
     expect(spotlight?.querySelector("svg")).toBeTruthy();
     expect(spotlight?.style.top).toBe("24px");
     expect(spotlight?.style.left).toBe("32px");
