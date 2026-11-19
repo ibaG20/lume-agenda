@@ -60,7 +60,7 @@ export function HomeScreen() {
         (agenda.status === "pending" && !agenda.data) ? (
           <ResourceFeedback kind="loading" title="Carregando sua agenda…" />
         ) : null}
-        {profile.status === "error" ? (
+        {profile.status === "error" && profile.error.code !== "NOT_FOUND" ? (
           <ResourceFeedback
             kind="error"
             title="Não foi possível carregar seu perfil"

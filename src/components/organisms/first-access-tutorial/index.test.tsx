@@ -9,28 +9,52 @@ import {
 } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { FirstAccessTutorial } from "./index";
+import {
+  FIRST_ACCESS_GUIDE_COOKIE,
+  FIRST_ACCESS_GUIDE_METADATA_KEY,
+  PROFILE_COMPLETION_PATH,
+} from "@/lib/first-access-guide";
 import { tutorialStorageKey } from "./index.function";
 
-const { replace } = vi.hoisted(() => ({ replace: vi.fn() }));
+const { replace, updateUser } = vi.hoisted(() => ({
+  replace: vi.fn(),
+  updateUser: vi.fn(),
+}));
+
+vi.mock("@/lib/supabase/browser", () => ({
+  createBrowserSupabaseClient: () => ({ auth: { updateUser } }),
+}));
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace }),
 }));
 
-function renderTutorial(pathname = "/inicio", enabled = true) {
+function renderTutorial(
+  pathname = "/inicio",
+  enabled = true,
+  profileIncomplete = false,
+) {
   return render(
     <FirstAccessTutorial
       enabled={enabled}
       pathname={pathname}
+      profileIncomplete={profileIncomplete}
       userId="user-a"
     />,
   );
 }
 
+function clearGuideCookie() {
+  document.cookie = `${FIRST_ACCESS_GUIDE_COOKIE}=; path=/; max-age=0`;
+}
+
 describe("FirstAccessTutorial", () => {
   beforeEach(() => {
     replace.mockReset();
+    updateUser.mockReset();
+    updateUser.mockResolvedValue({ data: {}, error: null });
     window.localStorage.clear();
+    clearGuideCookie();
     window.history.replaceState(null, "", "/inicio");
   });
   afterEach(() => {
@@ -175,6 +199,52 @@ describe("FirstAccessTutorial", () => {
       await screen.findByRole("heading", { name: "Painel do dia" }),
     ).toBeTruthy();
     expect(replace).toHaveBeenCalledWith("/inicio", { scroll: false });
+  });
+
+  it("sends an incomplete profile to its form only after the guide ends", async () => {
+    renderTutorial("/inicio", true, true);
+
+    await screen.findByRole("heading", { name: "Painel do dia" });
+    expect(replace).not.toHaveBeenCalledWith(PROFILE_COMPLETION_PATH);
+
+    fireEvent.click(screen.getByRole("button", { name: "Pular guia" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(replace).toHaveBeenLastCalledWith(PROFILE_COMPLETION_PATH);
+    expect(document.cookie).toContain(`${FIRST_ACCESS_GUIDE_COOKIE}=user-a`);
+    expect(updateUser).toHaveBeenCalledWith({
+      data: { [FIRST_ACCESS_GUIDE_METADATA_KEY]: expect.any(String) },
+    });
+  });
+
+  it("starts the guide from the profile page on the first access", async () => {
+    renderTutorial("/perfil", true, true);
+
+    expect(
+      await screen.findByRole("heading", { name: "Painel do dia" }),
+    ).toBeTruthy();
+    expect(replace).toHaveBeenCalledWith("/inicio", { scroll: false });
+  });
+
+  it("goes straight to the profile when the guide was already completed", async () => {
+    window.localStorage.setItem(tutorialStorageKey("user-a"), "1");
+    renderTutorial("/inicio", true, true);
+
+    await waitFor(() =>
+      expect(replace).toHaveBeenCalledWith(PROFILE_COMPLETION_PATH),
+    );
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.cookie).toContain(`${FIRST_ACCESS_GUIDE_COOKIE}=user-a`);
+  });
+
+  it("keeps a complete profile on the dashboard after the guide", async () => {
+    renderTutorial();
+
+    await screen.findByRole("heading", { name: "Painel do dia" });
+    fireEvent.click(screen.getByRole("button", { name: "Pular guia" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(replace).not.toHaveBeenCalledWith(PROFILE_COMPLETION_PATH);
   });
 
   it("does not open outside the complete dashboard", async () => {

@@ -4,7 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AppIcon } from "@/components/atoms/app-icon";
 import { Modal } from "@/components/molecules/modal";
-import { hasCompletedTutorial, saveTutorialCompletion } from "./index.function";
+import { PROFILE_COMPLETION_PATH } from "@/lib/first-access-guide";
+import {
+  hasCompletedTutorial,
+  hasCompletionCookie,
+  saveTutorialCompletion,
+} from "./index.function";
 import styles from "./index.module.css";
 
 const steps = [
@@ -71,6 +76,8 @@ type FirstAccessTutorialProps = {
   enabled: boolean;
   onOpenChange?: (open: boolean) => void;
   pathname: string;
+  /** Perfil sem os dados obrigatórios: ao fim do guia, leva ao perfil. */
+  profileIncomplete?: boolean;
   userId: string;
 };
 
@@ -78,6 +85,7 @@ export function FirstAccessTutorial({
   enabled,
   onOpenChange,
   pathname,
+  profileIncomplete = false,
   userId,
 }: FirstAccessTutorialProps) {
   const router = useRouter();
@@ -99,6 +107,11 @@ export function FirstAccessTutorial({
     if (!replayRequested && (!enabled || startedRef.current)) return;
     if (!replayRequested && hasCompletedTutorial(userId)) {
       startedRef.current = true;
+      if (profileIncomplete) {
+        // Guia concluído antes do cookie existir: sincroniza e segue ao perfil.
+        if (!hasCompletionCookie(userId)) saveTutorialCompletion(userId);
+        router.replace(PROFILE_COMPLETION_PATH);
+      }
       return;
     }
 
@@ -113,7 +126,7 @@ export function FirstAccessTutorial({
     }, 0);
 
     return () => window.clearTimeout(timeoutId);
-  }, [enabled, onOpenChange, pathname, router, userId]);
+  }, [enabled, onOpenChange, pathname, profileIncomplete, router, userId]);
 
   useEffect(() => {
     const pendingStep = pendingStepRef.current;
@@ -250,6 +263,9 @@ export function FirstAccessTutorial({
     setSpotlight(undefined);
     setOpen(false);
     onOpenChange?.(false);
+    if (profileIncomplete) {
+      router.replace(PROFILE_COMPLETION_PATH);
+    }
   }
 
   function goToStep(index: number) {

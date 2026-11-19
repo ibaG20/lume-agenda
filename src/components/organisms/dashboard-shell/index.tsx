@@ -21,10 +21,17 @@ const navigation = [
 
 type DashboardShellProps = {
   children: ReactNode;
+  guideCompleted?: boolean;
+  profileIncomplete?: boolean;
   userId: string;
 };
 
-export function DashboardShell({ children, userId }: DashboardShellProps) {
+export function DashboardShell({
+  children,
+  guideCompleted = false,
+  profileIncomplete = false,
+  userId,
+}: DashboardShellProps) {
   const pathname = usePathname();
   const helpActive = pathname.startsWith("/ajuda");
   const [tutorialOpen, setTutorialOpen] = useState(false);
@@ -133,9 +140,11 @@ export function DashboardShell({ children, userId }: DashboardShellProps) {
         ) : null}
       </div>
       <FirstAccessTutorial
-        enabled={pathname.startsWith("/inicio")}
+        // Abre sozinho só no primeiro acesso; depois, apenas por "Rever guia".
+        enabled={profileIncomplete && !guideCompleted}
         onOpenChange={setTutorialOpen}
         pathname={pathname}
+        profileIncomplete={profileIncomplete}
         userId={userId}
       />
     </div>

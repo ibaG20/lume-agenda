@@ -8,5 +8,6 @@ export const metadata: Metadata = {
 
 export default async function AgendamentosPage() {
   const profile = await requireCompleteProfile();
-  return <AgendaScreen timezone={profile.timezone} />;
+  // Durante o guia do primeiro acesso o perfil ainda pode não existir.
+  return <AgendaScreen timezone={profile?.timezone ?? "America/Sao_Paulo"} />;
 }

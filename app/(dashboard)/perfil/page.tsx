@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { ProfileScreen } from "@/features/dashboard/components/profile-screen";
-import { requireDashboardUser } from "@/features/auth/server/dashboard-session";
-import { getProfile } from "@/features/profile";
+import {
+  getDashboardProfile,
+  requireDashboardUser,
+} from "@/features/auth/server/dashboard-session";
 
 export const metadata: Metadata = {
   title: "Perfil · Agendinha",
@@ -13,8 +15,8 @@ type PerfilPageProps = {
 
 export default async function PerfilPage({ searchParams }: PerfilPageProps) {
   const query = await searchParams;
-  const { client, email } = await requireDashboardUser();
-  const profile = await getProfile(client);
+  const { email } = await requireDashboardUser();
+  const profile = await getDashboardProfile();
   if (!profile.ok && profile.error.code !== "NOT_FOUND") {
     throw new Error(profile.error.message);
   }
